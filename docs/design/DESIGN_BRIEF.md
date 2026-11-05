@@ -2,6 +2,8 @@
 
 Punto di partenza per la chat di design. Niente qui è definitivo: sono proposte da accettare, cambiare o buttare.
 
+> Le decisioni prese in D0 e D1 stanno in [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md), che prevale su questo brief.
+
 ## La sensazione
 
 Una **tana accogliente sotto le radici**, piena di libri, dove qualche creaturina ha appena lasciato in giro una tazza e una ghianda. Calda, artigianale, un po' dispettosa. Come un taccuino di un naturalista che studia un bosco inventato.

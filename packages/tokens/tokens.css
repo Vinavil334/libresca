@@ -1,0 +1,220 @@
+/* Libresca · Sottobosco — generated from tokens.json by packages/tokens/scripts/build-css.mjs. Do not edit by hand. */
+
+:root, [data-theme="giorno"] {
+  --color-surface: #f4ecdd;
+  --color-surface-raised: #fffaf1;
+  --color-text: #2d2433;
+  --color-text-muted: #5e5463;
+  --color-border: #2d2433;
+  --color-rule: #d9cdba;
+  --color-shadow: #2d2433;
+  --color-accent: #b8492f;
+  --color-on-accent: #fffaf1;
+  --color-link: #9e3d26;
+  --color-canopy: #4e6a3d;
+  --color-on-canopy: #fff6e6;
+  --color-canopy-soft: #dce6c9;
+  --color-honey: #edb54a;
+  --color-on-honey: #2d2433;
+  --color-ticket: #f6ddb0;
+  --color-why: #eef2e2;
+  --color-inverse: #2d2433;
+  --color-on-inverse: #fff6e6;
+  --color-success: #4e6a3d;
+  --color-warning: #8a5a0b;
+  --color-danger: #8a2a1a;
+  --color-focus: #9e3d26;
+  --color-cap: var(--color-accent);
+  --color-stem: #f2e4cc;
+  --color-firefly: #edb54a;
+  --color-mouse: #a99aa8;
+  --color-mouse-inner: #e9b7a8;
+  --shadow-card: 3px 3px 0 #2d2433;
+  --shadow-lift: 5px 5px 0 #2d2433;
+  --shadow-glow: 0 0 0 0 #edb54a;
+}
+
+[data-theme="notte"] {
+  --color-surface: #211a26;
+  --color-surface-raised: #2d2433;
+  --color-text: #f4ecdd;
+  --color-text-muted: #c3b8c4;
+  --color-border: #e8dcc8;
+  --color-rule: #4a3e4f;
+  --color-shadow: #0b080d;
+  --color-accent: #f0896b;
+  --color-on-accent: #211a26;
+  --color-link: #f5a286;
+  --color-canopy: #2f4a2c;
+  --color-on-canopy: #f4ecdd;
+  --color-canopy-soft: #3b5a37;
+  --color-honey: #f2c46a;
+  --color-on-honey: #211a26;
+  --color-ticket: #3a2e2a;
+  --color-why: #2a3427;
+  --color-inverse: #f4ecdd;
+  --color-on-inverse: #211a26;
+  --color-success: #a9c98f;
+  --color-warning: #f2c46a;
+  --color-danger: #ffb4a8;
+  --color-focus: #f2c46a;
+  --color-stem: #f4ecdd;
+  --color-firefly: #f7db7a;
+  --color-mouse: #b5a6b8;
+  --shadow-card: 3px 3px 0 #0b080d;
+  --shadow-lift: 5px 5px 0 #0b080d;
+  --shadow-glow: 0 0 10px 4px rgba(247, 219, 122, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="giorno"]) {
+    --color-surface: #211a26;
+    --color-surface-raised: #2d2433;
+    --color-text: #f4ecdd;
+    --color-text-muted: #c3b8c4;
+    --color-border: #e8dcc8;
+    --color-rule: #4a3e4f;
+    --color-shadow: #0b080d;
+    --color-accent: #f0896b;
+    --color-on-accent: #211a26;
+    --color-link: #f5a286;
+    --color-canopy: #2f4a2c;
+    --color-on-canopy: #f4ecdd;
+    --color-canopy-soft: #3b5a37;
+    --color-honey: #f2c46a;
+    --color-on-honey: #211a26;
+    --color-ticket: #3a2e2a;
+    --color-why: #2a3427;
+    --color-inverse: #f4ecdd;
+    --color-on-inverse: #211a26;
+    --color-success: #a9c98f;
+    --color-warning: #f2c46a;
+    --color-danger: #ffb4a8;
+    --color-focus: #f2c46a;
+    --color-stem: #f4ecdd;
+    --color-firefly: #f7db7a;
+    --color-mouse: #b5a6b8;
+    --shadow-card: 3px 3px 0 #0b080d;
+    --shadow-lift: 5px 5px 0 #0b080d;
+    --shadow-glow: 0 0 10px 4px rgba(247, 219, 122, 0.5);
+  }
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-cover: 6px;
+  --radius-card: 18px;
+  --radius-square: 22px;
+  --radius-sheet: 30px;
+  --radius-pill: 999px;
+  --border-ink: 2px;
+  --border-rule: 1.5px;
+  --border-dash: dashed;
+  --motion-gentle: 220ms;
+  --motion-quick: 120ms;
+  --motion-slow: 420ms;
+  --ease-gentle: cubic-bezier(0.3, 0.7, 0.4, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --font-display: Fraunces, "Iowan Old Style", Georgia, serif;
+  --font-body: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.type-display-xl {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 44px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-display-l {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 24px;
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-title-s {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 20px;
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-heading {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-note {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 400;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.type-body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+.type-body-strong {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+}
+
+.type-small {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+.type-label {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 800;
+}
+
+.type-nav {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.type-stamp {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}

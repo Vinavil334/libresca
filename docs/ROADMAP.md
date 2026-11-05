@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, tutte le decisioni iniziali prese, nessun codice. Prossimo task: **F0.2**, che richiede l'export Goodreads da scaricare sul tuo PC.
+**Stato attuale:** fondamenta documentali pronte, tutte le decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), nessun codice applicativo. Prossimo task: **F0.2**, che richiede l'export Goodreads da scaricare sul tuo PC; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -143,13 +143,13 @@ Si valuta solo dopo un uso reale. Le due strade sono indipendenti. Qui i piccoli
 
 Si lavora nella chat di design del progetto Claude, a partire da `docs/design/DESIGN_BRIEF.md`.
 
-- [ ] **D0** Direzione visiva: moodboard, mascotte, palette, tipografia, logo
-- [ ] **D1** Design system: token e componenti base, da riportare in repo prima delle schermate di F1
+- [x] **D0** Direzione visiva: scelta la direzione D "Sottobosco" tra quattro proposte (Erbario, Lanterna, Linoleum, Sottobosco), con giorno e notte su cinque schermate. Logo e mascotte definitiva passano alla D4
+- [x] **D1** Design system: token in `packages/tokens/tokens.json` con CSS generato e test, regole in `docs/design/DESIGN_SYSTEM.md`, icone e motivi in `docs/design/assets/`
 - [ ] **D2** Schermate Tana: libreria, scheda libro, scanner, aggiunta, stati vuoti
 - [ ] **D3** Schermate Bosco: tane degli amici, prestiti, spore, consigli
-- [ ] **D4** Set di creature, illustrazioni e animazioni
+- [ ] **D4** Set di creature, illustrazioni e animazioni; mascotte definitiva (sostituisce la topina provvisoria) e logo
 
-F0 non dipende dal design: usa token provvisori e neutri. Le schermate di F1 possono partire con D1 anche se D2 è ancora in corso.
+F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`; le schermate di F1 possono partire anche se D2 è ancora in corso.
 
 ## Registro dei cambi di piano
 
@@ -158,3 +158,4 @@ F0 non dipende dal design: usa token provvisori e neutri. Le schermate di F1 pos
 | 2026-11-05 | Prima versione | Avvio del progetto |
 | 2026-11-05 | Scelti import Goodreads e licenza MIT; F0.2 usa gli ISBN dell'export | Decisioni dell'utente in F0.1 |
 | 2026-11-05 | Accesso su invito ma apribile, API riusabili da mobile, i18n da subito, login Google, nuova F5 | Decisioni dell'utente in F0.1 |
+| 2026-11-05 | Chiuse D0 e D1: direzione "Sottobosco", token e design system in repo; logo e mascotte spostati in D4 | Scelta dell'utente nella chat di design |

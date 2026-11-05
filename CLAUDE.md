@@ -17,7 +17,9 @@ App per gestire la libreria personale, i libri degli amici, i prestiti e i consi
 - `docs/ARCHITECTURE.md`: stack, fonti metadati, limiti dei servizi
 - `docs/DATA_MODEL.md`: schema logico e regole di visibilità
 - `docs/RECOMMENDER.md`: progetto del Micelio
-- `docs/design/DESIGN_BRIEF.md`: direzione estetica, vocabolario
+- `docs/design/DESIGN_BRIEF.md`: brief di partenza della traccia design
+- `docs/design/DESIGN_SYSTEM.md`: regole del design system Sottobosco, vocabolario, creature
+- `packages/tokens/`: token del design system e CSS generato
 - `docs/adr/`: decisioni motivate; una decisione importante nuova richiede un ADR
 
 ## Stack
@@ -52,7 +54,7 @@ Non esistono ancora. Il task F0.3 deve sostituire questa sezione con i comandi r
 - La repo è pubblica. Mai committare dati reali di amici, export personali, chiavi. I file personali vanno in `data/private/`.
 - Open Library: massimo 3 richieste al secondo con `User-Agent` identificato, niente download massivi via API.
 - Il dataset UCSD Book Graph è solo per uso accademico: non usarlo per il prodotto.
-- Il design è ancora aperto. Non inventare un'estetica definitiva: usa i token provvisori finché `docs/design/DESIGN_SYSTEM.md` non esiste.
+- Il design system è `docs/design/DESIGN_SYSTEM.md` con i token di `packages/tokens/`: non inventare colori, font o stili fuori da lì. Dopo aver cambiato `tokens.json` rigenera `tokens.css` e fai girare i test del pacchetto. Le creature definitive arrivano con la D4: fino ad allora solo i segnaposto in `docs/design/assets/motivi/`.
 
 ## Come lavoriamo
 
