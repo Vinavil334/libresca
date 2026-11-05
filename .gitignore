@@ -1,0 +1,46 @@
+# Node
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Test
+playwright-report/
+test-results/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+ml/data/
+ml/artifacts/
+*.parquet
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+
+# Segreti
+.env
+.env.*
+!.env.example
+
+# Dati personali: la repo è pubblica
+data/private/
+*goodreads_library_export*.csv
+
+# Claude Code: preferenze locali
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
