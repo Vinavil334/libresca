@@ -66,6 +66,8 @@ Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tr
 | `import_jobs` | `id`, `user_id`, `source`, `status`, `total`, `done`, `report` | Import ripristinabili |
 | `import_rows` | `job_id`, `raw`, `match_status`, `work_id?` | Revisione delle corrispondenze dubbie |
 
+`started_on` e `finished_on` sono facoltative: l'export Goodreads non contiene la data di inizio e a volte nemmeno quella di fine. Una data sconosciuta resta `NULL`, mai stimata.
+
 `rating_half` va da 1 a 10: mezzo funghetto per unità. Si evitano così i decimali nel database. Vale `NULL` quando manca il voto: un libro senza voto è diverso da un voto basso.
 
 ## Sociale

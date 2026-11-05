@@ -17,7 +17,8 @@ Leggi le colonne per nome, mai per posizione.
 | `Exclusive Shelf` = `to-read` | `readings.status = want` |
 | `My Rating` da 1 a 5 | `rating_half` = voto × 2 |
 | `My Rating` = 0 | `rating_half` = NULL: significa nessun voto |
-| `Date Read` | `finished_on` |
+| `Date Read` | `finished_on`; se è vuota resta `NULL` |
+| Non esiste | `started_on` resta `NULL` |
 | `Bookshelves` | Crea o riusa `shelves`, escludendo gli scaffali esclusivi |
 | `Owned Copies` > 0 | Proponi la creazione di una copia, chiedendo conferma |
 | `Read Count` > 1 | Non inventare date per le riletture: segnalale nel report |
@@ -25,6 +26,8 @@ Leggi le colonne per nome, mai per posizione.
 
 ## Particolarità
 
+- **La data di inizio lettura non è nell'export.** Non stimarla: l'utente deve poterla completare in seguito.
+- `Date Read` può mancare anche per libri davvero letti. Non sostituirla con `Date Added`: segnala il libro nel report.
 - Gli ISBN possono arrivare in forma `="1770460829"`, con il wrapper da foglio di calcolo. Il parser deve rimuoverlo.
 - Molte righe possono non avere ISBN; in tal caso cerca per titolo e autore, chiedendo conferma.
 - L'edizione esportata può differire da quella che possiedi.

@@ -48,6 +48,7 @@ Non esistono ancora. Il task F0.3 deve sostituire questa sezione con i comandi r
 - Finché l'app è privata il costo deve restare zero: segnala prima qualunque servizio a pagamento. Limiti in `docs/ARCHITECTURE.md`.
 - Il login è con Google: le email integrate di Supabase non raggiungono gli amici.
 - Non usare l'ottimizzazione immagini di Vercel per le copertine.
+- Licenze: nel prodotto solo dipendenze permissive (MIT, Apache-2.0, BSD, ISC). Segnala GPL, AGPL e LGPL prima di aggiungerle: compromettono l'App Store. Nome e illustrazioni non sono MIT (`ASSETS_LICENSE.md`).
 - La repo è pubblica. Mai committare dati reali di amici, export personali, chiavi. I file personali vanno in `data/private/`.
 - Open Library: massimo 3 richieste al secondo con `User-Agent` identificato, niente download massivi via API.
 - Il dataset UCSD Book Graph è solo per uso accademico: non usarlo per il prodotto.

@@ -29,7 +29,7 @@ La libreria condivisa di una cerchia di amici: cosa possiedi, cosa hai letto, co
 ## Storie principali
 
 - Scansiono il codice a barre di un libro in libreria e in 5 secondi è nella mia Tana.
-- Importo la mia libreria da Goodreads senza perdere voti e date.
+- Importo la mia libreria da Goodreads con voti e date di fine, poi completo con calma le date mancanti.
 - Sono in libreria e controllo se ho già quel libro, o se ce l'ha un amico.
 - Segno che ho prestato un libro a Luca e me ne ricordo sei mesi dopo.
 - Mando a Marta una spora: "questo devi leggerlo", con due righe sul perché.

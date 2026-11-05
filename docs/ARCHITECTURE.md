@@ -109,10 +109,14 @@ Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> ve
 
 L'import procede a blocchi guidati dal browser: il client invia un blocco, il server lo elabora rispettando i limiti delle fonti, l'avanzamento vive in `import_jobs`. Si può riprendere dopo un'interruzione e non richiede code né server aggiuntivi. Le corrispondenze dubbie finiscono in una schermata di revisione.
 
+### Import da Goodreads
+
+L'export conserva voti, scaffali e **data di fine lettura**, che a volte manca, ma **non la data di inizio**. Il parser non deve mai dedurre date da `Date Added`. Le date mancanti restano vuote, e l'app guida a completarle. Il metodo per recuperare quelle di inizio si decide in F1.8, senza scraping automatico. Dettagli in `.claude/skills/metadati-libri/goodreads-csv.md`.
+
 ### Metodo dello spike F0.2
 
-1. Scegli 50 libri fisici della tua libreria: circa 35 italiani (grandi editori, piccoli editori, traduzioni, vecchie edizioni) e 15 stranieri.
-2. Salva gli ISBN in `data/private/spike-isbn.csv`. Le regole della repo impediscono a Claude di aprirlo: lo legge lo script, che stampa solo i dati aggregati.
+1. Scarica l'export da Goodreads e salvalo, senza aprirlo in Excel, in `data/private/`.
+2. Scegli 50 libri con ISBN: circa 35 italiani (grandi editori, piccoli editori, traduzioni, vecchie edizioni) e 15 stranieri. Le regole della repo impediscono a Claude di aprire quella cartella: legge tutto lo script, che stampa solo i dati aggregati.
 3. Per ogni fonte misura: edizione trovata, titolo corretto, autore, traduttore, descrizione, numero pagine, copertina.
 4. Riassumi i risultati aggregati in un nuovo ADR. Le ipotesi sulla copertura italiana diventano numeri.
 
@@ -174,6 +178,7 @@ I dati degli amici sono dati personali, anche se l'app è piccola.
 - [Hardcover API: Getting Started](https://docs.hardcover.app/api/getting-started)
 - [Goodreads: API deprecation](https://www.goodreads.com/topic/show/21788520-api-deprecation)
 - [isbnlib-sbn](https://www.pypi.org/project/isbnlib-sbn/)
+- [Date mancanti nell'export Goodreads](https://www.goodreads.com/topic/show/22566611-read-dates-are-missing----sometimes?page=1) e [assenza della data di inizio](https://www.librarything.com/topic/152083)
 - [Barcode scanning su iOS](https://eringen.substack.com/p/barcode-scanning-on-ios-the-missing)
 - [Prezzi Supabase 2026 (MakerKit)](https://makerkit.dev/blog/md/saas/supabase-pricing), fonte secondaria da ricontrollare su supabase.com
 - [Supabase: pausa dei progetti gratuiti](https://supabase.com/docs/guides/platform/free-project-pausing)

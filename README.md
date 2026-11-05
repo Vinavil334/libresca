@@ -50,4 +50,4 @@ La direzione visiva si sviluppa in una chat dedicata del progetto Claude, a part
 
 ## Licenza
 
-Non ancora definita: finché manca, tutti i diritti sono riservati.
+Il codice è sotto [licenza MIT](LICENSE). Nome, logo e illustrazioni sono riservati: vedi [ASSETS_LICENSE.md](ASSETS_LICENSE.md).

@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, nessun codice. In **F0.1** restano aperte le decisioni 4 e 5; poi si passa a **F0.2**.
+**Stato attuale:** fondamenta documentali pronte, tutte le decisioni iniziali prese, nessun codice. Prossimo task: **F0.2**, che richiede l'export Goodreads da scaricare sul tuo PC.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -37,24 +37,19 @@ flowchart LR
 | 1 | Accesso | Su invito all'inizio, progettata per aprirsi al pubblico | L'accesso è un'impostazione, non una regola scritta nel codice |
 | 2 | Piattaforma | Web app ora, app mobile in futuro | Logica in pacchetti condivisi e API riusabili fuori dal browser |
 | 3 | Costi | 0 € finché resta privata, piccola spesa quando si apre | Login Google, job anti-pausa, nessun dominio né servizio email |
+| 4 | Import | Goodreads | Voti e date di fine si importano; le date di inizio non sono nell'export (vedi F1.8) |
+| 5 | Licenza | MIT per il codice, nome e illustrazioni riservati | Nessun conflitto con l'App Store, dipendenze permissive |
 | 6 | Lingue | Italiano ora, altre lingue in futuro | Sistema di traduzione attivo da subito |
 | 7 | Embedding | Modello open eseguito nel job notturno | Nessun costo per chiamata e nessun servizio esterno |
 
-Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md) e [ADR-0006](adr/0006-accesso-a-costo-zero.md).
-
-### Ancora da chiudere
-
-| # | Tema | Stato |
-|---|---|---|
-| 4 | Import | Serve sapere dove stanno oggi i tuoi libri e voti: Goodreads, Anobii, StoryGraph, un foglio di calcolo o nessun archivio. In attesa di risposta, F1.8 resta su Goodreads |
-| 5 | Licenza | Consigliata AGPL-3.0 per il codice, con nome, logo e illustrazioni riservati. In attesa di conferma; finché manca, la repo resta senza licenza |
+Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](adr/0006-accesso-a-costo-zero.md) e [ADR-0007](adr/0007-licenza.md).
 
 ## F0 · Fondamenta
 
 *Fatto quando:* una pagina con login è online in HTTPS, la CI è verde e la scelta delle fonti metadati si basa su numeri reali.
 
-- [ ] **F0.1** (S) Chiudere le decisioni 4 e 5: import e licenza (`LICENSE`, ADR dedicato)
-- [ ] **F0.2** (S) Spike metadati: misurare la copertura di 50 ISBN reali della tua libreria, soprattutto italiani, su Open Library, Google Books e SBN (metodo in `docs/ARCHITECTURE.md`)
+- [x] **F0.1** (S) Prendere le decisioni iniziali e aggiungere la licenza
+- [ ] **F0.2** (S) Spike metadati: misurare la copertura di 50 ISBN presi dal tuo export Goodreads, soprattutto italiani, su Open Library, Google Books e SBN (metodo in `docs/ARCHITECTURE.md`)
 - [ ] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind, next-intl, lint, Vitest, Playwright; pacchetti `domain`, `data`, `i18n`, `tokens`; aggiornare i comandi in `CLAUDE.md`
 - [ ] **F0.4** (S) Supabase locale e progetto remoto in regione UE, generazione dei tipi
 - [ ] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS
@@ -73,7 +68,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md) e [ADR-0006](a
 - [ ] **F1.5** (M) Copie possedute: formato, posizione, condizioni, prestabile sì/no
 - [ ] **F1.6** (M) Letture: stati, date, riletture, voto a funghetti, note
 - [ ] **F1.7** (M) Tana e scheda libro: griglia, scaffali, filtri, ricerca interna
-- [ ] **F1.8** (M) Import Goodreads con revisione delle corrispondenze dubbie
+- [ ] **F1.8** (M) Import Goodreads con revisione delle corrispondenze dubbie e completamento guidato delle date mancanti; scegliere qui come recuperare le date di inizio
 - [ ] **F1.9** (S) Export completo CSV/JSON
 - [ ] **F1.10** (S) Copertina generata per i libri senza immagine, foto copertina facoltativa
 
@@ -161,4 +156,5 @@ F0 non dipende dal design: usa token provvisori e neutri. Le schermate di F1 pos
 | Data | Cambiamento | Motivo |
 |---|---|---|
 | 2026-11-05 | Prima versione | Avvio del progetto |
+| 2026-11-05 | Scelti import Goodreads e licenza MIT; F0.2 usa gli ISBN dell'export | Decisioni dell'utente in F0.1 |
 | 2026-11-05 | Accesso su invito ma apribile, API riusabili da mobile, i18n da subito, login Google, nuova F5 | Decisioni dell'utente in F0.1 |

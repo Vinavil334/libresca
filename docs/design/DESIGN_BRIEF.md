@@ -67,7 +67,7 @@ In ordine di priorità:
 - **App mobile futura:** oggi è una web app, ma la direzione deve funzionare anche in un'app nativa. Niente che dipenda da effetti disponibili solo nel browser.
 - **Più lingue:** l'italiano viene prima, ma i layout devono reggere testi più lunghi. Tana, Spora e le altre parole andranno adattate, non tradotte alla lettera.
 - **Prestazioni:** illustrazioni SVG leggere, animazioni CSS dove possibile, font in numero minimo.
-- **Originalità:** creature e illustrazioni originali, senza imitare personaggi, illustratori o opere esistenti. Font con licenza compatibile per un'app web.
+- **Originalità:** creature e illustrazioni originali, senza imitare personaggi, illustratori o opere esistenti. A differenza del codice, restano riservate (vedi `ASSETS_LICENSE.md`): assicurati di avere i diritti su tutto ciò che entra in repo. Font con licenza compatibile per un'app web.
 
 ## Cosa deve uscire dalla chat di design
 
