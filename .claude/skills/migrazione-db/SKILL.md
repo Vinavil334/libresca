@@ -56,6 +56,7 @@ with check (owner_id = (select auth.uid()));
 - [ ] Indici sulle colonne usate dalle policy
 - [ ] Funzioni `security definer` in uno schema non esposto, con `search_path` fissato
 - [ ] `on delete` deciso per ogni chiave esterna, verificando la cancellazione dell'account
+- [ ] Un account con `status` diverso da `active` non accede ai dati condivisi
 - [ ] Una riga `private` non è leggibile da un amico
 - [ ] Un utente non può creare righe per conto di un altro
 

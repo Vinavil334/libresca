@@ -12,6 +12,7 @@ Se esiste `docs/design/DESIGN_SYSTEM.md`, è la fonte principale. In caso contra
 - La fantasia sta nella cornice, le informazioni restano chiare.
 - Mobile first: progetta prima per il telefono e per l'uso a una mano.
 - Riusa i componenti esistenti prima di crearne di nuovi.
+- I componenti restano sottili: logica e dati stanno in `packages/`, così l'app mobile potrà riusarli.
 - Usa solo token semantici: niente colori, font o spaziature scritte a mano.
 - Le creature sono originali e arrivano da `public/creatures/`. Non improvvisare personaggi definitivi e non imitare personaggi esistenti.
 
@@ -25,7 +26,7 @@ Se esiste `docs/design/DESIGN_SYSTEM.md`, è la fonte principale. In caso contra
 
 ## Testi
 
-- Tutti i testi stanno nel file centrale dei messaggi.
+- Tutti i testi stanno in `packages/i18n/messages/`, con chiavi stabili. Date e numeri passano da `Intl`, e il layout regge testi più lunghi nelle altre lingue.
 - Italiano semplice, gentile, un po' ironico; mai colpevolizzante.
 - Le azioni dicono cosa succede: "Aggiungi alla Tana", non "OK".
 - La prima volta affianca la parola comune: "La tua Tana · la tua libreria".

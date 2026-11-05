@@ -1,6 +1,6 @@
 # Architettura
 
-Progetto per decine di utenti e un solo sviluppatore: la regola è usare pochi pezzi, ben integrati. Le decisioni sono motivate negli [ADR](adr/); fino alla F0.1 sono proposte.
+Un solo sviluppatore, costi a zero e pochi utenti all'inizio, senza chiudersi la strada verso il pubblico e un'app mobile. La regola è usare pochi pezzi, ben integrati. Le decisioni sono motivate negli [ADR](adr/).
 
 ## Vista d'insieme
 
@@ -8,10 +8,11 @@ Progetto per decine di utenti e un solo sviluppatore: la regola è usare pochi p
 flowchart TB
   subgraph Telefono["Telefono o browser"]
     PWA["PWA Next.js<br/>scanner barcode"]
+    APP["App Expo (F5)"]
   end
   subgraph Vercel
-    SSR["Server Components<br/>e Server Actions"]
-    META["Servizio metadati"]
+    SSR["Server Components"]
+    META["API /api/v1<br/>metadati e import"]
   end
   subgraph Supabase["Supabase (regione UE)"]
     AUTH["Auth"]
@@ -28,22 +29,30 @@ flowchart TB
   end
   PWA --> SSR
   PWA --> AUTH
+  PWA -- "dati con RLS" --> DB
+  PWA --> META
+  APP -.-> AUTH
+  APP -.-> DB
+  APP -.-> META
   PWA -- "copertine per ID" --> OL
   SSR --> DB
-  SSR --> META
   META --> OL
   META --> GB
   META -.-> SBN
   META --> DB
   ML -- "legge segnali, scrive consigli" --> DB
-  SSR --> STORE
+  PWA --> STORE
 ```
 
 ## Struttura della repo (a fine F0)
 
 ```text
-apps/web/            Next.js: pagine, componenti, Server Actions
-packages/domain/     Logica pura condivisa: ISBN, parser degli import, regole
+apps/web/            Next.js: pagine, componenti, API /api/v1
+apps/mobile/         App Expo, solo dalla F5
+packages/domain/     Logica pura: ISBN, parser degli import, regole, schemi di validazione
+packages/data/       Accesso ai dati via Supabase, senza React né Next.js
+packages/i18n/       Messaggi per lingua (messages/it.json)
+packages/tokens/     Design token in JSON, da cui si genera il CSS
 supabase/
   migrations/        Schema e policy RLS, unica fonte dello schema
   tests/             Test SQL delle policy
@@ -60,14 +69,15 @@ docs/                Roadmap, architettura, ADR, design
 |---|---|---|
 | Frontend | Next.js + TypeScript strict | Un solo linguaggio per UI e server, ecosistema ampio |
 | Stile | Tailwind con token CSS | I token del design system guidano tutto |
-| App mobile | PWA | Un link da mandare agli amici, nessuno store |
+| Lingue | next-intl, senza lingua nell'URL all'inizio | Traduzioni pronte da subito; un'altra lingua si aggiunge con un file di messaggi |
+| App mobile | PWA ora, Expo in F5 | Un link da mandare agli amici, nessuno store; la logica è già riusabile |
 | Barcode | `barcode-detector` (polyfill ZXing WASM) | iOS non implementa la Barcode Detection API |
 | Database | Supabase Postgres + pgvector | Auth, RLS, storage ed embedding in un solo posto |
 | Autorizzazione | Row Level Security | I permessi tra amici stanno vicino ai dati |
 | Recommender | Python in batch su GitHub Actions | Ecosistema ML, nessun server sempre acceso |
 | Test | Vitest, Playwright, pgTAP, pytest | Ogni livello ha il suo strumento |
 
-Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> version`. Il 5 novembre 2026 risultavano Next.js 16.4, Tailwind 4.3, `@supabase/supabase-js` 2.119, Vitest 5.1, Playwright 1.64, pnpm 12.16.
+Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> version`. Il 5 novembre 2026 risultavano Next.js 16.4, next-intl 4.14, Tailwind 4.3, `@supabase/supabase-js` 2.119, Vitest 5.1, Playwright 1.64, pnpm 12.16.
 
 ## Fonti dei metadati
 
@@ -106,26 +116,51 @@ L'import procede a blocchi guidati dal browser: il client invia un blocco, il se
 3. Per ogni fonte misura: edizione trovata, titolo corretto, autore, traduttore, descrizione, numero pagine, copertina.
 4. Riassumi i risultati aggregati in un nuovo ADR. Le ipotesi sulla copertura italiana diventano numeri.
 
+## Portabilità verso mobile e pubblico
+
+Regole che costano poco ora e risparmiano una riscrittura dopo. Motivazioni in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md).
+
+- **Logica fuori da Next.js.** Regole e accesso ai dati stanno in `packages/`, senza dipendenze da React DOM o Next.js. Le Server Actions, se usate, si limitano a richiamare quei pacchetti.
+- **Due vie verso il backend.** I dati passano dal client Supabase con RLS, che funziona anche da mobile. Ciò che richiede segreti o servizi esterni passa da `/api/v1`, con autenticazione tramite token Supabase e schemi di validazione condivisi.
+- **Sessione portabile.** Le API accettano `Authorization: Bearer`, non solo i cookie del browser.
+- **API versionate.** Una versione dell'app installata sul telefono può restare in uso a lungo: i cambi incompatibili richiedono `/api/v2`.
+- **Testi e token portabili.** Messaggi e token stanno in JSON, leggibili anche da Expo.
+- **Nessuna cerchia nel codice.** Le amicizie sono tra coppie di persone; l'accesso dipende da `profiles.status` e `app_settings`.
+- **Lingua come dato.** Date e numeri con `Intl`, lingua nel profilo, `language` su ogni edizione.
+
 ## Autenticazione e permessi
 
-- Magic link via email, senza password da gestire.
+- Login con Google, gestito da Supabase. La configurazione in Google Cloud va fatta una volta sola. Motivazioni in [ADR-0006](adr/0006-accesso-a-costo-zero.md).
+- Chiunque può autenticarsi, ma l'app si usa solo con `profiles.status = active`. Finché `signup_mode` è `invite_only`, un account diventa attivo riscattando un invito.
 - Tutte le tabelle hanno RLS attiva; la `secret key` di Supabase non arriva mai al browser.
 - Il worker `ml/` usa un ruolo Postgres dedicato, con scrittura limitata alle tabelle del recommender, non la chiave di servizio.
 - La logica di amicizia passa da una funzione `are_friends()` riusata nelle policy.
 
-## Costi e limiti da tenere d'occhio
+## Costi e limiti
 
-| Servizio | Piano gratuito | Rischio |
-|---|---|---|
-| Supabase | 500 MB di database, 1 GB di storage, 5 GB di egress mensili, 2 progetti attivi | **Pausa dopo 7 giorni di inattività**, con riattivazione manuale. In Pro: da 25 $/mese |
-| Vercel | Piano Hobby per uso non commerciale | Verificare limiti e cron quando si fa il deploy |
-| GitHub Actions | Generoso per repo pubbliche | I job non devono esporre dati nei log, perché la repo è pubblica |
+Obiettivo: **0 € finché l'app è privata**.
+
+| Servizio | Piano gratuito | Attenzione | All'apertura |
+|---|---|---|---|
+| Supabase | 500 MB di database, 1 GB di storage, 5 GB di egress mensili, 2 progetti | **Pausa con bassa attività su 7 giorni**; ripristino manuale fino a 1 anno. Verificare i backup del piano gratuito | Pro, da 25 $/mese, senza pausa |
+| Email di Supabase | 2 email/ora | **Consegna solo ai membri del team del progetto**: inutilizzabile per gli amici | SMTP esterno, con dominio |
+| Vercel Hobby | 100 GB di traffico, 1 milione di invocazioni, 4 ore di CPU attiva, 5.000 trasformazioni immagine | Solo uso personale non commerciale. Le donazioni sono ammesse; pagamenti, pubblicità e guadagni richiedono Pro | Pro, 20 $/mese per sviluppatore, se ci sono entrate |
+| GitHub Actions | Gratuito per repo pubbliche | Sulle repo pubbliche i workflow pianificati si disattivano dopo 60 giorni senza attività nella repo, e possono subire ritardi | Worker dedicato, se i tempi non bastano |
+| Google Books | Chiave gratuita | Quote da verificare durante lo spike | Catalogo locale |
+| Dominio | `*.vercel.app` gratuito | Link meno belli e niente email proprie | Dominio a pagamento |
+
+Conseguenze pratiche:
+
+- Il job di F0.8 esegue una vera lettura del database ogni giorno. Se GitHub lo disattiva, l'app prima o poi va in pausa: va riattivato a mano.
+- Le copertine evitano l'ottimizzazione immagini di Vercel, per non consumare la quota: si caricano già piccole da Open Library.
+- Niente login via email né notifiche email fino alla F5.
+- Se il traffico superasse le quote, Vercel Hobby ferma la funzione interessata fino a 30 giorni: è accettabile per una beta tra amici, non per un servizio pubblico.
 
 Il dimensionamento di pgvector è sostenibile: un vettore a 1024 dimensioni in float4 occupa circa 4 KB, quindi 10.000 opere richiedono circa 40 MB di soli vettori, indici esclusi. Con `halfvec` si dimezza.
 
 ## Privacy
 
-I dati di una cerchia di amici sono dati personali, anche se l'app è piccola.
+I dati degli amici sono dati personali, anche se l'app è piccola.
 
 - Hosting in UE, raccolta minima, cancellazione dell'account effettiva.
 - Testo chiaro nell'invito su cosa vedono gli amici.
@@ -141,3 +176,10 @@ I dati di una cerchia di amici sono dati personali, anche se l'app è piccola.
 - [isbnlib-sbn](https://www.pypi.org/project/isbnlib-sbn/)
 - [Barcode scanning su iOS](https://eringen.substack.com/p/barcode-scanning-on-ios-the-missing)
 - [Prezzi Supabase 2026 (MakerKit)](https://makerkit.dev/blog/md/saas/supabase-pricing), fonte secondaria da ricontrollare su supabase.com
+- [Supabase: pausa dei progetti gratuiti](https://supabase.com/docs/guides/platform/free-project-pausing)
+- [Supabase: SMTP personalizzato](https://supabase.com/docs/guides/auth/auth-smtp) e [limiti di Auth](https://supabase.com/docs/guides/auth/rate-limits)
+- [Supabase da app mobile](https://supabase.com/kb/faqs/database/mobile-app-database)
+- [Vercel: piano Hobby](https://vercel.com/docs/plans/hobby) e [uso commerciale](https://vercel.com/docs/limits/fair-use-guidelines)
+- [GitHub: workflow pianificati](https://docs.github.com/actions/managing-workflow-runs/disabling-and-enabling-a-workflow)
+- [next-intl senza routing per lingua](https://next-intl.dev/docs/getting-started/app-router/without-i18n-routing)
+- [Apple App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)

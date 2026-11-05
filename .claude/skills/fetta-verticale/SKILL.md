@@ -19,7 +19,7 @@ Task: $ARGUMENTS
 
 1. **Dati:** migrazione, RLS e test delle policy (skill `migrazione-db`).
 2. **Dominio:** logica pura in `packages/domain/` con test.
-3. **Server:** Server Actions con validazione degli input e gestione degli errori.
+3. **Accesso ai dati:** funzioni in `packages/data/`, oppure route in `/api/v1` per ciò che richiede segreti o servizi esterni. Input validati con gli schemi condivisi, errori gestiti.
 4. **UI:** stati di caricamento, vuoto ed errore inclusi (skill `ui-sottobosco`).
 5. **Test end-to-end:** solo per il percorso principale.
 

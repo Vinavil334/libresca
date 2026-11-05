@@ -64,6 +64,8 @@ In ordine di priorità:
 - **Copertine:** devono convivere con immagini di qualsiasi colore e qualità, e con griglie da centinaia di libri.
 - **Modalità chiara e scura:** la scura può essere il bosco di notte, con le lucciole.
 - **Accessibilità:** contrasto WCAG AA, target tattili ampi, supporto a `prefers-reduced-motion`; mai il solo colore per dare un'informazione.
+- **App mobile futura:** oggi è una web app, ma la direzione deve funzionare anche in un'app nativa. Niente che dipenda da effetti disponibili solo nel browser.
+- **Più lingue:** l'italiano viene prima, ma i layout devono reggere testi più lunghi. Tana, Spora e le altre parole andranno adattate, non tradotte alla lettera.
 - **Prestazioni:** illustrazioni SVG leggere, animazioni CSS dove possibile, font in numero minimo.
 - **Originalità:** creature e illustrazioni originali, senza imitare personaggi, illustratori o opere esistenti. Font con licenza compatibile per un'app web.
 
@@ -77,11 +79,11 @@ In ordine di priorità:
 
 ### Come rientra in repo
 
-- Token: `apps/web/src/styles/tokens.css`, solo variabili CSS semantiche.
+- Token: `packages/tokens/tokens.json` come sorgente, da cui si genera il CSS di `apps/web`. Solo nomi semantici.
 - Asset: `apps/web/public/creatures/`, SVG ottimizzati.
 - Regole sintetiche: `docs/design/DESIGN_SYSTEM.md`.
 
-Nomi minimi attesi per i token:
+Nomi minimi attesi per i token, nella forma CSS:
 
 ```css
 :root {

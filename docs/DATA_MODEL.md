@@ -8,6 +8,13 @@ Bozza del modello logico, da tradurre in migrazioni durante F1 e F2. I nomi di t
 2. **Possedere e leggere sono indipendenti.** `copies` e `readings` non si referenziano: un libro può stare in una, nell'altra o in entrambe.
 3. **Ogni lettura è un evento.** Una riga per ogni lettura: una rilettura è una riga nuova, con le sue date e il suo voto.
 
+## Convenzioni per poter crescere
+
+- ID in UUID, generabili anche dal client: una futura app mobile potrà creare dati offline.
+- `created_at` e `updated_at` sulle tabelle personali, utili alla sincronizzazione.
+- Nessuna tabella "cerchia": le relazioni sono tra coppie di persone, quindi l'apertura al pubblico non cambia il modello.
+- Lingua esplicita su edizioni e profili. L'interfaccia mostra, quando esiste, l'edizione nella lingua dell'utente.
+
 ```mermaid
 erDiagram
   profiles ||--o{ copies : possiede
@@ -47,9 +54,10 @@ Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tr
 
 | Tabella | Colonne principali | Note |
 |---|---|---|
-| `profiles` | `id` (da `auth.users`), `handle`, `display_name`, `avatar_creature`, `locale` | |
+| `profiles` | `id` (da `auth.users`), `handle`, `display_name`, `avatar_creature`, `locale`, `status` | `status`: `pending`, `active`, `suspended` |
 | `friendships` | `user_low`, `user_high`, `status`, `requested_by`, `created_at` | Una sola riga per coppia, con vincolo `user_low < user_high` |
-| `invites` | `code`, `created_by`, `expires_at`, `used_by` | Cerchia chiusa |
+| `invites` | `code`, `created_by`, `expires_at`, `used_by` | Riscattare un invito attiva l'account |
+| `app_settings` | `key`, `value` | Contiene `signup_mode`: `invite_only` oppure `open` |
 | `copies` | `id`, `owner_id`, `edition_id`, `format`, `condition`, `location`, `is_lendable`, `acquired_at`, `visibility`, `notes` | Più copie possibili, anche della stessa edizione |
 | `readings` | `id`, `user_id`, `work_id`, `edition_id?`, `status`, `started_on`, `finished_on`, `rating_half`, `review`, `visibility` | `status`: `want`, `reading`, `read`, `abandoned` |
 | `shelves` | `id`, `owner_id`, `name`, `kind`, `visibility`, `position` | |
@@ -68,6 +76,7 @@ Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tr
 | `spores` | `id`, `from_user`, `to_user`, `work_id`, `note`, `status`, `created_at` | Il segnale più forte per il recommender |
 | `activity` | `id`, `actor_id`, `verb`, `object_type`, `object_id`, `visibility`, `created_at` | Feed; filtrato dalla RLS |
 | `notifications` | `id`, `user_id`, `kind`, `payload`, `read_at` | |
+| `blocks`, `reports` | Da progettare in F5 | Necessarie prima dell'apertura al pubblico |
 
 ## Recommender
 
@@ -81,7 +90,7 @@ I log `reco_events` partono in F2.9, prima del modello: i dati persi non si recu
 
 ## Regole di visibilità
 
-`visibility` vale `private`, `friends` o `public`. Il default è `friends`; `public` resta inutilizzato finché l'app è una cerchia chiusa.
+`visibility` vale `private`, `friends` o `public`. Il default è `friends`. `public` esiste già nello schema, ma l'interfaccia lo propone solo dopo l'apertura al pubblico.
 
 | Dato | Proprietario | Amico | Altri utenti |
 |---|---|---|---|

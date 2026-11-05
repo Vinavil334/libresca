@@ -47,7 +47,7 @@ Affinità tra due amici: similarità sui voti residui dei libri in comune, ridot
 Si può fare anche con un solo utente.
 
 - Testo: titolo, autori, descrizione e soggetti dell'opera.
-- Embedding multilingua: i testi sono in italiano e inglese e devono stare nello stesso spazio. Da confrontare almeno `BAAI/bge-m3` (1024 dimensioni) e un modello più leggero come `paraphrase-multilingual-MiniLM-L12-v2` (384 dimensioni), su coppie di libri scelte a mano.
+- Embedding multilingua calcolati da un modello open dentro il job notturno, solo sulle opere nuove o cambiate. I testi sono in italiano e inglese e devono stare nello stesso spazio. Da confrontare almeno `BAAI/bge-m3` (1024 dimensioni) e un modello più leggero come `paraphrase-multilingual-MiniLM-L12-v2` (384 dimensioni), su coppie di libri scelte a mano.
 - Profilo di gusto: **più centroidi** ottenuti raggruppando i libri amati. Una sola media mescola fantasy e saggi di economia in un punto che non rappresenta nessuno dei due.
 
 Rischi: le descrizioni mancanti o molto corte; le opere senza testo vanno gestite esplicitamente, non riempite di vettori inaffidabili.
@@ -119,6 +119,7 @@ Ogni consiglio deve avere almeno un motivo. `reasons` è JSON strutturato e il t
 - Il ruolo database del worker legge solo i segnali necessari e scrive solo nelle tabelle del recommender.
 - La repo è pubblica: i log del job non devono contenere titoli, nomi o ID utente.
 - Modelli e artefatti non stanno in git.
+- Il job ricalcola solo ciò che è cambiato, così regge meglio la crescita degli utenti. All'apertura al pubblico va rivalutato dove farlo girare.
 
 ## Regole di privacy
 

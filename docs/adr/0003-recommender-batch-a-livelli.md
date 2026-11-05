@@ -1,6 +1,6 @@
 # ADR-0003: Recommender batch a livelli
 
-- **Stato:** Proposta
+- **Stato:** Accettata
 - **Data:** 2026-11-05
 
 ## Contesto
@@ -9,7 +9,7 @@ Con pochi utenti, il filtraggio collaborativo addestrato solo sui dati interni n
 
 ## Decisione
 
-Costruire il sistema per livelli indipendenti: sociale, contenuto, collaborativo con prior da dati pubblici, ranking ibrido. I calcoli girano in un job Python notturno che scrive i risultati in Postgres; l'app legge soltanto la tabella dei risultati.
+Costruire il sistema per livelli indipendenti: sociale, contenuto, collaborativo con prior da dati pubblici, ranking ibrido. I calcoli girano in un job Python notturno che scrive i risultati in Postgres; l'app legge soltanto la tabella dei risultati. Gli embedding usano un modello open eseguito nel job, per restare a costo zero.
 
 ## Alternative considerate
 

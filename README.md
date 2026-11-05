@@ -47,3 +47,7 @@ Per iniziare lo sviluppo vero (F0.3) serviranno anche Node.js LTS, pnpm, Docker 
 ## Design
 
 La direzione visiva si sviluppa in una chat dedicata del progetto Claude, a partire dal [brief](docs/design/DESIGN_BRIEF.md).
+
+## Licenza
+
+Non ancora definita: finché manca, tutti i diritti sono riservati.

@@ -1,6 +1,6 @@
 # ADR-0001: PWA Next.js con Supabase
 
-- **Stato:** Proposta
+- **Stato:** Accettata, con i vincoli di [ADR-0005](0005-portabilita-mobile-e-pubblico.md)
 - **Data:** 2026-11-05
 
 ## Contesto
@@ -9,11 +9,11 @@ Un solo sviluppatore, assistito da Claude Code, deve costruire un'app per pochi 
 
 ## Decisione
 
-PWA mobile-first in Next.js e TypeScript, su Vercel, con Supabase per Postgres, autenticazione, storage e pgvector. I permessi stanno nelle policy RLS. Nessun backend separato: il codice server vive in Server Components e Server Actions.
+PWA mobile-first in Next.js e TypeScript, su Vercel, con Supabase per Postgres, autenticazione, storage e pgvector. I permessi stanno nelle policy RLS. Nessun backend separato: le pagine usano Server Components, le operazioni riusabili stanno in pacchetti condivisi e in API HTTP su Next.js.
 
 ## Alternative considerate
 
-- **Expo / React Native:** migliore integrazione nativa, ma pubblicazione sugli store e distribuzione più pesanti per una cerchia di amici.
+- **Expo / React Native da subito:** migliore integrazione nativa, ma pubblicazione sugli store e distribuzione più pesanti per pochi amici. Resta la strada prevista per la F5.
 - **Backend dedicato (FastAPI o simili):** più controllo, ma un servizio in più da gestire senza un bisogno concreto.
 - **SQLite self-hosted:** economico e semplice, ma richiede di gestire server, backup, autenticazione e ricerca vettoriale.
 - **Applicazione federata basata su BookWyrm:** progetto interessante, ma l'obiettivo qui è un prodotto su misura per una cerchia e un'estetica molto specifica.
@@ -22,5 +22,5 @@ PWA mobile-first in Next.js e TypeScript, su Vercel, con Supabase per Postgres, 
 
 - Si invia un link e si è operativi, senza store.
 - Lo scanner su iOS richiede un polyfill WASM, perché Safari non implementa la Barcode Detection API.
-- Il progetto Supabase gratuito va in pausa dopo una settimana di inattività.
+- Il progetto Supabase gratuito va in pausa con bassa attività su 7 giorni: serve un job giornaliero.
 - Il vincolo a Supabase resta moderato: lo schema è Postgres standard, ma RLS e Auth andrebbero migrati con cura.

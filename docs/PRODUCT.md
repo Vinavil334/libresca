@@ -42,7 +42,7 @@ La libreria condivisa di una cerchia di amici: cosa possiedi, cosa hai letto, co
 - Pubblicità o vendita di dati.
 - Gamification che mette pressione: niente streak da non interrompere, sensi di colpa o classifiche di lettori.
 - Scraping di Goodreads o di altri servizi.
-- Community pubblica aperta, almeno fino alla F5.
+- Community pubblica aperta prima della F5: l'architettura la prevede, ma il prodotto nasce su invito.
 
 ## Principi di prodotto
 
@@ -50,7 +50,7 @@ La libreria condivisa di una cerchia di amici: cosa possiedi, cosa hai letto, co
 - **Ogni libro è gestibile a mano.** I metadati dei libri italiani saranno a volte incompleti: l'app non deve mai bloccare chi vuole inserire un libro.
 - **Privato per scelta, condiviso per default con gli amici.** Ogni copia e lettura può essere nascosta.
 - **Mobile first.** Il momento chiave è in piedi davanti a uno scaffale.
-- **Costruita per pochi, bene.** Decine di utenti, non milioni: niente complessità prematura.
+- **Costruita per pochi, pronta a crescere.** Si parte con pochi amici su invito: niente infrastruttura prematura, ma nessuna scelta che impedisca di aprirsi al pubblico o di arrivare su mobile.
 
 ## Misure di successo
 

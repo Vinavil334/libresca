@@ -1,6 +1,6 @@
 # ADR-0002: Modello opera, edizione, copia
 
-- **Stato:** Proposta
+- **Stato:** Accettata
 - **Data:** 2026-11-05
 
 ## Contesto

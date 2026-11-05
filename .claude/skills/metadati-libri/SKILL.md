@@ -9,7 +9,7 @@ Prima di tutto leggi la sezione "Fonti dei metadati" di `docs/ARCHITECTURE.md` e
 
 ## Regole
 
-- Tutte le chiamate passano dal servizio server. Il client carica direttamente solo le immagini delle copertine.
+- Tutte le chiamate passano da `/api/v1`. Il client carica direttamente solo le immagini delle copertine, senza l'ottimizzazione immagini di Vercel.
 - Prima si cerca nel catalogo locale, poi nelle fonti esterne.
 - Open Library: massimo 3 richieste al secondo, con `User-Agent` del tipo `Libresca (contatto)`, contatto letto da variabile d'ambiente.
 - Per più libri preferisci `search.json` a centinaia di richieste singole. Per elaborazioni massicce usa i dump mensili.

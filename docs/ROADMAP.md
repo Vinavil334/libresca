@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, nessun codice. Prossimo task: **F0.1**.
+**Stato attuale:** fondamenta documentali pronte, nessun codice. In **F0.1** restano aperte le decisioni 4 e 5; poi si passa a **F0.2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -14,7 +14,7 @@ flowchart LR
     D0["D0 Direzione visiva"] --> D1["D1 Design system"] --> D2["D2 Schermate Tana"] --> D3["D3 Schermate Bosco"] --> D4["D4 Illustrazioni e animazioni"]
   end
   subgraph Sviluppo["Traccia sviluppo"]
-    F0["F0 Fondamenta"] --> F1["F1 La Tana"] --> F2["F2 Il Bosco"] --> F3["F3 Il Micelio"] --> F4["F4 Incanto"] --> F5["F5 Oltre"]
+    F0["F0 Fondamenta"] --> F1["F1 La Tana"] --> F2["F2 Il Bosco"] --> F3["F3 Il Micelio"] --> F4["F4 Incanto"] --> F5["F5 Apertura e mobile"]
   end
   D1 -. token e componenti .-> F1
   D2 -. schermate .-> F1
@@ -26,42 +26,48 @@ flowchart LR
 |---|---|---|---|---|---|
 | **Obiettivo** | Si può costruire | Funziona per me | Funziona con gli amici | Mi consiglia bene | Fa innamorare |
 | **UI** | Shell PWA | Libreria, scheda libro, scanner | Tane amici, prestiti, spore | Pagina consigli con "perché" | Creature, micro-animazioni |
-| **Backend** | Repo, Supabase, CI, deploy | Catalogo, copie, letture, scaffali | Amicizie, permessi, feed | Tabelle consigli e feedback | Notifiche push, offline |
+| **Backend** | Repo, pacchetti condivisi, Supabase, CI, deploy | Catalogo, copie, letture, scaffali | Amicizie, permessi, feed | Tabelle consigli e feedback | Notifiche push, offline |
 | **Dati** | Test fonti metadati | Import Goodreads, export | Inviti, seed amici | Embedding, dataset pubblici | Statistiche annuali |
 | **Recommender** | | Raccolta segnali | Log impression, consigli sociali | Contenuto, collaborativo, ibrido | Tuning con feedback reali |
 
-## Decisioni aperte
+## Decisioni
 
-La colonna "Ipotesi" indica ciò che la documentazione dà per buono. Vanno confermate o cambiate in **F0.1**.
-
-| # | Decisione | Ipotesi attuale | Se cambia |
+| # | Tema | Decisione | Effetto sul progetto |
 |---|---|---|---|
-| 1 | Chi può entrare? | Cerchia chiusa, solo su invito | Privacy, moderazione e costi diventano molto più impegnativi |
-| 2 | Web o app nativa? | PWA mobile-first | Valutare Expo e rifare l'ADR-0001 |
-| 3 | Budget mensile | 0 €, con possibile passaggio a Supabase Pro (25 $/mese) | Con 0 € rigidi, il progetto va in pausa dopo una settimana di inattività |
-| 4 | Da dove importare? | Goodreads CSV | Aggiungere Anobii o StoryGraph in F1.8 |
-| 5 | Licenza della repo | Nessuna (repo pubblica, tutti i diritti riservati) | Scegliere una licenza open source e aggiungere `LICENSE` |
-| 6 | Lingua dell'app | Solo italiano, testi già centralizzati | Con più lingue, attivare l'i18n prima di F1 |
-| 7 | Embedding | Modello open eseguito nel job batch | Con un'API esterna si aggiungono costi e invio dati a terzi |
+| 1 | Accesso | Su invito all'inizio, progettata per aprirsi al pubblico | L'accesso è un'impostazione, non una regola scritta nel codice |
+| 2 | Piattaforma | Web app ora, app mobile in futuro | Logica in pacchetti condivisi e API riusabili fuori dal browser |
+| 3 | Costi | 0 € finché resta privata, piccola spesa quando si apre | Login Google, job anti-pausa, nessun dominio né servizio email |
+| 6 | Lingue | Italiano ora, altre lingue in futuro | Sistema di traduzione attivo da subito |
+| 7 | Embedding | Modello open eseguito nel job notturno | Nessun costo per chiamata e nessun servizio esterno |
+
+Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md) e [ADR-0006](adr/0006-accesso-a-costo-zero.md).
+
+### Ancora da chiudere
+
+| # | Tema | Stato |
+|---|---|---|
+| 4 | Import | Serve sapere dove stanno oggi i tuoi libri e voti: Goodreads, Anobii, StoryGraph, un foglio di calcolo o nessun archivio. In attesa di risposta, F1.8 resta su Goodreads |
+| 5 | Licenza | Consigliata AGPL-3.0 per il codice, con nome, logo e illustrazioni riservati. In attesa di conferma; finché manca, la repo resta senza licenza |
 
 ## F0 · Fondamenta
 
 *Fatto quando:* una pagina con login è online in HTTPS, la CI è verde e la scelta delle fonti metadati si basa su numeri reali.
 
-- [ ] **F0.1** (S) Rivedere le decisioni aperte e portare gli ADR da "Proposta" ad "Accettata"
+- [ ] **F0.1** (S) Chiudere le decisioni 4 e 5: import e licenza (`LICENSE`, ADR dedicato)
 - [ ] **F0.2** (S) Spike metadati: misurare la copertura di 50 ISBN reali della tua libreria, soprattutto italiani, su Open Library, Google Books e SBN (metodo in `docs/ARCHITECTURE.md`)
-- [ ] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind, lint, Vitest, Playwright; aggiornare i comandi in `CLAUDE.md`
+- [ ] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind, next-intl, lint, Vitest, Playwright; pacchetti `domain`, `data`, `i18n`, `tokens`; aggiornare i comandi in `CLAUDE.md`
 - [ ] **F0.4** (S) Supabase locale e progetto remoto in regione UE, generazione dei tipi
 - [ ] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS
 - [ ] **F0.6** (S) Deploy con preview su Vercel; Stop hook di Claude Code che richiede il typecheck
-- [ ] **F0.7** (S) Login via email con magic link e shell PWA (manifest, icone provvisorie)
+- [ ] **F0.7** (S) Login con Google, accesso riservato agli account attivi, shell PWA (manifest, icone provvisorie)
+- [ ] **F0.8** (S) Job giornaliero su GitHub Actions che tiene attivo Supabase e segnala se il controllo fallisce
 
 ## F1 · La Tana
 
 *Fatto quando:* la tua libreria reale è dentro, e per due settimane usi Libresca al posto di Goodreads.
 
 - [ ] **F1.1** (M) Catalogo: opere, edizioni, autori, contributori, ID esterni
-- [ ] **F1.2** (M) Servizio metadati: cascata di fonti, cache, normalizzazione ISBN, deduplica
+- [ ] **F1.2** (M) API metadati in `/api/v1`: cascata di fonti, cache, normalizzazione ISBN, deduplica
 - [ ] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale
 - [ ] **F1.4** (M) Scanner barcode da fotocamera, testato anche su iPhone
 - [ ] **F1.5** (M) Copie possedute: formato, posizione, condizioni, prestabile sì/no
@@ -75,15 +81,16 @@ La colonna "Ipotesi" indica ciò che la documentazione dà per buono. Vanno conf
 
 *Fatto quando:* almeno 5 amici hanno una Tana attiva e tutte le tabelle hanno test RLS.
 
-- [ ] **F2.1** (M) Inviti via link, richieste di amicizia, profilo
+- [ ] **F2.1** (M) Attivazione tramite invito, richieste di amicizia, profilo
 - [ ] **F2.2** (M) Visibilità per copia e lettura, suite di test RLS sugli scenari tra amici
 - [ ] **F2.3** (S) Tana degli amici in sola lettura
 - [ ] **F2.4** (S) "Chi ce l'ha?" su scheda libro e ricerca
 - [ ] **F2.5** (M) Prestiti: richiesta, accettazione, consegna, promemoria, restituzione; anche verso chi non è nell'app
 - [ ] **F2.6** (M) Spore: consigli diretti con nota e stato (ricevuta, in lista, letta, grazie)
 - [ ] **F2.7** (S) Lista dei desideri e "idee regalo" per un amico
-- [ ] **F2.8** (M) Feed del Bosco e notifiche in app/email
+- [ ] **F2.8** (M) Feed del Bosco e notifiche in app; quelle email richiedono un servizio SMTP e aspettano la F5
 - [ ] **F2.9** (S) Log delle interazioni per il recommender: impression, salvataggi, scarti
+- [ ] **F2.10** (S) Cancellazione effettiva dell'account e dei relativi dati
 
 ## F3 · Il Micelio
 
@@ -107,13 +114,33 @@ La colonna "Ipotesi" indica ciò che la documentazione dà per buono. Vanno conf
 - [ ] **F4.4** (S) Notifiche push
 - [ ] **F4.5** (M) Audit di accessibilità e prestazioni su telefoni economici
 
-## F5 · Oltre
+## F5 · Apertura e app mobile
 
-Idee da rivalutare solo dopo un uso reale.
+Si valuta solo dopo un uso reale. Le due strade sono indipendenti. Qui i piccoli costi sono previsti.
+
+### App mobile
+
+- [ ] **F5.1** (L) `apps/mobile` in Expo, riusando `domain`, `data`, `i18n` e `tokens`
+- [ ] **F5.2** (M) Scanner nativo, sessione sicura sul dispositivo, deep link
+- [ ] **F5.3** (S) Requisiti App Store: alternativa di login equivalente a Google, cancellazione account dall'app, segnalazione e blocco degli utenti
+
+### Apertura al pubblico
+
+- [ ] **F5.4** (M) Blocco utenti, segnalazioni, moderazione di recensioni e modifiche al catalogo
+- [ ] **F5.5** (S) Termini d'uso e informativa privacy, con revisione legale
+- [ ] **F5.6** (M) Dominio e SMTP: email transazionali, login via email, notifiche
+- [ ] **F5.7** (M) Passaggio a Supabase Pro; Vercel Pro in caso di entrate o pubblicità
+- [ ] **F5.8** (M) Catalogo locale alimentato dai dump di Open Library, per reggere il traffico
+- [ ] **F5.9** (M) Test di carico su policy RLS e job del recommender
+- [ ] **F5.10** (S) Impostare `signup_mode` su `open`
+
+### Altre lingue
+
+- [ ] **F5.11** (M) Selettore lingua, traduzione dei testi e adattamento del vocabolario del sottobosco
+
+### Idee da rivalutare
 
 - Club di lettura tra amici
-- App nativa, se la PWA mostra limiti concreti
-- Apertura ad altre cerchie
 - Tag di mood e ritmo arricchiti da LLM
 - Federazione con ActivityPub
 
@@ -134,3 +161,4 @@ F0 non dipende dal design: usa token provvisori e neutri. Le schermate di F1 pos
 | Data | Cambiamento | Motivo |
 |---|---|---|
 | 2026-11-05 | Prima versione | Avvio del progetto |
+| 2026-11-05 | Accesso su invito ma apribile, API riusabili da mobile, i18n da subito, login Google, nuova F5 | Decisioni dell'utente in F0.1 |
