@@ -125,6 +125,20 @@ L'export conserva voti, scaffali e **data di fine lettura**, che a volte manca, 
 
 Lo script è `tools/spikes/metadata_coverage.py`. Legge l'export Goodreads in `data/private/`, sceglie fino a 35 ISBN italiani e 15 stranieri, interroga le tre fonti e stampa solo dati aggregati. Le risposte restano in cache in `data/private/spike-f02-cache/`. Per rifare la misura, per esempio dopo un nuovo export, rilancialo con `python tools/spikes/metadata_coverage.py`. I risultati sono nell'ADR-0008.
 
+## Ambienti e deploy
+
+| Ambiente | Web | Database |
+|---|---|---|
+| Locale | `pnpm dev` su `localhost:3000` | Supabase in Docker (`pnpm db:start`) |
+| CI | Build di produzione per gli e2e | Solo Postgres, ricreato a ogni run |
+| Preview | URL di Vercel per ogni PR | Progetto remoto `libresca`, lo stesso della produzione |
+| Produzione | `libresca.vercel.app`, regione `fra1` | Progetto remoto `libresca` (`rvovshyvjgpsssuvvslu`), `eu-central-1` |
+
+- Preview e produzione condividono il database finché non contiene dati reali di amici; il secondo progetto gratuito resta libero per uno staging.
+- Il progetto Vercel ha Root Directory `apps/web`; Node 24 viene da `engines` in `apps/web/package.json`. La variabile `ENABLE_EXPERIMENTAL_COREPACK=1` fa usare a Vercel la versione di pnpm indicata in `packageManager`.
+- Vercel riceve solo `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. La secret key si aggiunge solo quando `/api/v1` ne avrà bisogno, e mai con prefisso `NEXT_PUBLIC_`.
+- Le migrazioni arrivano al remoto solo con `supabase db push --remote`, lanciato a mano dopo conferma; la CI non scrive mai sul database remoto.
+
 ## Portabilità verso mobile e pubblico
 
 Regole che costano poco ora e risparmiano una riscrittura dopo. Motivazioni in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md).
