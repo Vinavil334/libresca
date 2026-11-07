@@ -16,8 +16,6 @@
       "Bash(git fetch *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(python -c \"import json;json.load\\(open\\('.claude/settings.json'\\)\\)\")",
-      "Bash(git commit -q -m 'chore\\(claude\\): ask before remote Supabase pushes and resets via pnpm exec *)",
       "Bash(git checkout *)",
       "Bash(git pull *)",
       "Bash(git stash *)"
