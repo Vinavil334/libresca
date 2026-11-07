@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). Prossimo task: **F0.5**, CI su GitHub Actions; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5). Prossimo task: **F0.6**, deploy con preview su Vercel; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -53,7 +53,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [x] **F0.2** (S) Spike metadati: misurata la copertura di 49 ISBN del tuo export Goodreads (35 italiani) su Open Library, Google Books e SBN; risultati e ordine delle fonti nell'ADR-0008
 - [x] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind con tema generato dai token, next-intl, ESLint e Prettier, Vitest, Playwright su mobile e desktop; pacchetti `domain` (con normalizzazione ISBN), `data`, `i18n`, `tokens`; comandi in `CLAUDE.md`
 - [x] **F0.4** (S) Supabase locale e progetto remoto in regione UE (`eu-central-1`), generazione dei tipi in `packages/data`, client tipizzato, test pgTAP che blocca le tabelle senza RLS
-- [ ] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS
+- [x] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS; in più e2e su mobile e desktop e controllo che i tipi generati siano aggiornati
 - [ ] **F0.6** (S) Deploy con preview su Vercel; Stop hook di Claude Code che richiede il typecheck
 - [ ] **F0.7** (S) Login con Google, accesso riservato agli account attivi, shell PWA (manifest, icone provvisorie)
 - [ ] **F0.8** (S) Job giornaliero su GitHub Actions che tiene attivo Supabase e segnala se il controllo fallisce
