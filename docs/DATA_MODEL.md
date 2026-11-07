@@ -54,7 +54,7 @@ Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tr
 
 | Tabella | Colonne principali | Note |
 |---|---|---|
-| `profiles` | `id` (da `auth.users`), `handle`, `display_name`, `avatar_creature`, `locale`, `status` | `status`: `pending`, `active`, `suspended` |
+| `profiles` | `id` (da `auth.users`), `handle`, `display_name`, `avatar_creature`, `locale`, `status` | `status`: `pending`, `active`, `suspended`. Creato da un trigger alla registrazione, `pending` o `active` secondo `signup_mode`. L'utente modifica solo `handle`, `display_name`, `avatar_creature` e `locale` |
 | `friendships` | `user_low`, `user_high`, `status`, `requested_by`, `created_at` | Una sola riga per coppia, con vincolo `user_low < user_high` |
 | `invites` | `code`, `created_by`, `expires_at`, `used_by` | Riscattare un invito attiva l'account |
 | `app_settings` | `key`, `value` | Contiene `signup_mode`: `invite_only` oppure `open` |

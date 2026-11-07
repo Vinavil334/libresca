@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Prossimo task: **F0.7**, login con Google e shell PWA; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). F0.7a: login con Google e accesso riservato agli account attivi. Prossimo task: **F0.7b**, shell PWA; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -55,7 +55,9 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [x] **F0.4** (S) Supabase locale e progetto remoto in regione UE (`eu-central-1`), generazione dei tipi in `packages/data`, client tipizzato, test pgTAP che blocca le tabelle senza RLS
 - [x] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS; in più e2e su mobile e desktop e controllo che i tipi generati siano aggiornati
 - [x] **F0.6** (S) Deploy con preview su Vercel (`libresca.vercel.app`, preview e produzione sullo stesso progetto Supabase); Stop hook di Claude Code che richiede il typecheck
-- [ ] **F0.7** (S) Login con Google, accesso riservato agli account attivi, shell PWA (manifest, icone provvisorie)
+- [ ] **F0.7** (M) Login con Google, accesso riservato agli account attivi, shell PWA; diviso in due PR
+  - [x] **F0.7a** Login con Google, `profiles` e `app_settings` con RLS, regola di accesso in `packages/domain`, `proxy.ts`, pagine di login e attesa, e2e con account finti sullo stack locale
+  - [ ] **F0.7b** Shell PWA: manifest dai token, icone provvisorie
 - [ ] **F0.8** (S) Job giornaliero su GitHub Actions che tiene attivo Supabase e segnala se il controllo fallisce
 
 ## F1 · La Tana
@@ -164,3 +166,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-07 | Chiusa F0.2: fonti in parallelo invece della cascata, Google Books senza copie permanenti, SBN per gli ISBN italiani; F1.1, F1.2 e F1.3 aggiornate | Numeri dello spike (ADR-0008) e termini d'uso di Google |
 | 2026-11-07 | Chiusa F0.4: CLI Supabase come devDependency, edge functions e analytics spente in locale, schema `private` per le funzioni delle policy | Lo stack non usa edge functions (ADR-0001); helper delle policy fuori dall'API |
 | 2026-11-07 | Chiusa F0.6: preview Vercel sullo stesso progetto Supabase della produzione | Database ancora vuoto; il secondo progetto gratuito resta per uno staging |
+| 2026-11-07 | F0.7 da S a M e divisa in F0.7a (login e accesso) e F0.7b (PWA); il primo account si attiva con `private.activate_profile(email)` dal SQL Editor | Il task conteneva auth, due tabelle e la PWA; gli inviti arrivano solo in F2 |

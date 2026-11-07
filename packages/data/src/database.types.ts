@@ -3,7 +3,59 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never;
+      app_settings: {
+        Row: {
+          key: string;
+          updated_at: string;
+          value: NonNullable<Json>;
+        };
+        ComputedFields: never;
+        Insert: {
+          key: string;
+          updated_at?: string;
+          value: NonNullable<Json>;
+        };
+        Update: {
+          key?: string;
+          updated_at?: string;
+          value?: NonNullable<Json>;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          avatar_creature: string | null;
+          created_at: string;
+          display_name: string;
+          handle: string | null;
+          id: string;
+          locale: string;
+          status: Database['public']['Enums']['profile_status'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          avatar_creature?: string | null;
+          created_at?: string;
+          display_name: string;
+          handle?: string | null;
+          id: string;
+          locale?: string;
+          status?: Database['public']['Enums']['profile_status'];
+          updated_at?: string;
+        };
+        Update: {
+          avatar_creature?: string | null;
+          created_at?: string;
+          display_name?: string;
+          handle?: string | null;
+          id?: string;
+          locale?: string;
+          status?: Database['public']['Enums']['profile_status'];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -12,7 +64,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      profile_status: 'pending' | 'active' | 'suspended';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -119,6 +171,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      profile_status: ['pending', 'active', 'suspended'],
+    },
   },
 } as const;
