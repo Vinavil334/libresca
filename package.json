@@ -14,7 +14,12 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "pnpm --filter @libresca/web test:e2e",
-    "tokens": "pnpm --filter @libresca/tokens build"
+    "tokens": "pnpm --filter @libresca/tokens build",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --schema public > packages/data/src/database.types.ts && prettier --write packages/data/src/database.types.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
@@ -23,6 +28,7 @@
     "eslint-config-next": "16.4.5",
     "globals": "17.14.0",
     "prettier": "3.9.10",
+    "supabase": "3.0.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vitest": "5.1.0"

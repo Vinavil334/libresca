@@ -2,7 +2,7 @@
 
 App per gestire la libreria personale, i libri degli amici, i prestiti e i consigli di lettura. Alternativa intima a Goodreads e Fable, con un'estetica whimsical: funghi, topini, creaturine. All'inizio è una web app su invito e a costo zero; deve poter diventare pubblica, multilingua e app mobile senza riscritture.
 
-**Stato:** monorepo pronto, con una sola pagina e senza database. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
+**Stato:** monorepo pronto con una sola pagina; Supabase locale e remoto collegati, schema ancora vuoto. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
 
 ## Lingua
 
@@ -41,11 +41,16 @@ pnpm test                                      # test unitari Vitest di tutti i 
 pnpm test packages/domain/src/isbn.test.ts     # un solo file di test
 pnpm test:e2e                                  # Playwright su viewport mobile e desktop
 pnpm tokens                                    # rigenera tokens.css e tailwind.css da tokens.json
+pnpm db:start                                  # Supabase locale in Docker (Studio su http://localhost:54323)
+pnpm db:stop                                   # ferma i container
+pnpm db:reset                                  # ricrea il database locale da migrazioni e seed.sql
+pnpm db:test                                   # test pgTAP in supabase/tests/
+pnpm db:types                                  # rigenera packages/data/src/database.types.ts dal database locale
 ```
 
-Il primo `pnpm test:e2e` richiede `pnpm --filter @libresca/web exec playwright install chromium`.
+Il primo `pnpm test:e2e` richiede `pnpm --filter @libresca/web exec playwright install chromium`. I comandi `db:*` richiedono Docker Desktop avviato; `pnpm exec supabase status` mostra URL e chiavi locali. Dopo ogni migrazione: `db:reset`, `db:test`, `db:types`. La CLI agisce sul database locale salvo `--remote`: `pnpm exec supabase db push --remote` applica le migrazioni al progetto remoto e richiede la conferma esplicita dell'utente.
 
-Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/i18n`, `packages/tokens`. I pacchetti esportano sorgenti TypeScript e l'app li compila: non c'è un passo di build per i pacchetti.
+Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/i18n`, `packages/tokens`, `supabase/` (config, migrazioni, test pgTAP, seed). I pacchetti esportano sorgenti TypeScript e l'app li compila: non c'è un passo di build per i pacchetti.
 
 ## Regole del progetto
 

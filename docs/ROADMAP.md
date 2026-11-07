@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3). Prossimo task: **F0.4**, Supabase locale e remoto; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). Prossimo task: **F0.5**, CI su GitHub Actions; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -52,7 +52,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [x] **F0.1** (S) Prendere le decisioni iniziali e aggiungere la licenza
 - [x] **F0.2** (S) Spike metadati: misurata la copertura di 49 ISBN del tuo export Goodreads (35 italiani) su Open Library, Google Books e SBN; risultati e ordine delle fonti nell'ADR-0008
 - [x] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind con tema generato dai token, next-intl, ESLint e Prettier, Vitest, Playwright su mobile e desktop; pacchetti `domain` (con normalizzazione ISBN), `data`, `i18n`, `tokens`; comandi in `CLAUDE.md`
-- [ ] **F0.4** (S) Supabase locale e progetto remoto in regione UE, generazione dei tipi
+- [x] **F0.4** (S) Supabase locale e progetto remoto in regione UE (`eu-central-1`), generazione dei tipi in `packages/data`, client tipizzato, test pgTAP che blocca le tabelle senza RLS
 - [ ] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS
 - [ ] **F0.6** (S) Deploy con preview su Vercel; Stop hook di Claude Code che richiede il typecheck
 - [ ] **F0.7** (S) Login con Google, accesso riservato agli account attivi, shell PWA (manifest, icone provvisorie)
@@ -162,3 +162,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-05 | Chiuse D0 e D1: direzione "Sottobosco", token e design system in repo; logo e mascotte spostati in D4 | Scelta dell'utente nella chat di design |
 | 2026-11-07 | Chiusa F0.3: TypeScript 6.0 ed ESLint 9 al posto delle ultime versioni, per compatibilità dei plugin | Vincoli di typescript-eslint e `eslint-config-next` |
 | 2026-11-07 | Chiusa F0.2: fonti in parallelo invece della cascata, Google Books senza copie permanenti, SBN per gli ISBN italiani; F1.1, F1.2 e F1.3 aggiornate | Numeri dello spike (ADR-0008) e termini d'uso di Google |
+| 2026-11-07 | Chiusa F0.4: CLI Supabase come devDependency, edge functions e analytics spente in locale, schema `private` per le funzioni delle policy | Lo stack non usa edge functions (ADR-0001); helper delle policy fuori dall'API |

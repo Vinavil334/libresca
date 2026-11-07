@@ -1,0 +1,2 @@
+-- Fake data for the local database, loaded by `pnpm db:reset`.
+-- Never put real friends' data here: the repository is public.
