@@ -41,6 +41,7 @@ pnpm test                                      # test unitari Vitest di tutti i 
 pnpm test packages/domain/src/isbn.test.ts     # un solo file di test
 pnpm test:e2e                                  # Playwright su viewport mobile e desktop
 pnpm tokens                                    # rigenera tokens.css e tailwind.css da tokens.json
+pnpm icons                                     # rigenera le icone dell'app dalla topina segnaposto e dai token
 pnpm db:start                                  # Supabase locale in Docker (Studio su http://localhost:54323)
 pnpm db:stop                                   # ferma i container
 pnpm db:reset                                  # ricrea il database locale da migrazioni e seed.sql
