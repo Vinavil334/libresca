@@ -1,0 +1,16 @@
+{
+  "name": "@libresca/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./tailwind.css": "./tailwind.css",
+    "./tokens.json": "./tokens.json"
+  },
+  "scripts": {
+    "build": "node scripts/build-css.mjs",
+    "check": "node scripts/build-css.mjs --check",
+    "test": "vitest run"
+  }
+}

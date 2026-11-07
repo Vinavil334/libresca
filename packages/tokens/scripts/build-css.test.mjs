@@ -1,10 +1,10 @@
-// Run with: node --test packages/tokens/scripts/build-css.test.mjs
-import { test } from 'node:test';
+// Run with: pnpm test packages/tokens
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildCss, resolveValue, valueForTheme } from './build-css.mjs';
+import { buildCss, buildTailwindTheme, resolveValue, valueForTheme } from './build-css.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tokens = JSON.parse(readFileSync(join(ROOT, 'tokens.json'), 'utf8'));
@@ -17,7 +17,8 @@ function hex(name, theme) {
   return alias ? hex(alias[1], theme) : v;
 }
 function luminance(h) {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+  const [r, g, b] = [1, 3, 5]
+    .map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
     .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
@@ -28,16 +29,30 @@ function contrast(a, b) {
 
 test('the minimum names from DESIGN_BRIEF.md exist', () => {
   const css = buildCss(tokens);
-  for (const name of ['color-surface', 'color-surface-raised', 'color-text', 'color-text-muted', 'color-accent',
-    'color-border', 'color-success', 'color-warning', 'color-danger', 'font-display', 'font-body',
-    'radius-card', 'shadow-card', 'motion-gentle']) {
+  for (const name of [
+    'color-surface',
+    'color-surface-raised',
+    'color-text',
+    'color-text-muted',
+    'color-accent',
+    'color-border',
+    'color-success',
+    'color-warning',
+    'color-danger',
+    'font-display',
+    'font-body',
+    'radius-card',
+    'shadow-card',
+    'motion-gentle',
+  ]) {
     assert.match(css, new RegExp(`--${name}:`), name);
   }
 });
 
 test('token names are unique across families', () => {
-  const names = ['color', 'shadow', 'spacing', 'radius', 'border', 'duration', 'easing']
-    .flatMap((f) => (tokens[f]?.tokens ?? []).map((t) => t.name));
+  const names = ['color', 'shadow', 'spacing', 'radius', 'border', 'duration', 'easing'].flatMap((f) =>
+    (tokens[f]?.tokens ?? []).map((t) => t.name),
+  );
   assert.equal(new Set(names).size, names.length);
 });
 
@@ -64,14 +79,25 @@ test('display styles carry the soft Fraunces axes', () => {
 
 test('text pairs meet WCAG AA in both themes', () => {
   const pairs = [
-    ['color-text', 'color-surface'], ['color-text', 'color-surface-raised'], ['color-text', 'color-ticket'],
-    ['color-text', 'color-why'], ['color-text', 'color-canopy-soft'],
-    ['color-text-muted', 'color-surface'], ['color-text-muted', 'color-surface-raised'],
-    ['color-link', 'color-surface'], ['color-link', 'color-surface-raised'],
-    ['color-on-accent', 'color-accent'], ['color-on-canopy', 'color-canopy'], ['color-on-honey', 'color-honey'],
+    ['color-text', 'color-surface'],
+    ['color-text', 'color-surface-raised'],
+    ['color-text', 'color-ticket'],
+    ['color-text', 'color-why'],
+    ['color-text', 'color-canopy-soft'],
+    ['color-text-muted', 'color-surface'],
+    ['color-text-muted', 'color-surface-raised'],
+    ['color-link', 'color-surface'],
+    ['color-link', 'color-surface-raised'],
+    ['color-on-accent', 'color-accent'],
+    ['color-on-canopy', 'color-canopy'],
+    ['color-on-honey', 'color-honey'],
     ['color-on-inverse', 'color-inverse'],
-    ['color-success', 'color-surface'], ['color-success', 'color-surface-raised'], ['color-success', 'color-why'],
-    ['color-warning', 'color-surface'], ['color-danger', 'color-surface'], ['color-danger', 'color-surface-raised']
+    ['color-success', 'color-surface'],
+    ['color-success', 'color-surface-raised'],
+    ['color-success', 'color-why'],
+    ['color-warning', 'color-surface'],
+    ['color-danger', 'color-surface'],
+    ['color-danger', 'color-surface-raised'],
   ];
   for (const theme of THEMES) {
     for (const [fg, bg] of pairs) {
@@ -91,4 +117,23 @@ test('the focus ring reaches 3:1 on every surface', () => {
 
 test('tokens.css is up to date', () => {
   assert.equal(readFileSync(join(ROOT, 'tokens.css'), 'utf8'), buildCss(tokens));
+});
+
+test('the Tailwind theme resets the default scales and exposes only tokens', () => {
+  const theme = buildTailwindTheme(tokens);
+  // `reference` stops Tailwind from re-declaring the variables, which would be circular.
+  assert.match(theme, /@theme inline reference \{/);
+  for (const ns of ['color', 'font', 'text', 'radius', 'shadow', 'ease', 'spacing']) {
+    assert.match(theme, new RegExp(`--${ns}-\\*: initial;`), ns);
+  }
+  for (const t of tokens.color.tokens) {
+    assert.match(theme, new RegExp(`--color-${t.name.slice('color-'.length)}: var\\(--${t.name}\\);`), t.name);
+  }
+  assert.match(theme, /--spacing-4: var\(--space-4\);/);
+  assert.match(theme, /--radius-card: var\(--radius-card\);/);
+  assert.match(theme, /--font-display: var\(--font-display\);/);
+});
+
+test('tailwind.css is up to date', () => {
+  assert.equal(readFileSync(join(ROOT, 'tailwind.css'), 'utf8'), buildTailwindTheme(tokens));
 });

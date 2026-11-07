@@ -1,0 +1,7 @@
+# LF everywhere, as in .editorconfig, so generated files compare equal on every OS.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
+*.woff2 binary

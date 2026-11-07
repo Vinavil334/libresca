@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+@import '@libresca/tokens/tokens.css';
+@import '@libresca/tokens/tailwind.css';
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+
+  :focus-visible {
+    outline: var(--border-ink) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
