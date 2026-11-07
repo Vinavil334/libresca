@@ -5,7 +5,32 @@
   },
   "home": {
     "title": "Libresca",
+    "greeting": "Ciao, {name}",
     "intro": "La tua Tana · la tua libreria",
     "body": "Qui stanno spuntando i primi funghetti. Presto potrai mettere al riparo i tuoi libri."
+  },
+  "login": {
+    "title": "Libresca",
+    "intro": "La tua Tana · la tua libreria",
+    "body": "Entra per mettere al riparo i tuoi libri e scoprire cosa leggono gli amici del Bosco.",
+    "google": "Entra con Google",
+    "errors": {
+      "start": "Non riusciamo a raggiungere Google. Riprova tra un momento.",
+      "callback": "Il tarlo ha mangiato l'accesso a metà strada. Riprova tra un momento."
+    }
+  },
+  "waiting": {
+    "pending": {
+      "title": "Hai bussato alla tana",
+      "body": "Il tuo account c'è, ma per ora la porta si apre solo con un invito. Quando un amico ti invita, entrerai da qui."
+    },
+    "suspended": {
+      "title": "La tana è chiusa, per ora",
+      "body": "Il tuo account è in pausa. Se pensi sia un errore, scrivi a chi ti ha invitato."
+    },
+    "signedInAs": "Hai fatto l'accesso come {name}."
+  },
+  "auth": {
+    "signOut": "Esci"
   }
 }

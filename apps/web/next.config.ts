@@ -1,5 +1,22 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { existsSync, readFileSync } from 'node:fs';
+import { parseEnv } from 'node:util';
+
+/**
+ * One .env.local at the repository root serves the whole workspace, while Next.js
+ * only reads env files next to the app. Variables already set in the environment
+ * (Vercel, CI, Playwright) win over the file.
+ */
+function loadRootEnv(): void {
+  const file = new URL('../../.env.local', import.meta.url);
+  if (!existsSync(file)) return;
+  for (const [name, value] of Object.entries(parseEnv(readFileSync(file, 'utf8')))) {
+    if (process.env[name] === undefined && value !== undefined) process.env[name] = value;
+  }
+}
+
+loadRootEnv();
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

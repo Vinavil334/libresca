@@ -155,6 +155,8 @@ Regole che costano poco ora e risparmiano una riscrittura dopo. Motivazioni in [
 
 - Login con Google, gestito da Supabase. La configurazione in Google Cloud va fatta una volta sola. Motivazioni in [ADR-0006](adr/0006-accesso-a-costo-zero.md).
 - Chiunque può autenticarsi, ma l'app si usa solo con `profiles.status = active`. Finché `signup_mode` è `invite_only`, un account diventa attivo riscattando un invito.
+- La regola che decide la pagina (login, attesa, app) è `redirectFor` in `packages/domain/src/access.ts`; nel web la applica `apps/web/src/proxy.ts` a ogni richiesta, verificando il token con `getClaims()`. Le policy usano `private.is_active()`.
+- Il primo account si attiva a mano dal SQL Editor di Supabase: `select private.activate_profile('email@esempio.it');`. La funzione non è eseguibile dall'API.
 - Tutte le tabelle hanno RLS attiva; la `secret key` di Supabase non arriva mai al browser.
 - Il worker `ml/` usa un ruolo Postgres dedicato, con scrittura limitata alle tabelle del recommender, non la chiave di servizio.
 - La logica di amicizia passa da una funzione `are_friends()` riusata nelle policy.
