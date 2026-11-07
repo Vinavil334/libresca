@@ -5,7 +5,7 @@ description: Regole per metadati e copertine dei libri a Libresca, normalizzazio
 
 # Metadati dei libri
 
-Prima di tutto leggi la sezione "Fonti dei metadati" di `docs/ARCHITECTURE.md` e `docs/adr/0004-fonti-metadati.md`. L'ordine delle fonti deciso dallo spike F0.2 prevale su qualsiasi ipotesi.
+Prima di tutto leggi la sezione "Fonti dei metadati" di `docs/ARCHITECTURE.md` e `docs/adr/0008-cascata-fonti-metadati.md`. L'ADR-0008 contiene i numeri dello spike F0.2 e le priorità per campo, che prevalgono su qualsiasi ipotesi.
 
 ## Regole
 
@@ -14,7 +14,8 @@ Prima di tutto leggi la sezione "Fonti dei metadati" di `docs/ARCHITECTURE.md` e
 - Open Library: massimo 3 richieste al secondo, con `User-Agent` del tipo `Libresca (contatto)`, contatto letto da variabile d'ambiente.
 - Per più libri preferisci `search.json` a centinaia di richieste singole. Per elaborazioni massicce usa i dump mensili.
 - Copertine: salva e usa `cover_id` oppure OLID; gli accessi per ISBN hanno un limite di 100 richieste ogni 5 minuti per IP.
-- Google Books: chiave solo lato server. Prima di aggiungere una cache persistente rileggi i termini d'uso correnti.
+- Google Books: chiave solo lato server. Nessuna copia permanente dei suoi contenuti: salva solo l'ID del volume, mostra descrizione e copertina dal vivo e rispetta l'intestazione di cache.
+- SBN: solo per ISBN `978-88` e `979-12`, una richiesta al secondo, endpoint `opac.sbn.it/opacmobilegw/`. È la fonte più affidabile per pagine e traduttori.
 - Conserva sempre la provenienza: fonte, ID esterno, payload grezzo.
 - Nessuno scraping.
 
