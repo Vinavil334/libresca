@@ -46,6 +46,6 @@ test('the Google button starts the OAuth flow through Supabase', async ({ page }
 
 test('a failed callback shows a gentle error', async ({ page }) => {
   await page.goto('/auth/callback?code=not-a-real-code');
-  await expect(page).toHaveURL(/\/login\?error=callback$/);
+  await expect(page).toHaveURL(/\/login\?error=callback&reason=\w+/);
   await expect(page.getByRole('alert').filter({ hasText: it.login.errors.callback })).toBeVisible();
 });
