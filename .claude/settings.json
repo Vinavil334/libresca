@@ -16,8 +16,6 @@
       "Bash(git fetch *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(python -c \"import json;json.load\\(open\\('.claude/settings.json'\\)\\)\")",
-      "Bash(git commit -q -m 'chore\\(claude\\): ask before remote Supabase pushes and resets via pnpm exec *)",
       "Bash(git checkout *)",
       "Bash(git pull *)",
       "Bash(git stash *)"
@@ -39,6 +37,19 @@
       "Bash(pnpm exec supabase db push*)",
       "Bash(pnpm exec supabase db reset --linked*)",
       "Bash(pnpm exec supabase db reset --remote*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/typecheck-on-stop.mjs\"",
+            "timeout": 180
+          }
+        ]
+      }
     ]
   }
 }
