@@ -77,7 +77,12 @@ docs/                Roadmap, architettura, ADR, design
 | Recommender | Python in batch su GitHub Actions | Ecosistema ML, nessun server sempre acceso |
 | Test | Vitest, Playwright, pgTAP, pytest | Ogni livello ha il suo strumento |
 
-Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> version`. Il 5 novembre 2026 risultavano Next.js 16.4, next-intl 4.14, Tailwind 4.3, `@supabase/supabase-js` 2.119, Vitest 5.1, Playwright 1.64, pnpm 12.16.
+Versioni scelte nello scaffold (F0.3, 7 novembre 2026): pnpm 12.18, Next.js 16.4, React 19.3, next-intl 4.14, Tailwind 4.3, Vitest 5.1, Playwright 1.65. Ci sono due eccezioni volute all'ultima versione:
+
+- **TypeScript 6.0 e non 7:** typescript-eslint supporta TypeScript solo fino alla 6.0.
+- **ESLint 9 e non 10:** i plugin React, import e jsx-a11y usati da `eslint-config-next` non supportano ancora ESLint 10.
+
+Riprova a passare all'ultima versione quando cambiano le dipendenze. pnpm rifiuta i pacchetti pubblicati da meno di un giorno: meglio scegliere una versione precedente che aggiungere eccezioni.
 
 ## Fonti dei metadati
 

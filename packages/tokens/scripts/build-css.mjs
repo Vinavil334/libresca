@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Generates packages/tokens/tokens.css from packages/tokens/tokens.json.
-// No dependencies: runs with plain Node until F0.3 sets up the workspace.
+// Generates tokens.css (CSS variables and .type-* classes) and tailwind.css (Tailwind theme)
+// from packages/tokens/tokens.json. No dependencies.
 //
-//   node packages/tokens/scripts/build-css.mjs          write tokens.css
-//   node packages/tokens/scripts/build-css.mjs --check  exit 1 if tokens.css is stale
+//   pnpm tokens                                         write both files
+//   node packages/tokens/scripts/build-css.mjs --check  exit 1 if either file is stale
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = join(ROOT, 'tokens.json');
 const TARGET = join(ROOT, 'tokens.css');
+const TAILWIND_TARGET = join(ROOT, 'tailwind.css');
 
 /** Families that are plain {tokens:[{name,value}]} lists of theme-independent values. */
 const STATIC_FAMILIES = ['spacing', 'radius', 'border', 'duration', 'easing'];
@@ -46,7 +47,9 @@ export function buildCss(tokens) {
   const themed = THEMED_FAMILIES.flatMap((f) => tokens[f]?.tokens ?? []);
   const out = [];
 
-  out.push(`/* ${tokens.name} — generated from tokens.json by packages/tokens/scripts/build-css.mjs. Do not edit by hand. */`);
+  out.push(
+    `/* ${tokens.name} — generated from tokens.json by packages/tokens/scripts/build-css.mjs. Do not edit by hand. */`,
+  );
   out.push('');
   out.push(`:root, [data-theme="${first}"] {`);
   out.push(...declarations(themed, first, first));
@@ -93,21 +96,61 @@ export function buildCss(tokens) {
   return out.join('\n') + '\n';
 }
 
+/**
+ * Tailwind 4 theme that exposes only the design tokens: bg-surface, text-text-muted, p-4, rounded-card…
+ * Default palettes, sizes and fonts are reset, so utilities outside the design system do not exist.
+ * Values point to the variables of tokens.css, so themes switch at runtime.
+ */
+export function buildTailwindTheme(tokens) {
+  const out = [];
+  out.push(
+    `/* ${tokens.name} — Tailwind theme generated from tokens.json by packages/tokens/scripts/build-css.mjs. Do not edit by hand. */`,
+  );
+  out.push('');
+  out.push('@theme inline reference {');
+  for (const ns of ['color', 'font', 'text', 'radius', 'shadow', 'ease', 'spacing']) out.push(`  --${ns}-*: initial;`);
+  out.push('  --spacing: initial;');
+  for (const t of tokens.color.tokens) out.push(`  --color-${t.name.replace(/^color-/, '')}: var(--${t.name});`);
+  for (const key of Object.keys(tokens.type.families)) out.push(`  --font-${key}: var(--font-${key});`);
+  for (const t of tokens.radius?.tokens ?? [])
+    out.push(`  --radius-${t.name.replace(/^radius-/, '')}: var(--${t.name});`);
+  for (const t of tokens.shadow?.tokens ?? [])
+    out.push(`  --shadow-${t.name.replace(/^shadow-/, '')}: var(--${t.name});`);
+  for (const t of tokens.easing?.tokens ?? []) out.push(`  --ease-${t.name.replace(/^ease-/, '')}: var(--${t.name});`);
+  for (const t of tokens.spacing?.tokens ?? [])
+    out.push(`  --spacing-${t.name.replace(/^space-/, '')}: var(--${t.name});`);
+  out.push('}');
+  return out.join('\n') + '\n';
+}
+
 function main() {
   const tokens = JSON.parse(readFileSync(SOURCE, 'utf8'));
-  const css = buildCss(tokens);
+  const outputs = [
+    [TARGET, buildCss(tokens)],
+    [TAILWIND_TARGET, buildTailwindTheme(tokens)],
+  ];
   if (process.argv.includes('--check')) {
-    let current = '';
-    try { current = readFileSync(TARGET, 'utf8'); } catch { /* missing file counts as stale */ }
-    if (current !== css) {
-      console.error('tokens.css is out of date: run node packages/tokens/scripts/build-css.mjs');
-      process.exit(1);
+    let stale = false;
+    for (const [path, css] of outputs) {
+      let current = '';
+      try {
+        current = readFileSync(path, 'utf8');
+      } catch {
+        /* missing file counts as stale */
+      }
+      if (current !== css) {
+        console.error(`${path} is out of date: run pnpm tokens`);
+        stale = true;
+      }
     }
-    console.log('tokens.css is up to date');
+    if (stale) process.exit(1);
+    console.log('generated CSS is up to date');
     return;
   }
-  writeFileSync(TARGET, css);
-  console.log(`wrote ${TARGET}`);
+  for (const [path, css] of outputs) {
+    writeFileSync(path, css);
+    console.log(`wrote ${path}`);
+  }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();

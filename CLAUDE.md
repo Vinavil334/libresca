@@ -2,7 +2,7 @@
 
 App per gestire la libreria personale, i libri degli amici, i prestiti e i consigli di lettura. Alternativa intima a Goodreads e Fable, con un'estetica whimsical: funghi, topini, creaturine. All'inizio è una web app su invito e a costo zero; deve poter diventare pubblica, multilingua e app mobile senza riscritture.
 
-**Stato:** nessun codice ancora. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
+**Stato:** monorepo pronto, con una sola pagina e senza database. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
 
 ## Lingua
 
@@ -19,7 +19,7 @@ App per gestire la libreria personale, i libri degli amici, i prestiti e i consi
 - `docs/RECOMMENDER.md`: progetto del Micelio
 - `docs/design/DESIGN_BRIEF.md`: brief di partenza della traccia design
 - `docs/design/DESIGN_SYSTEM.md`: regole del design system Sottobosco, vocabolario, creature
-- `packages/tokens/`: token del design system e CSS generato
+- `packages/tokens/`: token del design system, CSS generato e tema Tailwind
 - `docs/adr/`: decisioni motivate; una decisione importante nuova richiede un ADR
 
 ## Stack
@@ -28,7 +28,24 @@ Next.js PWA in TypeScript, Tailwind, next-intl, Supabase (Postgres, Auth, Storag
 
 ## Comandi
 
-Non esistono ancora. Il task F0.3 deve sostituire questa sezione con i comandi reali per installare, avviare, fare typecheck, lint, eseguire tutti i test o un singolo file di test.
+Monorepo pnpm (versione fissata in `package.json`, si attiva con `corepack enable pnpm`), Node 24. Tutti i comandi partono dalla radice.
+
+```sh
+pnpm install                                   # dipendenze di tutto il workspace
+pnpm dev                                       # app web su http://localhost:3000
+pnpm build                                     # build di produzione dell'app web
+pnpm typecheck                                 # tsc su ogni pacchetto e sull'app
+pnpm lint                                      # ESLint e controllo Prettier
+pnpm format                                    # applica Prettier
+pnpm test                                      # test unitari Vitest di tutti i pacchetti
+pnpm test packages/domain/src/isbn.test.ts     # un solo file di test
+pnpm test:e2e                                  # Playwright su viewport mobile e desktop
+pnpm tokens                                    # rigenera tokens.css e tailwind.css da tokens.json
+```
+
+Il primo `pnpm test:e2e` richiede `pnpm --filter @libresca/web exec playwright install chromium`.
+
+Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/i18n`, `packages/tokens`. I pacchetti esportano sorgenti TypeScript e l'app li compila: non c'è un passo di build per i pacchetti.
 
 ## Regole del progetto
 
@@ -41,7 +58,7 @@ Non esistono ancora. Il task F0.3 deve sostituire questa sezione con i comandi r
 - Ciò che richiede segreti o servizi esterni sta in `/api/v1`, autenticato con token Supabase Bearer.
 - I testi stanno in `packages/i18n/messages/`, mai nei componenti. Date e numeri passano da `Intl`.
 - L'accesso dipende da `profiles.status` e `app_settings`: mai regole fisse su una cerchia.
-- La UI usa solo token semantici: niente colori o font scritti a mano nei componenti.
+- La UI usa solo token semantici: niente colori o font scritti a mano nei componenti. Tailwind espone solo i token (`bg-surface`, `text-text-muted`, `p-4`, `rounded-card`); la tipografia passa dalle classi `.type-*`. ESLint blocca i colori esadecimali nell'app e gli import di Next.js o React DOM nei pacchetti.
 - Nessuna chiamata diretta dal client alle API dei metadati: passano da `/api/v1`, che gestisce limiti, cache e chiavi.
 - Le parole fantasiose (Tana, Micelio…) stanno nella UI e nei documenti di prodotto. Nel codice usa i nomi di `docs/DATA_MODEL.md`.
 
@@ -54,7 +71,7 @@ Non esistono ancora. Il task F0.3 deve sostituire questa sezione con i comandi r
 - La repo è pubblica. Mai committare dati reali di amici, export personali, chiavi. I file personali vanno in `data/private/`.
 - Open Library: massimo 3 richieste al secondo con `User-Agent` identificato, niente download massivi via API.
 - Il dataset UCSD Book Graph è solo per uso accademico: non usarlo per il prodotto.
-- Il design system è `docs/design/DESIGN_SYSTEM.md` con i token di `packages/tokens/`: non inventare colori, font o stili fuori da lì. Dopo aver cambiato `tokens.json` rigenera `tokens.css` e fai girare i test del pacchetto. Le creature definitive arrivano con la D4: fino ad allora solo i segnaposto in `docs/design/assets/motivi/`.
+- Il design system è `docs/design/DESIGN_SYSTEM.md` con i token di `packages/tokens/`: non inventare colori, font o stili fuori da lì. Dopo aver cambiato `tokens.json` lancia `pnpm tokens` e `pnpm test packages/tokens`. Le creature definitive arrivano con la D4: fino ad allora solo i segnaposto in `docs/design/assets/motivi/`.
 
 ## Come lavoriamo
 

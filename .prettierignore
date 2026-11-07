@@ -1,0 +1,14 @@
+# Prose is written by hand, generated files are written by their scripts.
+*.md
+pnpm-lock.yaml
+packages/tokens/tokens.css
+packages/tokens/tailwind.css
+# Kept in the same layout as the design system in the design chat.
+packages/tokens/tokens.json
+docs/design/assets/
+data/
+tools/spikes/
+.claude/
+.next/
+playwright-report/
+test-results/

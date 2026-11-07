@@ -1,0 +1,30 @@
+{
+  "name": "@libresca/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@libresca/data": "workspace:*",
+    "@libresca/domain": "workspace:*",
+    "@libresca/i18n": "workspace:*",
+    "@libresca/tokens": "workspace:*",
+    "next": "16.4.5",
+    "next-intl": "4.14.9",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "@tailwindcss/postcss": "4.3.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.4"
+  }
+}

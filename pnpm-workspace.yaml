@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Install scripts run only for the packages listed with true.
+# These two ship prebuilt binaries, so their scripts are not needed.
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
