@@ -10,12 +10,8 @@
       "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:supabase.com)",
       "WebFetch(domain:nextjs.org)",
-      "WebFetch(domain:code.claude.com)"
-    ],
-    "ask": [
-      "Bash(git push *)",
-      "Bash(supabase db push *)",
-      "Bash(supabase db reset --linked *)"
+      "WebFetch(domain:code.claude.com)",
+      "Bash(gh pr *)"
     ],
     "deny": [
       "Read(./.env)",
@@ -25,6 +21,11 @@
       "Read(./apps/web/.env.local)",
       "Read(./ml/.env)",
       "Read(./data/private/**)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(supabase db push *)",
+      "Bash(supabase db reset --linked *)"
     ]
   }
 }
