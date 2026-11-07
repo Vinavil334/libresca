@@ -176,7 +176,7 @@ Obiettivo: **0 € finché l'app è privata**.
 
 Conseguenze pratiche:
 
-- Il job di F0.8 esegue una vera lettura del database ogni giorno. Se GitHub lo disattiva, l'app prima o poi va in pausa: va riattivato a mano.
+- Il job di F0.8 (`.github/workflows/keepalive.yml`) chiama ogni giorno `public.health_check()`, che fa una vera lettura di `app_settings` e restituisce solo `true`. Usa le variabili di repository `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`, non segreti. Se fallisce apre una issue "Supabase non risponde al controllo giornaliero" e la chiude da solo quando torna a rispondere. Se GitHub disattiva il workflow dopo 60 giorni senza commit, l'app prima o poi va in pausa: va riattivato a mano dalla scheda Actions.
 - Le copertine evitano l'ottimizzazione immagini di Vercel, per non consumare la quota: si caricano già piccole da Open Library.
 - Niente login via email né notifiche email fino alla F5.
 - Se il traffico superasse le quote, Vercel Hobby ferma la funzione interessata fino a 30 giorni: è accettabile per una beta tra amici, non per un servizio pubblico.

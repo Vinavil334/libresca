@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Prossimo task: **F0.8**, job che tiene attivo Supabase; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Prossimo task: **F1.1**, il catalogo; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -58,7 +58,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [x] **F0.7** (M) Login con Google, accesso riservato agli account attivi, shell PWA; diviso in due PR
   - [x] **F0.7a** Login con Google, `profiles` e `app_settings` con RLS, regola di accesso in `packages/domain`, `proxy.ts`, pagine di login e attesa, e2e con account finti sullo stack locale
   - [x] **F0.7b** Shell PWA: manifest dai token, icone provvisorie generate dalla topina segnaposto (`pnpm icons`), colore della barra per giorno e notte; nessun service worker, l'offline è F4.3
-- [ ] **F0.8** (S) Job giornaliero su GitHub Actions che tiene attivo Supabase e segnala se il controllo fallisce
+- [x] **F0.8** (S) Job giornaliero su GitHub Actions che tiene attivo Supabase con una vera lettura (`public.health_check()`) e, se il controllo fallisce, apre una issue
 
 ## F1 · La Tana
 

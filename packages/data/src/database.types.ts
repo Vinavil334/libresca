@@ -61,7 +61,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      health_check: { Args: Record<PropertyKey, never>; Returns: boolean };
     };
     Enums: {
       profile_status: 'pending' | 'active' | 'suspended';
