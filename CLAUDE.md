@@ -82,5 +82,5 @@ Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/i
 
 - Procedi per fette verticali piccole, un task della roadmap alla volta (`/fetta-verticale`).
 - Lavora su un branch, mai direttamente su `main`.
-- Prima di dire che un task è finito, esegui i controlli e prova la funzione davvero, anche in viewport mobile quando c'è UI.
+- Prima di dire che un task è finito, esegui i controlli e prova la funzione davvero, anche in viewport mobile quando c'è UI. Uno Stop hook (`.claude/hooks/typecheck-on-stop.mjs`) blocca la fine del turno se ci sono file TypeScript o JSON modificati e `pnpm typecheck` fallisce.
 - A fine task aggiorna la roadmap. Se scopri che il piano è sbagliato, dillo e proponi la modifica.
