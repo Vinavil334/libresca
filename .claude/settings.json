@@ -11,7 +11,13 @@
       "WebFetch(domain:supabase.com)",
       "WebFetch(domain:nextjs.org)",
       "WebFetch(domain:code.claude.com)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(git branch *)",
+      "Bash(git fetch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python -c \"import json;json.load\\(open\\('.claude/settings.json'\\)\\)\")",
+      "Bash(git commit -q -m 'chore\\(claude\\): ask before remote Supabase pushes and resets via pnpm exec *)"
     ],
     "deny": [
       "Read(./.env)",
@@ -25,7 +31,11 @@
     "ask": [
       "Bash(git push *)",
       "Bash(supabase db push *)",
-      "Bash(supabase db reset --linked *)"
+      "Bash(supabase db reset --linked *)",
+      "Bash(supabase db reset --remote*)",
+      "Bash(pnpm exec supabase db push*)",
+      "Bash(pnpm exec supabase db reset --linked*)",
+      "Bash(pnpm exec supabase db reset --remote*)"
     ]
   }
 }
