@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, tutte le decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), nessun codice applicativo. Prossimo task: **F0.2**, che richiede l'export Goodreads da scaricare sul tuo PC; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008). Nessun codice applicativo. Prossimo task: **F0.3**, lo scaffold del monorepo; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -41,15 +41,16 @@ flowchart LR
 | 5 | Licenza | MIT per il codice, nome e illustrazioni riservati | Nessun conflitto con l'App Store, dipendenze permissive |
 | 6 | Lingue | Italiano ora, altre lingue in futuro | Sistema di traduzione attivo da subito |
 | 7 | Embedding | Modello open eseguito nel job notturno | Nessun costo per chiamata e nessun servizio esterno |
+| 8 | Fonti metadati | Google Books, Open Library e SBN interrogati in parallelo, uniti campo per campo | Google Books trova i libri ma non entra nel catalogo come copia permanente; SBN dà pagine e traduttori italiani |
 
-Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](adr/0006-accesso-a-costo-zero.md) e [ADR-0007](adr/0007-licenza.md).
+Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](adr/0006-accesso-a-costo-zero.md), [ADR-0007](adr/0007-licenza.md) e [ADR-0008](adr/0008-cascata-fonti-metadati.md).
 
 ## F0 · Fondamenta
 
 *Fatto quando:* una pagina con login è online in HTTPS, la CI è verde e la scelta delle fonti metadati si basa su numeri reali.
 
 - [x] **F0.1** (S) Prendere le decisioni iniziali e aggiungere la licenza
-- [ ] **F0.2** (S) Spike metadati: misurare la copertura di 50 ISBN presi dal tuo export Goodreads, soprattutto italiani, su Open Library, Google Books e SBN (metodo in `docs/ARCHITECTURE.md`)
+- [x] **F0.2** (S) Spike metadati: misurata la copertura di 49 ISBN del tuo export Goodreads (35 italiani) su Open Library, Google Books e SBN; risultati e ordine delle fonti nell'ADR-0008
 - [ ] **F0.3** (M) Scaffold del monorepo: pnpm, Next.js, TypeScript strict, Tailwind, next-intl, lint, Vitest, Playwright; pacchetti `domain`, `data`, `i18n`, `tokens`; aggiornare i comandi in `CLAUDE.md`
 - [ ] **F0.4** (S) Supabase locale e progetto remoto in regione UE, generazione dei tipi
 - [ ] **F0.5** (S) CI su GitHub Actions: typecheck, lint, test, test RLS
@@ -61,9 +62,9 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 
 *Fatto quando:* la tua libreria reale è dentro, e per due settimane usi Libresca al posto di Goodreads.
 
-- [ ] **F1.1** (M) Catalogo: opere, edizioni, autori, contributori, ID esterni
-- [ ] **F1.2** (M) API metadati in `/api/v1`: cascata di fonti, cache, normalizzazione ISBN, deduplica
-- [ ] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale
+- [ ] **F1.1** (M) Catalogo: opere, edizioni, autori con nomi alternativi, contributori, ID esterni
+- [ ] **F1.2** (M) API metadati in `/api/v1`: fonti in parallelo e unione per campo secondo l'ADR-0008, cache nei limiti dei termini, normalizzazione ISBN, deduplica; prima di iniziare, leggere la quota della chiave Google Books
+- [ ] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale comodo anche con foto della copertina, perché le novità sono il punto debole delle fonti
 - [ ] **F1.4** (M) Scanner barcode da fotocamera, testato anche su iPhone
 - [ ] **F1.5** (M) Copie possedute: formato, posizione, condizioni, prestabile sì/no
 - [ ] **F1.6** (M) Letture: stati, date, riletture, voto a funghetti, note
@@ -159,3 +160,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-05 | Scelti import Goodreads e licenza MIT; F0.2 usa gli ISBN dell'export | Decisioni dell'utente in F0.1 |
 | 2026-11-05 | Accesso su invito ma apribile, API riusabili da mobile, i18n da subito, login Google, nuova F5 | Decisioni dell'utente in F0.1 |
 | 2026-11-05 | Chiuse D0 e D1: direzione "Sottobosco", token e design system in repo; logo e mascotte spostati in D4 | Scelta dell'utente nella chat di design |
+| 2026-11-07 | Chiusa F0.2: fonti in parallelo invece della cascata, Google Books senza copie permanenti, SBN per gli ISBN italiani; F1.1, F1.2 e F1.3 aggiornate | Numeri dello spike (ADR-0008) e termini d'uso di Google |

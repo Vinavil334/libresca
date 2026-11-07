@@ -41,12 +41,12 @@ erDiagram
 
 | Tabella | Colonne principali | Note |
 |---|---|---|
-| `works` | `id`, `title`, `original_title`, `original_language`, `first_published_year`, `description`, `merged_into` | `merged_into` permette di unire doppioni senza rompere riferimenti |
-| `editions` | `id`, `work_id`, `title`, `isbn13`, `language`, `publisher`, `published_year`, `format`, `page_count`, `cover_source`, `cover_id`, `cover_path`, `metadata_status` | `isbn13` unico quando presente; molti libri vecchi non lo hanno |
-| `authors` | `id`, `name`, `sort_name` | |
+| `works` | `id`, `title`, `original_title`, `original_language`, `first_published_year`, `description`, `merged_into` | `merged_into` permette di unire doppioni senza rompere riferimenti. `description` solo da fonti aperte o scritta dall'utente, mai da Google Books (ADR-0008) |
+| `editions` | `id`, `work_id`, `title`, `isbn13`, `language`, `publisher`, `published_year`, `format`, `page_count`, `cover_source`, `cover_id`, `cover_path`, `metadata_status` | `isbn13` unico quando presente; molti libri vecchi non lo hanno. `cover_source` vale `openlibrary`, `googlebooks`, `upload` o `generated`; per Google Books `cover_id` è l'ID del volume e l'immagine si carica dal vivo |
+| `authors` | `id`, `name`, `sort_name`, `alternate_names` | `alternate_names` raccoglie traslitterazioni e grafie originali: Open Library scrive alcuni autori stranieri nel loro alfabeto |
 | `work_authors` | `work_id`, `author_id`, `position` | |
 | `contributors` | `edition_id`, `name`, `role` | Traduttori e curatori: contano molto nell'editoria italiana |
-| `external_ids` | `edition_id` o `work_id`, `source`, `value`, `raw` | Provenienza e payload grezzo |
+| `external_ids` | `edition_id` o `work_id`, `source`, `value`, `raw` | Provenienza e payload grezzo. Per `googlebooks` `raw` resta vuoto: i termini vietano copie permanenti (ADR-0008) |
 
 Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tramite azioni server validate.
 

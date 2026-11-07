@@ -1,6 +1,6 @@
 # ADR-0004: Fonti dei metadati dei libri
 
-- **Stato:** Proposta, da completare con i risultati dello spike F0.2
+- **Stato:** Accettata, con l'ordine delle fonti superato da [ADR-0008](0008-cascata-fonti-metadati.md)
 - **Data:** 2026-11-05
 
 ## Contesto

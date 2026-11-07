@@ -22,7 +22,7 @@ flowchart TB
   subgraph Fonti["Fonti esterne"]
     OL["Open Library"]
     GB["Google Books"]
-    SBN["OPAC SBN (da valutare)"]
+    SBN["OPAC SBN (solo ISBN italiani)"]
   end
   subgraph Batch["GitHub Actions (notturno)"]
     ML["Worker Python<br/>Micelio"]
@@ -38,7 +38,7 @@ flowchart TB
   SSR --> DB
   META --> OL
   META --> GB
-  META -.-> SBN
+  META --> SBN
   META --> DB
   ML -- "legge segnali, scrive consigli" --> DB
   PWA --> STORE
@@ -81,12 +81,14 @@ Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> ve
 
 ## Fonti dei metadati
 
+Ordine, priorità per campo e numeri dello spike F0.2 sono in [ADR-0008](adr/0008-cascata-fonti-metadati.md).
+
 | Fonte | Uso | Limiti verificati |
 |---|---|---|
-| **Open Library** | Prima fonte per opere, edizioni e copertine | 1 richiesta/s senza identificazione, 3/s con `User-Agent` contenente app e contatto. Niente download massivi via API: esistono i dump mensili. Dati del catalogo aperti |
-| **Google Books** | Integrazione, utile sui libri italiani (ipotesi da misurare) | Richiede API key o OAuth; ricerca con `isbn:` e `langRestrict`. Controllare quote e termini sulla conservazione dei dati prima di salvarli |
-| **OPAC SBN** | Possibile fonte per i libri italiani | Non ho trovato un'API pubblica documentata. Esiste un vecchio plugin Python `isbnlib-sbn` (2020). Da valutare nello spike |
-| **Inserimento manuale** | Sempre disponibile | È la rete di sicurezza |
+| **Google Books** | Trova l'89% delle edizioni italiane del campione: serve a trovare il libro e completare la scheda | Chiave obbligatoria (quota anonima zero), solo lato server. I termini vietano database e copie permanenti dei contenuti: si salva l'ID del volume, mentre descrizioni e copertine si mostrano dal vivo. Vietato far pagare l'app senza accordo con Google |
+| **OPAC SBN** | Solo ISBN italiani: pagine affidabili e traduttori, 60% delle edizioni italiane | Dati in licenza CC0. Endpoint JSON non documentato `opac.sbn.it/opacmobilegw/`, usato a una richiesta al secondo. Niente descrizioni; la copertina che restituisce non è riutilizzabile |
+| **Open Library** | Copertine e descrizioni aperte, ottima sui libri stranieri (93%), debole su quelli italiani (26%) | 1 richiesta/s senza identificazione, 3/s con `User-Agent` contenente app e contatto. Niente download massivi via API: esistono i dump mensili. Dati del catalogo aperti |
+| **Inserimento manuale** | Sempre disponibile | È la rete di sicurezza, soprattutto per le novità |
 
 **Fonti escluse:** l'API Goodreads (nessuna nuova chiave dal dicembre 2020); l'API Hardcover (beta, pensata per uso offline o da backend con il proprio token, non per alimentare un altro catalogo); qualsiasi forma di scraping.
 
@@ -94,14 +96,15 @@ Prima dello scaffold, verifica le versioni correnti con `npm view <pacchetto> ve
 
 - Salva in `editions` il `cover_id` di Open Library e costruisci gli URL per ID: `https://covers.openlibrary.org/b/id/<id>-M.jpg`. Il limite di 100 richieste ogni 5 minuti per IP si applica agli accessi con ID diversi da CoverID e OLID, quindi anche per ISBN.
 - Carica le copertine direttamente da `covers.openlibrary.org` e aggiungi un link di cortesia a Open Library nella pagina "Informazioni".
+- Se Open Library non ha la copertina, usa quella di Google Books caricata dal vivo a partire dall'ID del volume. Non salvarne mai una copia.
 - Senza copertina, genera una copertina illustrata da titolo e autore. È un'occasione di design, non un ripiego.
 
 ### Pipeline di aggiunta di un libro
 
 1. Normalizza l'input: ripulisci l'ISBN, converti ISBN-10 in ISBN-13, verifica la cifra di controllo.
 2. Cerca prima nel catalogo locale.
-3. Interroga le fonti in cascata, nell'ordine deciso dallo spike, con timeout brevi.
-4. Unisci i risultati campo per campo, conservando la provenienza in `external_ids` e nel payload grezzo.
+3. Interroga in parallelo, con timeout brevi, Open Library e Google Books, più SBN per i prefissi `978-88` e `979-12`.
+4. Unisci i risultati campo per campo con le priorità dell'ADR-0008, conservando la provenienza in `external_ids`. Il payload grezzo si salva solo per le fonti aperte.
 5. Collega l'edizione a un'opera esistente, se la corrispondenza è sicura; altrimenti creane una nuova, che potrà essere unita in seguito.
 6. Se nessuna fonte risponde, apri l'inserimento manuale con i dati già noti.
 
@@ -113,12 +116,9 @@ L'import procede a blocchi guidati dal browser: il client invia un blocco, il se
 
 L'export conserva voti, scaffali e **data di fine lettura**, che a volte manca, ma **non la data di inizio**. Il parser non deve mai dedurre date da `Date Added`. Le date mancanti restano vuote, e l'app guida a completarle. Il metodo per recuperare quelle di inizio si decide in F1.8, senza scraping automatico. Dettagli in `.claude/skills/metadati-libri/goodreads-csv.md`.
 
-### Metodo dello spike F0.2
+### Spike F0.2
 
-1. Scarica l'export da Goodreads e salvalo, senza aprirlo in Excel, in `data/private/`.
-2. Scegli 50 libri con ISBN: circa 35 italiani (grandi editori, piccoli editori, traduzioni, vecchie edizioni) e 15 stranieri. Le regole della repo impediscono a Claude di aprire quella cartella: legge tutto lo script, che stampa solo i dati aggregati.
-3. Per ogni fonte misura: edizione trovata, titolo corretto, autore, traduttore, descrizione, numero pagine, copertina.
-4. Riassumi i risultati aggregati in un nuovo ADR. Le ipotesi sulla copertura italiana diventano numeri.
+Lo script è `tools/spikes/metadata_coverage.py`. Legge l'export Goodreads in `data/private/`, sceglie fino a 35 ISBN italiani e 15 stranieri, interroga le tre fonti e stampa solo dati aggregati. Le risposte restano in cache in `data/private/spike-f02-cache/`. Per rifare la misura, per esempio dopo un nuovo export, rilancialo con `python tools/spikes/metadata_coverage.py`. I risultati sono nell'ADR-0008.
 
 ## Portabilità verso mobile e pubblico
 
@@ -150,7 +150,7 @@ Obiettivo: **0 € finché l'app è privata**.
 | Email di Supabase | 2 email/ora | **Consegna solo ai membri del team del progetto**: inutilizzabile per gli amici | SMTP esterno, con dominio |
 | Vercel Hobby | 100 GB di traffico, 1 milione di invocazioni, 4 ore di CPU attiva, 5.000 trasformazioni immagine | Solo uso personale non commerciale. Le donazioni sono ammesse; pagamenti, pubblicità e guadagni richiedono Pro | Pro, 20 $/mese per sviluppatore, se ci sono entrate |
 | GitHub Actions | Gratuito per repo pubbliche | Sulle repo pubbliche i workflow pianificati si disattivano dopo 60 giorni senza attività nella repo, e possono subire ritardi | Worker dedicato, se i tempi non bastano |
-| Google Books | Chiave gratuita | Quote da verificare durante lo spike | Catalogo locale |
+| Google Books | Chiave gratuita, senza fatturazione | Quota anonima zero. Quota giornaliera della chiave da leggere nella console prima di F1.2. Vietato far pagare l'app senza accordo con Google | Solo fonti aperte (Open Library e SBN), più catalogo locale |
 | Dominio | `*.vercel.app` gratuito | Link meno belli e niente email proprie | Dominio a pagamento |
 
 Conseguenze pratiche:
@@ -174,7 +174,8 @@ I dati degli amici sono dati personali, anche se l'app è piccola.
 ## Fonti
 
 - [Open Library: API](https://openlibrary.org/developers/api), [Covers API](https://openlibrary.org/dev/docs/api/covers), [uso dei dati](https://openlibrary.org/help/faq/using)
-- [Google Books API: Using the API](https://developers.google.com/books/docs/v1/using)
+- [Google Books API: Using the API](https://developers.google.com/books/docs/v1/using), [termini della Books API](https://developers.google.com/books/terms), [Google APIs Terms of Service](https://developers.google.com/terms)
+- [ICCU: open data](https://www.iccu.sbn.it/en/activities/open-data/) e [relazione CNC del 2013 sulla licenza CC0](https://www.iccu.sbn.it/export/sites/iccu/documenti/2014/CNC_SBN_Verb11-9-13/Relazione_CNC_11-9-2013.pdf)
 - [Hardcover API: Getting Started](https://docs.hardcover.app/api/getting-started)
 - [Goodreads: API deprecation](https://www.goodreads.com/topic/show/21788520-api-deprecation)
 - [isbnlib-sbn](https://www.pypi.org/project/isbnlib-sbn/)
