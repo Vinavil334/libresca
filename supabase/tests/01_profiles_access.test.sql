@@ -4,6 +4,7 @@ begin;
 select plan(19);
 
 -- Three fake accounts. The auth trigger creates their profiles.
+-- Assertions only look at these ids: a local database may already hold other accounts.
 insert into auth.users (id, email, raw_user_meta_data) values
   ('11111111-1111-1111-1111-111111111111', 'ada@example.com', '{"full_name": "Ada Funghetti"}'),
   ('22222222-2222-2222-2222-222222222222', 'bruno@example.com', '{"name": "Bruno Muschio"}'),
@@ -12,13 +13,13 @@ insert into auth.users (id, email, raw_user_meta_data) values
 -- Trigger and bootstrap ----------------------------------------------------
 
 select results_eq(
-  $$ select status::text from public.profiles order by id $$,
+  $$ select status::text from public.profiles where id in ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333') order by id $$,
   $$ values ('pending'), ('pending'), ('pending') $$,
   'with invite_only every new account starts pending'
 );
 
 select results_eq(
-  $$ select display_name from public.profiles order by id $$,
+  $$ select display_name from public.profiles where id in ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333') order by id $$,
   $$ values ('Ada Funghetti'), ('Bruno Muschio'), ('chiara') $$,
   'the display name comes from Google, or from the email when missing'
 );
