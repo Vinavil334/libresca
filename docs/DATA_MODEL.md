@@ -41,14 +41,18 @@ erDiagram
 
 | Tabella | Colonne principali | Note |
 |---|---|---|
-| `works` | `id`, `title`, `original_title`, `original_language`, `first_published_year`, `description`, `merged_into` | `merged_into` permette di unire doppioni senza rompere riferimenti. `description` solo da fonti aperte o scritta dall'utente, mai da Google Books (ADR-0008) |
-| `editions` | `id`, `work_id`, `title`, `isbn13`, `language`, `publisher`, `published_year`, `format`, `page_count`, `cover_source`, `cover_id`, `cover_path`, `metadata_status` | `isbn13` unico quando presente; molti libri vecchi non lo hanno. `cover_source` vale `openlibrary`, `googlebooks`, `upload` o `generated`; per Google Books `cover_id` è l'ID del volume e l'immagine si carica dal vivo |
-| `authors` | `id`, `name`, `sort_name`, `alternate_names` | `alternate_names` raccoglie traslitterazioni e grafie originali: Open Library scrive alcuni autori stranieri nel loro alfabeto |
+| `works` | `id`, `title`, `original_title`, `original_language`, `first_published_year`, `description`, `field_sources`, `merged_into`, `created_by` | `merged_into` permette di unire doppioni senza rompere riferimenti. `description` solo da fonti aperte o scritta dall'utente, mai da Google Books: un vincolo lo impedisce (ADR-0008) |
+| `editions` | `id`, `work_id`, `title`, `isbn13`, `language`, `publisher`, `published_year`, `format`, `page_count`, `cover_source`, `cover_id`, `cover_path`, `metadata_status`, `field_sources`, `created_by` | `isbn13` unico quando presente, con cifra di controllo verificata anche dal database; molti libri vecchi non lo hanno. `cover_source` vale `openlibrary`, `googlebooks`, `upload` o `generated` (`NULL`: ancora nessuna copertina); per Google Books `cover_id` è l'ID del volume e l'immagine si carica dal vivo. `format`: `hardcover`, `paperback`, `ebook`, `audiobook`, `other`. `metadata_status`: `incomplete` (da ritentare sulle fonti aperte) o `complete` |
+| `authors` | `id`, `name`, `sort_name`, `alternate_names`, `merged_into`, `created_by` | `alternate_names` raccoglie traslitterazioni e grafie originali: Open Library scrive alcuni autori stranieri nel loro alfabeto. `sort_name` ("Eco, Umberto") è proposto da `authorSortName` in `packages/domain` e resta modificabile. Anche gli autori doppioni si uniscono con `merged_into` |
 | `work_authors` | `work_id`, `author_id`, `position` | |
-| `contributors` | `edition_id`, `name`, `role` | Traduttori e curatori: contano molto nell'editoria italiana |
-| `external_ids` | `edition_id` o `work_id`, `source`, `value`, `raw` | Provenienza e payload grezzo. Per `googlebooks` `raw` resta vuoto: i termini vietano copie permanenti (ADR-0008) |
+| `contributors` | `edition_id`, `name`, `role`, `position` | Traduttori e curatori: contano molto nell'editoria italiana. `role`: `translator`, `editor`, `illustrator`, `introduction`, `other` |
+| `external_ids` | uno solo tra `work_id`, `edition_id`, `author_id`; `source`, `value`, `raw` | Provenienza e payload grezzo. `source`: `openlibrary`, `googlebooks`, `sbn`, `goodreads`. Lo stesso ID di una fonte non può puntare a due righe dello stesso tipo. Per `googlebooks` solo l'ID del volume di un'edizione, con `raw` vuoto: i termini vietano copie permanenti (ADR-0008) |
 
-Il catalogo è leggibile da tutti gli utenti autenticati, ma si modifica solo tramite azioni server validate.
+`field_sources` dice da quale fonte viene ogni campo, per esempio `{"title": "sbn", "page_count": "googlebooks"}`; i valori ammessi sono quelli di `metadata_source`, cioè le fonti più `user`. Serve al job che sostituirà i dati di Google Books con dati aperti. `created_by` registra chi ha aggiunto la riga e diventa `NULL` se l'account viene cancellato.
+
+Il catalogo è leggibile solo dagli account attivi. Nessuno lo scrive direttamente: le aggiunte passano da `public.create_edition(entry)`, che controlla l'account, crea in una sola transazione opera (o usa una esistente), autori, edizione, contributori e ID esterni, e restituisce `work_id` ed `edition_id`. La forma di `entry` è validata prima da `validateCatalogEntry` in `packages/domain`, e il database ripete i controlli essenziali. La funzione non abbina autori per nome: chi la chiama passa l'`id` di un autore esistente o i dati di uno nuovo, perché un falso abbinamento è peggio di un doppione.
+
+`public.search_works(query, max_results)` cerca nei titoli delle opere, nei titoli delle edizioni e in tutti i nomi degli autori, senza badare a maiuscole e accenti (`pg_trgm` e `unaccent`). Mette prima le corrispondenze esatte di una sottostringa, poi quelle approssimate, e salta le opere unite.
 
 ## Dati personali
 
@@ -113,6 +117,6 @@ Regole derivate:
 - `editions(isbn13)` univoco parziale; `editions(work_id)`.
 - `copies(owner_id)`, `copies(edition_id)`.
 - `readings(user_id, status)`, `readings(work_id)`.
-- Ricerca testuale su titolo e autore con `pg_trgm` e `unaccent`, importante per i caratteri accentati.
+- Ricerca testuale su titoli di opere ed edizioni e nomi degli autori con indici GIN trigram su `private.search_text()` (minuscole, senza accenti).
 - `work_embeddings` con indice HNSW quando il volume lo giustifica.
 - Indici su tutte le colonne usate nelle policy RLS.

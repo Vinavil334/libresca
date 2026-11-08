@@ -2,7 +2,7 @@
 
 App per gestire la libreria personale, i libri degli amici, i prestiti e i consigli di lettura. Alternativa intima a Goodreads e Fable, con un'estetica whimsical: funghi, topini, creaturine. All'inizio è una web app su invito e a costo zero; deve poter diventare pubblica, multilingua e app mobile senza riscritture.
 
-**Stato:** monorepo pronto con una sola pagina; Supabase locale e remoto collegati, schema ancora vuoto. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
+**Stato:** login Google, accesso per i soli account attivi e shell PWA online; nello schema ci sono profili, impostazioni e il catalogo condiviso (F1.1), ma ancora nessun dato personale. Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
 
 ## Lingua
 

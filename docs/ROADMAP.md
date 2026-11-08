@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Prossimo task: **F1.1**, il catalogo; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Catalogo condiviso con scrittura validata e ricerca senza accenti (F1.1). Prossimo task: **F1.2**, l'API dei metadati; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -64,7 +64,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 
 *Fatto quando:* la tua libreria reale è dentro, e per due settimane usi Libresca al posto di Goodreads.
 
-- [ ] **F1.1** (M) Catalogo: opere, edizioni, autori con nomi alternativi, contributori, ID esterni
+- [x] **F1.1** (M) Catalogo: opere, edizioni, autori con nomi alternativi, contributori, ID esterni. Lettura per i soli account attivi; scrittura solo con `public.create_edition()`, validata prima da `validateCatalogEntry` in `packages/domain`; ricerca `public.search_works()` con `pg_trgm` e `unaccent`; letture e scrittura in `packages/data`
 - [ ] **F1.2** (M) API metadati in `/api/v1`: fonti in parallelo e unione per campo secondo l'ADR-0008, cache nei limiti dei termini, normalizzazione ISBN, deduplica; prima di iniziare, leggere la quota della chiave Google Books
 - [ ] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale comodo anche con foto della copertina, perché le novità sono il punto debole delle fonti
 - [ ] **F1.4** (M) Scanner barcode da fotocamera, testato anche su iPhone
@@ -167,3 +167,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-07 | Chiusa F0.4: CLI Supabase come devDependency, edge functions e analytics spente in locale, schema `private` per le funzioni delle policy | Lo stack non usa edge functions (ADR-0001); helper delle policy fuori dall'API |
 | 2026-11-07 | Chiusa F0.6: preview Vercel sullo stesso progetto Supabase della produzione | Database ancora vuoto; il secondo progetto gratuito resta per uno staging |
 | 2026-11-07 | F0.7 da S a M e divisa in F0.7a (login e accesso) e F0.7b (PWA); il primo account si attiva con `private.activate_profile(email)` dal SQL Editor | Il task conteneva auth, due tabelle e la PWA; gli inviti arrivano solo in F2 |
+| 2026-11-08 | Chiusa F1.1: il catalogo si scrive solo con una funzione `security definer` (niente scritture dirette né chiave service role sui client); ricerca testuale anticipata da F1.3; `external_ids` anche sugli autori; in più `field_sources`, `created_by` e `merged_into` sugli autori | Decisioni dell'utente all'avvio di F1.1; la provenienza per campo serve all'ADR-0008 |

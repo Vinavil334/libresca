@@ -6,4 +6,18 @@
  */
 export { createLibrescaClient, type LibrescaClient, type LibrescaClientConfig } from './client';
 export { getAccess, getOwnProfile, type OwnProfile } from './profiles';
+export {
+  type CatalogAuthor,
+  type Contributor,
+  type CreateEditionResult,
+  type Edition,
+  type EditionDetails,
+  type Work,
+  type WorkDetails,
+  type WorkWithAuthors,
+  createEdition,
+  getEditionByIsbn,
+  getWork,
+  searchWorks,
+} from './catalog';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate, Enums } from './database.types';

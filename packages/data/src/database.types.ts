@@ -22,6 +22,220 @@ export type Database = {
         };
         Relationships: [];
       };
+      authors: {
+        Row: {
+          alternate_names: string[];
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          merged_into: string | null;
+          name: string;
+          sort_name: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          alternate_names?: string[];
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          merged_into?: string | null;
+          name: string;
+          sort_name: string;
+          updated_at?: string;
+        };
+        Update: {
+          alternate_names?: string[];
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          merged_into?: string | null;
+          name?: string;
+          sort_name?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'authors_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'authors_merged_into_fkey';
+            columns: ['merged_into'];
+            isOneToOne: false;
+            referencedRelation: 'authors';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      contributors: {
+        Row: {
+          edition_id: string;
+          id: string;
+          name: string;
+          position: number;
+          role: Database['public']['Enums']['contributor_role'];
+        };
+        ComputedFields: never;
+        Insert: {
+          edition_id: string;
+          id?: string;
+          name: string;
+          position?: number;
+          role: Database['public']['Enums']['contributor_role'];
+        };
+        Update: {
+          edition_id?: string;
+          id?: string;
+          name?: string;
+          position?: number;
+          role?: Database['public']['Enums']['contributor_role'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'contributors_edition_id_fkey';
+            columns: ['edition_id'];
+            isOneToOne: false;
+            referencedRelation: 'editions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      editions: {
+        Row: {
+          cover_id: string | null;
+          cover_path: string | null;
+          cover_source: Database['public']['Enums']['cover_source'] | null;
+          created_at: string;
+          created_by: string | null;
+          field_sources: NonNullable<Json>;
+          format: Database['public']['Enums']['edition_format'] | null;
+          id: string;
+          isbn13: string | null;
+          language: string | null;
+          metadata_status: Database['public']['Enums']['metadata_status'];
+          page_count: number | null;
+          published_year: number | null;
+          publisher: string | null;
+          title: string;
+          updated_at: string;
+          work_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cover_id?: string | null;
+          cover_path?: string | null;
+          cover_source?: Database['public']['Enums']['cover_source'] | null;
+          created_at?: string;
+          created_by?: string | null;
+          field_sources?: NonNullable<Json>;
+          format?: Database['public']['Enums']['edition_format'] | null;
+          id?: string;
+          isbn13?: string | null;
+          language?: string | null;
+          metadata_status?: Database['public']['Enums']['metadata_status'];
+          page_count?: number | null;
+          published_year?: number | null;
+          publisher?: string | null;
+          title: string;
+          updated_at?: string;
+          work_id: string;
+        };
+        Update: {
+          cover_id?: string | null;
+          cover_path?: string | null;
+          cover_source?: Database['public']['Enums']['cover_source'] | null;
+          created_at?: string;
+          created_by?: string | null;
+          field_sources?: NonNullable<Json>;
+          format?: Database['public']['Enums']['edition_format'] | null;
+          id?: string;
+          isbn13?: string | null;
+          language?: string | null;
+          metadata_status?: Database['public']['Enums']['metadata_status'];
+          page_count?: number | null;
+          published_year?: number | null;
+          publisher?: string | null;
+          title?: string;
+          updated_at?: string;
+          work_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'editions_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'editions_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      external_ids: {
+        Row: {
+          author_id: string | null;
+          created_at: string;
+          edition_id: string | null;
+          id: string;
+          raw: Json | null;
+          source: Database['public']['Enums']['metadata_source'];
+          value: string;
+          work_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id?: string | null;
+          created_at?: string;
+          edition_id?: string | null;
+          id?: string;
+          raw?: Json | null;
+          source: Database['public']['Enums']['metadata_source'];
+          value: string;
+          work_id?: string | null;
+        };
+        Update: {
+          author_id?: string | null;
+          created_at?: string;
+          edition_id?: string | null;
+          id?: string;
+          raw?: Json | null;
+          source?: Database['public']['Enums']['metadata_source'];
+          value?: string;
+          work_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'external_ids_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'external_ids_edition_id_fkey';
+            columns: ['edition_id'];
+            isOneToOne: false;
+            referencedRelation: 'editions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'external_ids_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_creature: string | null;
@@ -56,14 +270,134 @@ export type Database = {
         };
         Relationships: [];
       };
+      work_authors: {
+        Row: {
+          author_id: string;
+          position: number;
+          work_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          position: number;
+          work_id: string;
+        };
+        Update: {
+          author_id?: string;
+          position?: number;
+          work_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'work_authors_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'work_authors_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      works: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          field_sources: NonNullable<Json>;
+          first_published_year: number | null;
+          id: string;
+          merged_into: string | null;
+          original_language: string | null;
+          original_title: string | null;
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          field_sources?: NonNullable<Json>;
+          first_published_year?: number | null;
+          id?: string;
+          merged_into?: string | null;
+          original_language?: string | null;
+          original_title?: string | null;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          field_sources?: NonNullable<Json>;
+          first_published_year?: number | null;
+          id?: string;
+          merged_into?: string | null;
+          original_language?: string | null;
+          original_title?: string | null;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'works_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'works_merged_into_fkey';
+            columns: ['merged_into'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      create_edition: { Args: { entry: Json }; Returns: Json };
       health_check: { Args: Record<PropertyKey, never>; Returns: boolean };
+      search_works: {
+        Args: { max_results?: number; query: string };
+        Returns: {
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          field_sources: NonNullable<Json>;
+          first_published_year: number | null;
+          id: string;
+          merged_into: string | null;
+          original_language: string | null;
+          original_title: string | null;
+          title: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: '*';
+          to: 'works';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
     };
     Enums: {
+      contributor_role: 'translator' | 'editor' | 'illustrator' | 'introduction' | 'other';
+      cover_source: 'openlibrary' | 'googlebooks' | 'upload' | 'generated';
+      edition_format: 'hardcover' | 'paperback' | 'ebook' | 'audiobook' | 'other';
+      metadata_source: 'openlibrary' | 'googlebooks' | 'sbn' | 'goodreads' | 'user';
+      metadata_status: 'incomplete' | 'complete';
       profile_status: 'pending' | 'active' | 'suspended';
     };
     CompositeTypes: {
@@ -172,6 +506,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      contributor_role: ['translator', 'editor', 'illustrator', 'introduction', 'other'],
+      cover_source: ['openlibrary', 'googlebooks', 'upload', 'generated'],
+      edition_format: ['hardcover', 'paperback', 'ebook', 'audiobook', 'other'],
+      metadata_source: ['openlibrary', 'googlebooks', 'sbn', 'goodreads', 'user'],
+      metadata_status: ['incomplete', 'complete'],
       profile_status: ['pending', 'active', 'suspended'],
     },
   },
