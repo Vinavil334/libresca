@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  // fetch, URL and AbortSignal: web-standard APIs, also present in Node and React Native.
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["src"]
+}

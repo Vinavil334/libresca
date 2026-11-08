@@ -51,6 +51,7 @@ apps/web/            Next.js: pagine, componenti, API /api/v1
 apps/mobile/         App Expo, solo dalla F5
 packages/domain/     Logica pura: ISBN, parser degli import, regole, schemi di validazione
 packages/data/       Accesso ai dati via Supabase, senza React né Next.js
+packages/metadata/   Fonti dei metadati (Open Library, Google Books, SBN): client, parser, unione per campo; solo lato server
 packages/i18n/       Messaggi per lingua (messages/it.json)
 packages/tokens/     Design token in JSON, da cui si genera il CSS
 supabase/
@@ -90,9 +91,9 @@ Ordine, priorità per campo e numeri dello spike F0.2 sono in [ADR-0008](adr/000
 
 | Fonte | Uso | Limiti verificati |
 |---|---|---|
-| **Google Books** | Trova l'89% delle edizioni italiane del campione: serve a trovare il libro e completare la scheda | Chiave obbligatoria (quota anonima zero), solo lato server. I termini vietano database e copie permanenti dei contenuti: si salva l'ID del volume, mentre descrizioni e copertine si mostrano dal vivo. Vietato far pagare l'app senza accordo con Google |
+| **Google Books** | Trova l'89% delle edizioni italiane del campione: serve a trovare il libro e completare la scheda | Chiave obbligatoria (quota anonima zero), solo lato server. Quota della chiave: 1.000 richieste al giorno e 100 al minuto per utente; il server passa `quotaUser`, un hash dell'ID dell'account, così il limite al minuto vale per persona. Attribuzione visibile non richiesta, da riverificare in F5.5. I termini vietano database e copie permanenti dei contenuti: si salva l'ID del volume, mentre descrizioni e copertine si mostrano dal vivo. Vietato far pagare l'app senza accordo con Google |
 | **OPAC SBN** | Solo ISBN italiani: pagine affidabili e traduttori, 60% delle edizioni italiane | Dati in licenza CC0. Endpoint JSON non documentato `opac.sbn.it/opacmobilegw/`, usato a una richiesta al secondo. Niente descrizioni; la copertina che restituisce non è riutilizzabile |
-| **Open Library** | Copertine e descrizioni aperte, ottima sui libri stranieri (93%), debole su quelli italiani (26%) | 1 richiesta/s senza identificazione, 3/s con `User-Agent` contenente app e contatto. Niente download massivi via API: esistono i dump mensili. Dati del catalogo aperti |
+| **Open Library** | Copertine e descrizioni aperte, ottima sui libri stranieri (93%), debole su quelli italiani (26%) | 1 richiesta/s senza identificazione, 3/s con `User-Agent` contenente app e contatto (`OPEN_LIBRARY_CONTACT`). Niente download massivi via API: esistono i dump mensili. Dati del catalogo aperti, ma alcune descrizioni sono copiate da Wikipedia (CC BY-SA): quelle si scartano |
 | **Inserimento manuale** | Sempre disponibile | È la rete di sicurezza, soprattutto per le novità |
 
 **Fonti escluse:** l'API Goodreads (nessuna nuova chiave dal dicembre 2020); l'API Hardcover (beta, pensata per uso offline o da backend con il proprio token, non per alimentare un altro catalogo); qualsiasi forma di scraping.
@@ -109,7 +110,9 @@ Ordine, priorità per campo e numeri dello spike F0.2 sono in [ADR-0008](adr/000
 1. Normalizza l'input: ripulisci l'ISBN, converti ISBN-10 in ISBN-13, verifica la cifra di controllo.
 2. Cerca prima nel catalogo locale.
 3. Interroga in parallelo, con timeout brevi, Open Library e Google Books, più SBN per i prefissi `978-88` e `979-12`.
-4. Unisci i risultati campo per campo con le priorità dell'ADR-0008, conservando la provenienza in `external_ids`. Il payload grezzo si salva solo per le fonti aperte.
+4. Unisci i risultati campo per campo con le priorità dell'ADR-0008, conservando la provenienza in `external_ids`. Il payload grezzo si salva solo per le fonti aperte; da quello di SBN si toglie `copertina`, che contiene la chiave LibraryThing di SBN.
+
+I passi 1-4 sono `GET /api/v1/books/isbn/{isbn}` (F1.2a), con la logica in `packages/metadata`. Accetta cookie o `Authorization: Bearer` e risponde solo agli account attivi. Restituisce `catalog` se l'edizione è già nel catalogo, senza interrogare le fonti; altrimenti `proposal`, con la fonte di ogni campo e lo stato di ogni fonte; `not_found` (404) se nessuna la conosce. Non salva nulla: la proposta diventa una voce del catalogo con `proposalToCatalogEntry` e `create_edition` solo dopo la conferma dell'utente. Ritmo per fonte (Open Library 3/s, SBN 1/s), timeout di 4 secondi e una piccola cache in memoria per istanza: un'ora per le fonti aperte, per Google Books solo quanto permette `Cache-Control`. Ogni account può fare 30 ricerche esterne al minuto. Una cache condivisa su Postgres arriverà con l'import (F1.8), dove i volumi la giustificano.
 5. Collega l'edizione a un'opera esistente, se la corrispondenza è sicura; altrimenti creane una nuova, che potrà essere unita in seguito.
 6. Se nessuna fonte risponde, apri l'inserimento manuale con i dati già noti.
 
@@ -171,7 +174,7 @@ Obiettivo: **0 € finché l'app è privata**.
 | Email di Supabase | 2 email/ora | **Consegna solo ai membri del team del progetto**: inutilizzabile per gli amici | SMTP esterno, con dominio |
 | Vercel Hobby | 100 GB di traffico, 1 milione di invocazioni, 4 ore di CPU attiva, 5.000 trasformazioni immagine | Solo uso personale non commerciale. Le donazioni sono ammesse; pagamenti, pubblicità e guadagni richiedono Pro | Pro, 20 $/mese per sviluppatore, se ci sono entrate |
 | GitHub Actions | Gratuito per repo pubbliche | Sulle repo pubbliche i workflow pianificati si disattivano dopo 60 giorni senza attività nella repo, e possono subire ritardi | Worker dedicato, se i tempi non bastano |
-| Google Books | Chiave gratuita, senza fatturazione | Quota anonima zero. Quota giornaliera della chiave da leggere nella console prima di F1.2. Vietato far pagare l'app senza accordo con Google | Solo fonti aperte (Open Library e SBN), più catalogo locale |
+| Google Books | Chiave gratuita, senza fatturazione: 1.000 richieste al giorno, 100 al minuto per utente | Quota anonima zero. L'import Goodreads di una libreria grande può esaurire la quota giornaliera: in F1.8 Google Books va usato solo per i buchi delle fonti aperte, o diluito su più giorni. Vietato far pagare l'app senza accordo con Google | Solo fonti aperte (Open Library e SBN), più catalogo locale |
 | Dominio | `*.vercel.app` gratuito | Link meno belli e niente email proprie | Dominio a pagamento |
 
 Conseguenze pratiche:

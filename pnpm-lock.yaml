@@ -208,6 +208,9 @@ importers:
       '@libresca/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@libresca/metadata':
+        specifier: workspace:*
+        version: link:../../packages/metadata
       '@libresca/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -258,6 +261,12 @@ importers:
   packages/domain: {}
 
   packages/i18n: {}
+
+  packages/metadata:
+    dependencies:
+      '@libresca/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/tokens: {}
 

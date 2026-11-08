@@ -18,6 +18,7 @@
     "@libresca/data": "workspace:*",
     "@libresca/domain": "workspace:*",
     "@libresca/i18n": "workspace:*",
+    "@libresca/metadata": "workspace:*",
     "@libresca/tokens": "workspace:*",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.0",
