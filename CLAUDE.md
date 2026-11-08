@@ -2,7 +2,7 @@
 
 App per gestire la libreria personale, i libri degli amici, i prestiti e i consigli di lettura. Alternativa intima a Goodreads e Fable, con un'estetica whimsical: funghi, topini, creaturine. All'inizio è una web app su invito e a costo zero; deve poter diventare pubblica, multilingua e app mobile senza riscritture.
 
-**Stato:** login Google, accesso per i soli account attivi e shell PWA online; nello schema ci sono profili, impostazioni e il catalogo condiviso (F1.1), ma ancora nessun dato personale. `/api/v1/books/isbn/{isbn}` propone la scheda di un libro dalle fonti e `/api/v1/books/search?q=` cerca per titolo e autore (F1.2). `/add` aggiunge un libro al catalogo, anche a mano con la foto della copertina (bucket Storage `covers`), e `/books/{id}` ne mostra la scheda essenziale (F1.3). Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
+**Stato:** login Google, accesso per i soli account attivi e shell PWA online; nello schema ci sono profili, impostazioni e il catalogo condiviso (F1.1), ma ancora nessun dato personale. `/api/v1/books/isbn/{isbn}` propone la scheda di un libro dalle fonti e `/api/v1/books/search?q=` cerca per titolo e autore (F1.2). `/add` aggiunge un libro al catalogo, anche a mano con la foto della copertina (bucket Storage `covers`), e `/books/{id}` ne mostra la scheda essenziale (F1.3); lo scanner legge l'ISBN dalla fotocamera o da una foto (F1.4). Controlla sempre `docs/ROADMAP.md`: è la fonte di verità su cosa è fatto e cosa viene dopo. Usa `/prossimo-passo` per riprendere il lavoro.
 
 ## Lingua
 
@@ -49,7 +49,7 @@ pnpm db:test                                   # test pgTAP in supabase/tests/
 pnpm db:types                                  # rigenera packages/data/src/database.types.ts dal database locale
 ```
 
-Il primo `pnpm test:e2e` richiede `pnpm --filter @libresca/web exec playwright install chromium`. Gli e2e girano sempre contro lo stack locale (`pnpm db:start`): creano account finti con password, perché Google nei test non c'è. L'app legge un solo `.env.local` nella radice, che in sviluppo punta allo stack locale. I comandi `db:*` richiedono Docker Desktop avviato; `pnpm exec supabase status` mostra URL e chiavi locali. Dopo ogni migrazione: `db:reset`, `db:test`, `db:types`. La CI (`.github/workflows/ci.yml`) ripete su ogni PR typecheck, lint, test unitari, test pgTAP, e2e e controlla che `database.types.ts` sia aggiornato. La CLI agisce sul database locale salvo `--remote`: `pnpm exec supabase db push --remote` applica le migrazioni al progetto remoto e richiede la conferma esplicita dell'utente.
+Il primo `pnpm test:e2e` richiede `pnpm --filter @libresca/web exec playwright install chromium webkit` (WebKit per il progetto iPhone). Gli e2e girano sempre contro lo stack locale (`pnpm db:start`): creano account finti con password, perché Google nei test non c'è. L'app legge un solo `.env.local` nella radice, che in sviluppo punta allo stack locale. I comandi `db:*` richiedono Docker Desktop avviato; `pnpm exec supabase status` mostra URL e chiavi locali. Dopo ogni migrazione: `db:reset`, `db:test`, `db:types`. La CI (`.github/workflows/ci.yml`) ripete su ogni PR typecheck, lint, test unitari, test pgTAP, e2e e controlla che `database.types.ts` sia aggiornato. La CLI agisce sul database locale salvo `--remote`: `pnpm exec supabase db push --remote` applica le migrazioni al progetto remoto e richiede la conferma esplicita dell'utente.
 
 Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/metadata` (fonti dei metadati, solo lato server; `@libresca/metadata/client` per tipi e funzioni pure usabili nel browser), `packages/i18n`, `packages/tokens`, `supabase/` (config, migrazioni, test pgTAP, seed). I pacchetti esportano sorgenti TypeScript e l'app li compila: non c'è un passo di build per i pacchetti.
 
@@ -64,7 +64,7 @@ Struttura: `apps/web` (Next.js), `packages/domain`, `packages/data`, `packages/m
 - Ciò che richiede segreti o servizi esterni sta in `/api/v1`, autenticato con token Supabase Bearer.
 - I testi stanno in `packages/i18n/messages/`, mai nei componenti. Date e numeri passano da `Intl`.
 - L'accesso dipende da `profiles.status` e `app_settings`: mai regole fisse su una cerchia.
-- La UI usa solo token semantici: niente colori o font scritti a mano nei componenti. Tailwind espone solo i token (`bg-surface`, `text-text-muted`, `p-4`, `rounded-card`); la tipografia passa dalle classi `.type-*`. ESLint blocca i colori esadecimali nell'app e gli import di Next.js o React DOM nei pacchetti.
+- La UI usa solo token semantici: niente colori o font scritti a mano nei componenti. Tailwind espone solo i token (`bg-surface`, `text-text-muted`, `p-4`, `rounded-card`); la tipografia passa dalle classi `.type-*`. ESLint blocca i colori esadecimali nell'app, le spaziature fuori dalla scala dei token (`pl-12`, `inset-0`: usa un passo 1-6 o 8, oppure un valore arbitrario come `inset-[0]`) e gli import di Next.js o React DOM nei pacchetti.
 - Nessuna chiamata diretta dal client alle API dei metadati: passano da `/api/v1`, che gestisce limiti, cache e chiavi.
 - Le parole fantasiose (Tana, Micelio…) stanno nella UI e nei documenti di prodotto. Nel codice usa i nomi di `docs/DATA_MODEL.md`.
 

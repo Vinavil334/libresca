@@ -69,7 +69,7 @@ jobs:
       # Auth, REST API, Storage and Postgres: the tests sign fake accounts in against the local stack
       # and upload cover photos (F1.3b).
       - run: pnpm exec supabase start -x realtime,imgproxy,mailpit,studio,edge-runtime,logflare,vector,supavisor,postgres-meta
-      - run: pnpm --filter @libresca/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @libresca/web exec playwright install --with-deps chromium webkit
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

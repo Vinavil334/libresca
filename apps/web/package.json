@@ -7,8 +7,8 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/copy-zxing-wasm.mjs && next dev",
+    "build": "node scripts/copy-zxing-wasm.mjs && next build",
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "test:e2e": "playwright test",
@@ -22,6 +22,7 @@
     "@libresca/tokens": "workspace:*",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.0",
+    "barcode-detector": "3.2.3",
     "next": "16.4.5",
     "next-intl": "4.14.9",
     "react": "19.3.1",

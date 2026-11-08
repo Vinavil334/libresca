@@ -72,7 +72,7 @@ docs/                Roadmap, architettura, ADR, design
 | Stile | Tailwind con token CSS | I token del design system guidano tutto |
 | Lingue | next-intl, senza lingua nell'URL all'inizio | Traduzioni pronte da subito; un'altra lingua si aggiunge con un file di messaggi |
 | App mobile | PWA ora, Expo in F5 | Un link da mandare agli amici, nessuno store; la logica è già riusabile |
-| Barcode | `barcode-detector` (polyfill ZXing WASM) | iOS non implementa la Barcode Detection API |
+| Barcode | Barcode Detection API del browser, altrimenti `barcode-detector` (polyfill ZXing WASM, MIT) | iOS non implementa la Barcode Detection API. Il WASM (circa 1 MB) è copiato in `public/zxing/` da `scripts/copy-zxing-wasm.mjs` prima di `dev` e `build`, servito con cache immutabile e caricato solo quando serve, mai da una CDN |
 | Database | Supabase Postgres + pgvector | Auth, RLS, storage ed embedding in un solo posto |
 | Autorizzazione | Row Level Security | I permessi tra amici stanno vicino ai dati |
 | Recommender | Python in batch su GitHub Actions | Ecosistema ML, nessun server sempre acceso |

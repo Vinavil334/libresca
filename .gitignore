@@ -7,6 +7,8 @@ dist/
 coverage/
 *.tsbuildinfo
 next-env.d.ts
+# Copied from zxing-wasm by apps/web/scripts/copy-zxing-wasm.mjs
+apps/web/public/zxing/
 
 # Test
 playwright-report/

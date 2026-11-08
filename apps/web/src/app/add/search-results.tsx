@@ -54,7 +54,7 @@ function Candidate({
     <li className={card}>
       <div className="flex gap-4">
         <BookCover title={candidate.title} url={candidate.cover?.url} />
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex min-w-[0] flex-col gap-1">
           <h3 className="type-title wrap-break-word text-text">{candidate.title}</h3>
           {candidate.authors.length > 0 && (
             <p className="type-body wrap-break-word text-text">
@@ -118,7 +118,7 @@ export function SearchResults({
               <li key={work.id}>
                 <Link href={`/books/${work.id}`} className={`${card} flex items-center gap-4`}>
                   <BookCover title={work.title} size="small" />
-                  <span className="flex min-w-0 flex-col">
+                  <span className="flex min-w-[0] flex-col">
                     <span className="type-title-s wrap-break-word text-text">{work.title}</span>
                     {work.authors.length > 0 && (
                       <span className="type-small wrap-break-word text-text-muted">

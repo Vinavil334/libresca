@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   // Cover photos reach a Server Action already resized (at most 1 MB, the bucket limit), plus form overhead.
   experimental: { serverActions: { bodySizeLimit: '2mb' } },
+  // The barcode reader's WASM carries its version in the file name: cache it for good.
+  async headers() {
+    return [
+      { source: '/zxing/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

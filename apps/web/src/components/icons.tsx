@@ -55,3 +55,12 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
     </Icon>
   );
 }
+
+export function ScanIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M2 7V3h4M18 3h4v4M22 17v4h-4M6 21H2v-4" />
+      <path d="M7 7v10M10.5 7v10M14 7v10M17 7v10" />
+    </Icon>
+  );
+}
