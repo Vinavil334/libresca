@@ -17,6 +17,7 @@ export {
   type WorkWithAuthors,
   type WorksByIdentifier,
   createEdition,
+  findAuthorsByOpenLibraryIds,
   findWorksByIdentifiers,
   getEditionByIsbn,
   getWork,

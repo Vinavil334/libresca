@@ -49,10 +49,13 @@ export interface SourceRecord {
   workRaw?: JsonValue;
 }
 
+/** Where a proposed value comes from: a source, or the user who typed or corrected it. */
+export type ValueSource = SourceName | 'user';
+
 /** A value and the source it was taken from. */
 export interface Sourced<T> {
   value: T;
-  source: SourceName;
+  source: ValueSource;
 }
 
 export interface ProposalAuthor {
@@ -66,10 +69,11 @@ export interface ProposalAuthor {
  * user confirms it in the add screen (F1.3).
  */
 export interface EditionProposal {
-  isbn13: string;
+  /** Missing for an edition without ISBN, found by a title search or typed by hand. */
+  isbn13?: string;
   title?: Sourced<string>;
   authors: ProposalAuthor[];
-  authorsSource?: SourceName;
+  authorsSource?: ValueSource;
   publisher?: Sourced<string>;
   publishedYear?: Sourced<number>;
   firstPublishedYear?: Sourced<number>;
@@ -80,7 +84,7 @@ export interface EditionProposal {
   /** `storable` is false for Google Books: show it, never save it. */
   description?: Sourced<string> & { storable: boolean };
   cover?: { source: 'openlibrary' | 'googlebooks'; id: string; url: string };
-  contributors: (SourceContributor & { source: SourceName })[];
+  contributors: (SourceContributor & { source: ValueSource })[];
   editionExternalIds: ExternalIdInput[];
   workExternalIds: ExternalIdInput[];
 }

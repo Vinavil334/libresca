@@ -7,12 +7,19 @@ import type { EditionProposal, SourceName, SourceStatus } from './types';
  * `Edition` is the catalog edition type of the caller (`EditionDetails` in `@libresca/data`).
  *
  * - `catalog` (200): the edition is already in the catalog; no source was asked.
- * - `proposal` (200): not in the catalog; the merged card from the sources.
+ * - `proposal` (200): not in the catalog; the merged card from the sources. `catalogWork`:
+ *   the catalog work with the same Open Library work id, which the new edition belongs to.
  * - `not_found` (404): no source has it; the client opens manual entry.
  */
 export type IsbnLookupResponse<Edition = unknown> =
   | { status: 'catalog'; isbn13: string; edition: Edition }
-  | { status: 'proposal'; isbn13: string; sources: Record<SourceName, SourceStatus>; proposal: EditionProposal }
+  | {
+      status: 'proposal';
+      isbn13: string;
+      sources: Record<SourceName, SourceStatus>;
+      proposal: EditionProposal;
+      catalogWork?: { id: string; title: string };
+    }
   | { status: 'not_found'; isbn13: string; sources: Record<SourceName, SourceStatus> };
 
 /**

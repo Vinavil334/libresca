@@ -14,6 +14,7 @@ export type {
   SourceRecord,
   SourceStatus,
   Sourced,
+  ValueSource,
 } from './types';
 export { sourceNames } from './types';
 export { type CachePolicy, type HttpClient, type HttpResult, createHttpClient } from './http';
@@ -39,4 +40,14 @@ export {
   identifiersOf,
   matchCatalog,
 } from './catalog-match';
+export {
+  type EditOptions,
+  type ProposalEdits,
+  applyEdits,
+  candidateProposal,
+  editedCatalogEntry,
+  editsFromProposal,
+  emptyProposal,
+  openLibraryAuthorIds,
+} from './edit';
 export type { ApiError, BookSearchResponse, IsbnLookupResponse } from './api';

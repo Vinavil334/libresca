@@ -7,7 +7,8 @@
     "title": "Libresca",
     "greeting": "Ciao, {name}",
     "intro": "La tua Tana · la tua libreria",
-    "body": "Qui stanno spuntando i primi funghetti. Presto potrai mettere al riparo i tuoi libri."
+    "body": "Qui stanno spuntando i primi funghetti. Presto potrai mettere al riparo i tuoi libri.",
+    "addBook": "Aggiungi un libro"
   },
   "login": {
     "title": "Libresca",
@@ -32,5 +33,119 @@
   },
   "auth": {
     "signOut": "Esci"
+  },
+  "add": {
+    "title": "Aggiungi un libro",
+    "intro": "Cerca per titolo, autore o ISBN: prima guardiamo nel catalogo, poi nelle biblioteche aperte e su Google Books.",
+    "back": "Torna all'inizio",
+    "search": {
+      "label": "Titolo, autore o ISBN",
+      "placeholder": "Ce l'ho già? Cerca…",
+      "submit": "Cerca",
+      "loading": "Cerco tra gli scaffali…",
+      "tooShort": "Scrivi almeno due lettere.",
+      "invalidIsbn": "Questo ISBN non torna: controlla le cifre, a volte ne salta una."
+    },
+    "errors": {
+      "network": "Il tarlo ha mangiato la risposta. Riprova tra un momento.",
+      "rateLimited": "Piano, piano: troppe ricerche in un minuto. Riprova tra poco.",
+      "session": "La sessione è scaduta. Ricarica la pagina ed entra di nuovo."
+    },
+    "results": {
+      "catalog": "Già nel catalogo",
+      "found": "Trovati altrove",
+      "empty": "Non l'abbiamo trovato da nessuna parte. Capita, soprattutto con le novità.",
+      "sourcesDown": "Una fonte non risponde: i risultati potrebbero essere pochi.",
+      "manual": "Inseriscilo a mano",
+      "notThere": "Non c'è quello che cerchi?",
+      "inCatalog": "È già nel catalogo",
+      "maybeInCatalog": "Forse è già nel catalogo",
+      "knownEditions": "{count, plural, one {# edizione conosciuta} other {# edizioni conosciute}}",
+      "chooseEdition": "Scegli l'edizione che hai in mano",
+      "noIsbn": "senza ISBN",
+      "unknownPublisher": "editore sconosciuto",
+      "chooseEditionLabel": "Scegli l'edizione {details}",
+      "summary": "{count, plural, =0 {Nessun risultato} one {# risultato} other {# risultati}}"
+    },
+    "confirm": {
+      "title": "Controlla la scheda",
+      "intro": "Correggi quello che non torna, poi aggiungilo.",
+      "notFound": "Nessuna fonte conosce questo ISBN: scrivi tu il resto, il codice c'è già.",
+      "manualIntro": "Scrivi quello che sai: basta il titolo, il resto si può completare dopo.",
+      "back": "Torna alla ricerca",
+      "fields": {
+        "title": "Titolo",
+        "authors": "Autori",
+        "author": "Autore {number}",
+        "addAuthor": "Aggiungi un autore",
+        "removeAuthor": "Togli {name}",
+        "publisher": "Editore",
+        "publishedYear": "Anno di questa edizione",
+        "pageCount": "Pagine",
+        "format": "Formato",
+        "isbn": "ISBN"
+      },
+      "formats": {
+        "none": "Non so",
+        "hardcover": "Copertina rigida",
+        "paperback": "Brossura",
+        "ebook": "Ebook",
+        "audiobook": "Audiolibro",
+        "other": "Altro"
+      },
+      "source": "da {source}",
+      "sources": {
+        "openlibrary": "Open Library",
+        "googlebooks": "Google Books",
+        "sbn": "SBN",
+        "user": "te"
+      },
+      "pagesUnreliable": "Le pagine vengono da Google Books, che spesso sbaglia: controllale se hai il libro sotto mano.",
+      "descriptionOnlyShown": "La descrizione viene da Google Books: la vedi qui, ma non la salviamo.",
+      "description": "Di cosa parla",
+      "sameWork": "Questa edizione andrà con «{title}», che è già nel catalogo.",
+      "sameWorkUnknown": "Questa edizione andrà con un'opera che è già nel catalogo.",
+      "maybeSameWork": "«{title}» è già nel catalogo. È la stessa opera?",
+      "maybeSameWorkUnknown": "Un'opera con lo stesso titolo e lo stesso autore è già nel catalogo. È la stessa?",
+      "sameWorkYes": "Sì, è la stessa",
+      "sameWorkNo": "No, è un'altra",
+      "authorsFromWork": "Gli autori sono quelli dell'opera già nel catalogo.",
+      "save": "Aggiungi al catalogo",
+      "saving": "Lo metto sullo scaffale…",
+      "errors": {
+        "invalid": "Qualche campo non torna: controlla quelli segnati.",
+        "duplicate_isbn": "Questo ISBN è già nel catalogo: qualcuno l'ha appena aggiunto.",
+        "not_found": "L'opera scelta non c'è più nel catalogo. Torna ai risultati e riprova.",
+        "forbidden": "Il tuo account non può aggiungere libri, per ora.",
+        "rejected": "Il catalogo ha rifiutato questa scheda. Controlla i campi e riprova.",
+        "failed": "Non siamo riusciti a salvarla. Riprova tra un momento."
+      },
+      "issues": {
+        "required": "Questo campo serve.",
+        "too_long": "È un po' troppo lungo.",
+        "invalid_year": "Scrivi un anno, per esempio 2019.",
+        "invalid_page_count": "Scrivi un numero intero di pagine.",
+        "invalid_isbn": "Questo ISBN non è valido.",
+        "duplicate": "C'è due volte.",
+        "other": "Questo valore non torna."
+      },
+      "answerSameWork": "Prima dicci se è la stessa opera."
+    },
+    "cover": {
+      "alt": "Copertina di {title}"
+    }
+  },
+  "book": {
+    "added": "Aggiunto al catalogo. Presto potrai dire che ce l'hai e quando l'hai letto.",
+    "found": "Questo libro era già nel catalogo.",
+    "back": "Torna all'inizio",
+    "firstPublished": "Prima edizione: {year}",
+    "editions": "Edizioni",
+    "pages": "{count, plural, one {# pagina} other {# pagine}}",
+    "isbn": "ISBN {isbn}",
+    "noIsbn": "Senza ISBN",
+    "description": "Di cosa parla",
+    "addAnother": "Aggiungi un altro libro",
+    "unknownAuthor": "Autore sconosciuto"
   }
 }

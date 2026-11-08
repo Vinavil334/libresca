@@ -42,3 +42,5 @@ export {
   profileStatuses,
   redirectFor,
 } from './access';
+export { type BookQuery, parseBookQuery } from './book-query';
+export { type CoverTone, coverTone, coverTones } from './covers';
