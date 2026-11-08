@@ -43,7 +43,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Everything except Next.js internals and static files with an extension (icons, manifest, fonts).
-    '/((?!_next/static|_next/image|.*\\.(?:ico|png|svg|jpg|jpeg|webp|webmanifest|txt|xml|woff2?)$).*)',
+    // Everything except the API, Next.js internals and static files with an extension (icons, manifest, fonts).
+    // /api checks its own access and answers 401 or 403 in JSON: a redirect to /login would break
+    // Bearer clients such as the future mobile app.
+    '/((?!api/|_next/static|_next/image|.*\\.(?:ico|png|svg|jpg|jpeg|webp|webmanifest|txt|xml|woff2?)$).*)',
   ],
 };

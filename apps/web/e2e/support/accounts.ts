@@ -73,3 +73,20 @@ export async function signIn(context: BrowserContext, account: TestAccount, base
       .map(([name, value]) => ({ name, value, url: baseURL, sameSite: 'Lax' as const })),
   );
 }
+
+/** Signs the account in outside the browser, for API calls with `Authorization: Bearer`. */
+export async function signInClient(account: TestAccount) {
+  const client = createClient<Database>(env('E2E_SUPABASE_URL'), env('E2E_SUPABASE_PUBLISHABLE_KEY'), {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await client.auth.signInWithPassword({ email: account.email, password: account.password });
+  if (error || !data.session) throw error ?? new Error('signInWithPassword returned no session');
+  return { client, accessToken: data.session.access_token };
+}
+
+/** Removes a work and its editions created by a test. Catalog rows outlive accounts, so tests clean up. */
+export async function deleteWork(workId: string): Promise<void> {
+  const client = admin();
+  await client.from('editions').delete().eq('work_id', workId);
+  await client.from('works').delete().eq('id', workId);
+}

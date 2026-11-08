@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { type CatalogEntryInput, authorSortName, validateCatalogEntry } from './catalog';
+import { type CatalogEntryInput, authorSortName, coverUrl, validateCatalogEntry } from './catalog';
 
 const workId = 'aaaaaaaa-0000-4000-8000-000000000001';
 
@@ -190,5 +190,20 @@ describe('validateCatalogEntry', () => {
     expect(issuesOf({ work: { id: workId }, edition: { fieldSources: { title: 'wikipedia' as never } } })).toEqual([
       { path: 'edition.fieldSources.title', code: 'invalid_option' },
     ]);
+  });
+});
+
+describe('coverUrl', () => {
+  it('builds live URLs from the cover id', () => {
+    expect(coverUrl('openlibrary', '13774674')).toBe('https://covers.openlibrary.org/b/id/13774674-M.jpg');
+    expect(coverUrl('openlibrary', '1', 'large')).toBe('https://covers.openlibrary.org/b/id/1-L.jpg');
+    expect(coverUrl('googlebooks', 'ab_C-1', 'small')).toBe(
+      'https://books.google.com/books/content?id=ab_C-1&printsec=frontcover&img=1&zoom=5',
+    );
+  });
+
+  it('has no URL for uploaded or generated covers', () => {
+    expect(coverUrl('upload', 'x')).toBeNull();
+    expect(coverUrl('generated', 'x')).toBeNull();
   });
 });

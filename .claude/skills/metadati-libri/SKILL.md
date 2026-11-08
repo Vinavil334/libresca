@@ -16,7 +16,9 @@ Prima di tutto leggi la sezione "Fonti dei metadati" di `docs/ARCHITECTURE.md` e
 - Copertine: salva e usa `cover_id` oppure OLID; gli accessi per ISBN hanno un limite di 100 richieste ogni 5 minuti per IP.
 - Google Books: chiave solo lato server. Nessuna copia permanente dei suoi contenuti: salva solo l'ID del volume, mostra descrizione e copertina dal vivo e rispetta l'intestazione di cache.
 - SBN: solo per ISBN `978-88` e `979-12`, una richiesta al secondo, endpoint `opac.sbn.it/opacmobilegw/`. È la fonte più affidabile per pagine e traduttori.
-- Conserva sempre la provenienza: fonte, ID esterno, payload grezzo.
+- Conserva sempre la provenienza: fonte, ID esterno, payload grezzo. Dal payload di SBN togli `copertina` (contiene la chiave LibraryThing di SBN).
+- Scarta le descrizioni di Open Library copiate da Wikipedia: sono CC BY-SA, non dati aperti.
+- La logica delle fonti vive in `packages/metadata`; le risposte di prova stanno in `src/fixtures/`, con la struttura reale e libri inventati.
 - Nessuno scraping.
 
 ## Normalizzazione ISBN

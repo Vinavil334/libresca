@@ -26,7 +26,7 @@ export type EditionFormat = (typeof editionFormats)[number];
 export const contributorRoles = ['translator', 'editor', 'illustrator', 'introduction', 'other'] as const;
 export type ContributorRole = (typeof contributorRoles)[number];
 
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 /** Which source each field's value came from, for example `{ title: 'sbn' }`. */
 export type FieldSources = Record<string, MetadataSource>;
@@ -411,4 +411,26 @@ export function validateCatalogEntry(input: CatalogEntryInput): CatalogValidatio
   const edition = validateEdition(c, input.edition);
   if (c.issues.length > 0) return { ok: false, issues: c.issues };
   return { ok: true, entry: { work: compact(work), edition: compact(edition) } };
+}
+
+export type CoverSize = 'small' | 'medium' | 'large';
+
+const openLibrarySizes: Record<CoverSize, string> = { small: 'S', medium: 'M', large: 'L' };
+const googleBooksZoom: Record<CoverSize, number> = { small: 5, medium: 1, large: 2 };
+
+/**
+ * URL of a cover that is loaded live from its source: images are never copied (ADR-0008).
+ * Uploaded and generated covers are not served from an id, so they return `null`.
+ */
+export function coverUrl(source: CoverSource, id: string, size: CoverSize = 'medium'): string | null {
+  const encoded = encodeURIComponent(id);
+  switch (source) {
+    case 'openlibrary':
+      return `https://covers.openlibrary.org/b/id/${encoded}-${openLibrarySizes[size]}.jpg`;
+    case 'googlebooks':
+      return `https://books.google.com/books/content?id=${encoded}&printsec=frontcover&img=1&zoom=${googleBooksZoom[size]}`;
+    case 'upload':
+    case 'generated':
+      return null;
+  }
 }
