@@ -36,6 +36,8 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   reporter: isCI ? 'github' : 'list',
+  // Locally the app runs in dev mode and compiles each page on its first visit: allow for it.
+  expect: { timeout: isCI ? 5_000 : 15_000 },
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'retain-on-failure',

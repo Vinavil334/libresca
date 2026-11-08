@@ -44,3 +44,14 @@ export {
 } from './access';
 export { type BookQuery, parseBookQuery } from './book-query';
 export { type CoverTone, coverTone, coverTones } from './covers';
+export {
+  coverBucket,
+  coverPhotoMaxBytes,
+  coverPhotoMaxSide,
+  coverPhotoPath,
+  coverPhotoQuality,
+  coverPhotoSize,
+  coverPhotoUrl,
+  isCoverPath,
+} from './cover-photo';
+export { commonLanguages, defaultBookLanguage } from './languages';

@@ -5,6 +5,7 @@
  * The database repeats the essential checks as constraints; this module catches
  * mistakes earlier and reports them as codes the UI can translate.
  */
+import { isCoverPath } from './cover-photo';
 import { toIsbn13 } from './isbn';
 
 export const metadataSources = ['openlibrary', 'googlebooks', 'sbn', 'goodreads', 'user'] as const;
@@ -94,6 +95,7 @@ export type CatalogIssueCode =
   | 'invalid_page_count'
   | 'invalid_option'
   | 'missing_cover_reference'
+  | 'invalid_cover_path'
   | 'googlebooks_not_storable';
 
 export interface CatalogIssue {
@@ -378,6 +380,7 @@ function validateEdition(c: Collector, edition: EditionInput): EditionPayload {
     c.add('edition.coverId', 'missing_cover_reference');
   }
   if (coverSource === 'upload' && !coverPath) c.add('edition.coverPath', 'missing_cover_reference');
+  if (coverPath && !isCoverPath(coverPath)) c.add('edition.coverPath', 'invalid_cover_path');
 
   const seenContributors = new Set<string>();
   const contributors: ContributorInput[] = [];

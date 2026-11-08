@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Catalogo condiviso con scrittura validata e ricerca senza accenti (F1.1). API che propone la scheda di un libro per ISBN dalle tre fonti (F1.2a) e ricerca per titolo e autore che segnala le opere già nel catalogo (F1.2b): **F1.2 è chiusa**. Prima schermata per aggiungere un libro: ricerca unica per titolo, autore o ISBN, scheda da confermare e correggere, scheda libro essenziale (F1.3a). Prossimo task: **F1.3b**, inserimento da zero con foto della copertina; sulla traccia design, **D2**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Catalogo condiviso con scrittura validata e ricerca senza accenti (F1.1). API che propone la scheda di un libro per ISBN dalle tre fonti (F1.2a) e ricerca per titolo e autore che segnala le opere già nel catalogo (F1.2b): **F1.2 è chiusa**. Prima schermata per aggiungere un libro: ricerca unica per titolo, autore o ISBN, scheda da confermare e correggere, scheda libro essenziale (F1.3a); inserimento a mano con lingua, traduttori e foto della copertina su Supabase Storage (F1.3b): **F1.3 è chiusa**. Prossimo task: **F1.4**, lo scanner del codice a barre; sulla traccia design, **D2**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -68,16 +68,16 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [x] **F1.2** (M) API metadati in `/api/v1`: fonti in parallelo e unione per campo secondo l'ADR-0008; diviso in due PR
   - [x] **F1.2a** Ricerca per ISBN: `GET /api/v1/books/isbn/{isbn}` con cookie o Bearer, prima il catalogo e poi Open Library, Google Books e SBN in parallelo; proposta con la fonte di ogni campo, senza salvare; nuovo pacchetto `packages/metadata` con parser, unione, ritmo per fonte, cache in memoria e `proposalToCatalogEntry`; quota Google Books misurata (1.000 al giorno, 100 al minuto per utente)
   - [x] **F1.2b** Ricerca per titolo e autore: `GET /api/v1/books/search?q=` con testo libero; catalogo, Open Library e Google Books in parallelo (SBN no); risultati raggruppati per opera con le edizioni trovate; ogni candidato già nel catalogo lo segnala, certo per ID condiviso o probabile per titolo e autore, senza unire nulla da solo; testi delle fonti normalizzati in NFC
-- [ ] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale comodo anche con foto della copertina, perché le novità sono il punto debole delle fonti; diviso in due PR
+- [x] **F1.3** (M) Aggiunta libro: ricerca per titolo/autore, ISBN, inserimento manuale comodo anche con foto della copertina, perché le novità sono il punto debole delle fonti; diviso in due PR
   - [x] **F1.3a** Cercare, scegliere e confermare: `/add` con una sola casella che riconosce l'ISBN (`parseBookQuery`), risultati con le opere già nel catalogo e i candidati delle fonti, scelta dell'edizione, scheda con i campi correggibili (le correzioni hanno fonte `user`), aggancio all'opera esistente (certo per ID condiviso, con domanda per titolo e autore), autori riusati per ID Open Library, scheda libro essenziale `/books/{id}`; un ISBN sconosciuto apre la scheda vuota con il codice. Senza il disegno della D2: si usano token e componenti di D1
-  - [ ] **F1.3b** Inserimento da zero comodo e foto della copertina: bucket Storage con policy e test, foto ridotta nel browser, `cover_source = 'upload'`
+  - [x] **F1.3b** Inserimento da zero comodo e foto della copertina: bucket pubblico `covers` con policy e test (scrive solo un account attivo, nella propria cartella; una foto in uso non si cancella), percorso controllato anche dal catalogo; foto ridotta nel browser a JPEG di 800 px e caricata con una Server Action, `cover_source = 'upload'`; campi lingua (italiano proposto) e traduttori; la scheda libro mostra foto, lingua e traduttori. Le foto caricate e mai salvate restano orfane: le pulirà un job (F4.6)
 - [ ] **F1.4** (M) Scanner barcode da fotocamera, testato anche su iPhone
 - [ ] **F1.5** (M) Copie possedute: formato, posizione, condizioni, prestabile sì/no
 - [ ] **F1.6** (M) Letture: stati, date, riletture, voto a funghetti, note
 - [ ] **F1.7** (M) Tana e scheda libro: griglia, scaffali, filtri, ricerca interna
 - [ ] **F1.8** (M) Import Goodreads con revisione delle corrispondenze dubbie e completamento guidato delle date mancanti; scegliere qui come recuperare le date di inizio. Serve una cache condivisa delle fonti aperte su Postgres, e Google Books solo per i buchi, per non esaurire la quota giornaliera
 - [ ] **F1.9** (S) Export completo CSV/JSON
-- [ ] **F1.10** (S) Copertina generata per i libri senza immagine, foto copertina facoltativa
+- [ ] **F1.10** (S) Copertina generata definitiva per i libri senza immagine, sul disegno della traccia design (la versione provvisoria c'è da F1.3a, la foto da F1.3b)
 
 ## F2 · Il Bosco
 
@@ -115,6 +115,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [ ] **F4.3** (M) Modalità offline per consultare la Tana in libreria
 - [ ] **F4.4** (S) Notifiche push
 - [ ] **F4.5** (M) Audit di accessibilità e prestazioni su telefoni economici
+- [ ] **F4.6** (S) Job di pulizia delle foto di copertina caricate e mai usate da un'edizione, più vecchie di un giorno
 
 ## F5 · Apertura e app mobile
 
@@ -175,3 +176,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-08 | F1.2 divisa in F1.2a (ISBN) e F1.2b (titolo e autore); logica delle fonti in un nuovo pacchetto `packages/metadata`; la cache condivisa passa da F1.2 a F1.8, in F1.2 solo cache in memoria | Lo scanner (F1.4) ha bisogno solo dell'ISBN; una cache condivisa a costo zero vale la pena solo con i volumi dell'import |
 | 2026-11-08 | Chiusa F1.2b: la ricerca per titolo non interroga SBN; risultati per opera, con Google Books agganciato a Open Library solo tramite ISBN | Decisioni dell'utente all'avvio di F1.2b; il ritmo di SBN serve alla ricerca per ISBN |
 | 2026-11-08 | F1.3 divisa in F1.3a (ricerca, scelta e conferma) e F1.3b (inserimento da zero e foto, con Storage); le schermate partono senza la D2; finché non ci sono le copie (F1.5) aggiungere vuol dire mettere il libro nel catalogo comune | Decisioni dell'utente all'avvio di F1.3; la migrazione dello Storage resta in una PR a parte |
+| 2026-11-08 | Chiusa F1.3b: bucket `covers` pubblico con percorsi non indovinabili, foto JPEG di 800 px, lingua e traduttori nell'inserimento a mano; F1.10 ridotta alla copertina generata definitiva; pulizia delle foto orfane da pianificare | Decisioni dell'utente all'avvio di F1.3b |

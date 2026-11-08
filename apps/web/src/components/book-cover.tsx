@@ -57,7 +57,7 @@ export function BookCover({
         <circle cx="24" cy="7" r="1.5" className="fill-surface" />
       </svg>
       {size !== 'small' && (
-        <span className="type-title-s line-clamp-4 w-full text-center break-words hyphens-auto">{title}</span>
+        <span className="type-title-s line-clamp-4 w-full text-center wrap-break-word hyphens-auto">{title}</span>
       )}
     </div>
   );

@@ -1,4 +1,10 @@
-import { type CatalogEntryInput, type EditionFormat, cleanText, editionFormats } from '@libresca/domain';
+import {
+  type CatalogEntryInput,
+  type EditionFormat,
+  cleanText,
+  defaultBookLanguage,
+  editionFormats,
+} from '@libresca/domain';
 
 import { proposalToCatalogEntry } from './merge';
 import type { CandidateEdition, WorkCandidate } from './search';
@@ -16,6 +22,11 @@ export interface ProposalEdits {
   publishedYear: string;
   pageCount: string;
   format: EditionFormat | '';
+  /** ISO 639 code, or empty when unknown. */
+  language: string;
+  translators: string[];
+  /** Path of a photo the user uploaded for this edition; it replaces any source cover. */
+  coverPhoto?: string;
 }
 
 /** The form's starting values for a proposal. */
@@ -27,6 +38,9 @@ export function editsFromProposal(proposal: EditionProposal): ProposalEdits {
     publishedYear: proposal.publishedYear ? String(proposal.publishedYear.value) : '',
     pageCount: proposal.pageCount ? String(proposal.pageCount.value) : '',
     format: proposal.format?.value ?? '',
+    // Most books typed by hand here are Italian; the user can change it.
+    language: proposal.language?.value ?? defaultBookLanguage,
+    translators: proposal.contributors.filter((c) => c.role === 'translator').map((c) => c.name),
   };
 }
 
@@ -61,6 +75,26 @@ function editedAuthors(proposal: EditionProposal, names: string[]): Pick<Edition
   return { authors, authorsSource: clean.length > 0 ? 'user' : undefined };
 }
 
+/** Same names in the same order, ignoring extra spaces and empty rows. */
+function sameNames(typed: string[], proposed: string[]): boolean {
+  const clean = typed.map(cleanText).filter(Boolean);
+  return clean.length === proposed.length && clean.every((name, i) => name === proposed[i]);
+}
+
+function editedTranslators(proposal: EditionProposal, names: string[]): EditionProposal['contributors'] {
+  const translators = proposal.contributors.filter((c) => c.role === 'translator');
+  if (
+    sameNames(
+      names,
+      translators.map((c) => c.name),
+    )
+  )
+    return proposal.contributors;
+  const others = proposal.contributors.filter((c) => c.role !== 'translator');
+  const typed = names.map(cleanText).filter(Boolean);
+  return [...typed.map((name) => ({ name, role: 'translator' as const, source: 'user' as const })), ...others];
+}
+
 export interface EditOptions {
   /** Add the edition to this catalog work instead of creating one: its title and authors stay. */
   workId?: string;
@@ -84,6 +118,8 @@ export function applyEdits(proposal: EditionProposal, edits: ProposalEdits): Edi
       return value && { ...value, reliable: value.source !== 'googlebooks' };
     })(),
     format: edited(proposal.format, format),
+    language: edited(proposal.language, cleanText(edits.language).toLowerCase() || undefined),
+    contributors: editedTranslators(proposal, edits.translators),
   };
 }
 
@@ -96,7 +132,13 @@ export function editedCatalogEntry(
   edits: ProposalEdits,
   options: EditOptions = {},
 ): CatalogEntryInput {
-  const entry = proposalToCatalogEntry(applyEdits(proposal, edits));
+  const proposed = proposalToCatalogEntry(applyEdits(proposal, edits));
+  const entry: CatalogEntryInput = edits.coverPhoto
+    ? {
+        ...proposed,
+        edition: { ...proposed.edition, coverSource: 'upload', coverId: undefined, coverPath: edits.coverPhoto },
+      }
+    : proposed;
   if (options.workId) {
     return { work: { id: options.workId }, edition: { ...entry.edition, title: cleanText(edits.title) || undefined } };
   }
