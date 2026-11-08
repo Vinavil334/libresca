@@ -34,7 +34,7 @@ function EditionButton({
         className="flex min-h-[2.75rem] w-full items-center gap-3 rounded-card border-(length:--border-rule) border-rule px-3 py-2 text-left type-small text-text hover:border-border"
       >
         <BookCover title={edition.title ?? ''} url={edition.cover?.url} size="small" />
-        <span className="break-words">{details}</span>
+        <span className="wrap-break-word">{details}</span>
       </button>
     </li>
   );
@@ -55,9 +55,11 @@ function Candidate({
       <div className="flex gap-4">
         <BookCover title={candidate.title} url={candidate.cover?.url} />
         <div className="flex min-w-0 flex-col gap-1">
-          <h3 className="type-title break-words text-text">{candidate.title}</h3>
+          <h3 className="type-title wrap-break-word text-text">{candidate.title}</h3>
           {candidate.authors.length > 0 && (
-            <p className="type-body break-words text-text">{format.list(candidate.authors, { type: 'conjunction' })}</p>
+            <p className="type-body wrap-break-word text-text">
+              {format.list(candidate.authors, { type: 'conjunction' })}
+            </p>
           )}
           <p className="type-small text-text-muted">
             {[
@@ -117,9 +119,9 @@ export function SearchResults({
                 <Link href={`/books/${work.id}`} className={`${card} flex items-center gap-4`}>
                   <BookCover title={work.title} size="small" />
                   <span className="flex min-w-0 flex-col">
-                    <span className="type-title-s break-words text-text">{work.title}</span>
+                    <span className="type-title-s wrap-break-word text-text">{work.title}</span>
                     {work.authors.length > 0 && (
-                      <span className="type-small break-words text-text-muted">
+                      <span className="type-small wrap-break-word text-text-muted">
                         {format.list(
                           work.authors.map((author) => author.name),
                           { type: 'conjunction' },

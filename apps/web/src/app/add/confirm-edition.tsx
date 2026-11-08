@@ -1,7 +1,7 @@
 'use client';
 
 import type { CreateEditionResult } from '@libresca/data';
-import { type CatalogIssue, editionFormats } from '@libresca/domain';
+import { type CatalogIssue, commonLanguages, editionFormats } from '@libresca/domain';
 import {
   type EditionProposal,
   type ProposalEdits,
@@ -9,15 +9,18 @@ import {
   type ValueSource,
   editsFromProposal,
 } from '@libresca/metadata/client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState, useTransition } from 'react';
+import { type FormEvent, useEffect, useId, useMemo, useRef, useState, useTransition } from 'react';
 
 import { BookCover } from '@/components/book-cover';
 import { Button } from '@/components/button';
-import { BackIcon, CloseIcon, PlusIcon } from '@/components/icons';
+import { BackIcon } from '@/components/icons';
 
-import { addEdition } from './actions';
+import { addEdition, discardCover } from './actions';
+import { type CoverPhoto, CoverPhotoField } from './cover-photo-field';
+import { FormField, inputClasses as input } from './form-field';
+import { NameListField, nameItems } from './name-list-field';
 
 /** A catalog work this edition belongs to (`identifier`) or may belong to (`title_author`). */
 export interface WorkMatch {
@@ -26,18 +29,31 @@ export interface WorkMatch {
   basis: 'identifier' | 'title_author';
 }
 
-type Field = 'title' | 'authors' | 'publisher' | 'publishedYear' | 'pageCount' | 'isbn' | 'format';
+type Field =
+  | 'title'
+  | 'authors'
+  | 'translators'
+  | 'publisher'
+  | 'publishedYear'
+  | 'pageCount'
+  | 'isbn'
+  | 'format'
+  | 'language'
+  | 'cover';
 
 /** Which form field a validation issue belongs to; anything else is shown above the button. */
 function fieldOf(path: string): Field | null {
   if (path === 'work.title' || path === 'edition.title') return 'title';
   if (path.startsWith('work.authors')) return 'authors';
+  if (path.startsWith('edition.contributors')) return 'translators';
   const edition: Record<string, Field> = {
     'edition.publisher': 'publisher',
     'edition.publishedYear': 'publishedYear',
     'edition.pageCount': 'pageCount',
     'edition.isbn': 'isbn',
     'edition.format': 'format',
+    'edition.language': 'language',
+    'edition.coverPath': 'cover',
   };
   return edition[path] ?? null;
 }
@@ -51,37 +67,8 @@ const knownIssues = [
   'duplicate',
 ] as const;
 
-const input =
-  'min-h-[3rem] w-full rounded-card border-(length:--border-ink) border-border bg-surface-raised px-4 py-2 type-body text-text aria-[invalid=true]:border-danger';
-
-function FormField({
-  id,
-  label,
-  hint,
-  error,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  error?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="flex flex-wrap items-baseline gap-x-2 type-label text-text">
-        {label}
-        {hint && <span className="type-small text-text-muted">{hint}</span>}
-      </label>
-      {children}
-      {error && (
-        <p id={`${id}-error`} className="type-small text-danger">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+/** Plain fields of the form; names and the photo have their own state. */
+type PlainEdits = Omit<ProposalEdits, 'authors' | 'translators' | 'coverPhoto'>;
 
 export function ConfirmEdition({
   proposal,
@@ -96,14 +83,15 @@ export function ConfirmEdition({
 }) {
   const t = useTranslations('add.confirm');
   const tCover = useTranslations('add.cover');
+  const locale = useLocale();
   const router = useRouter();
   const id = useId();
   const heading = useRef<HTMLHeadingElement>(null);
   const [initial] = useState(() => editsFromProposal(proposal));
-  const [edits, setEdits] = useState<Omit<ProposalEdits, 'authors'>>(initial);
-  const [authors, setAuthors] = useState(() =>
-    (initial.authors.length > 0 ? initial.authors : ['']).map((name, key) => ({ key, name })),
-  );
+  const [edits, setEdits] = useState<PlainEdits>(initial);
+  const [authors, setAuthors] = useState(() => nameItems(initial.authors, true));
+  const [translators, setTranslators] = useState(() => nameItems(initial.translators, false));
+  const [photo, setPhoto] = useState<CoverPhoto | null>(null);
   // `identifier`: certainly the same work. `title_author`: the user answers.
   const [sameWork, setSameWork] = useState<boolean | null>(match?.basis === 'identifier' ? true : null);
   const [askAnswer, setAskAnswer] = useState(false);
@@ -126,11 +114,20 @@ export function ConfirmEdition({
 
   const sourceName = (source: ValueSource) => t(`sources.${source}`);
   /** "da SBN" next to a label, while the value is still the proposed one. */
-  const hint = (field: keyof Omit<ProposalEdits, 'authors'>, sourced: Sourced<unknown> | undefined) =>
+  const hint = (field: keyof PlainEdits, sourced: Sourced<unknown> | undefined) =>
     sourced && edits[field] === initial[field] ? t('source', { source: sourceName(sourced.source) }) : undefined;
+  const namesHint = (names: string[], proposed: string[], source: ValueSource | undefined) =>
+    source && names.join('|') === proposed.join('|') ? t('source', { source: sourceName(source) }) : undefined;
 
-  const set = (field: keyof Omit<ProposalEdits, 'authors'>) => (value: string) =>
-    setEdits((current) => ({ ...current, [field]: value }));
+  const set = (field: keyof PlainEdits) => (value: string) => setEdits((current) => ({ ...current, [field]: value }));
+
+  // Languages by name in the user's language; a code from the sources outside the list stays available.
+  const languages = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: 'language' });
+    const codes = [...new Set([...commonLanguages, ...(initial.language ? [initial.language] : [])])];
+    return codes.map((code) => ({ code, name: names.of(code) ?? code }));
+  }, [locale, initial.language]);
+  const translatorSource = proposal.contributors.find((c) => c.role === 'translator')?.source;
 
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -138,7 +135,12 @@ export function ConfirmEdition({
     startSaving(async () => {
       const result = await addEdition({
         proposal,
-        edits: { ...edits, authors: authors.map((author) => author.name) },
+        edits: {
+          ...edits,
+          authors: authors.map((author) => author.name),
+          translators: translators.map((translator) => translator.name),
+          coverPhoto: photo?.path,
+        },
         workId: attach ? match?.workId : undefined,
       });
       if (result.ok) return router.push(`/books/${result.workId}?added=1`);
@@ -154,7 +156,10 @@ export function ConfirmEdition({
       <div className="flex flex-col gap-2">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => {
+            if (photo) void discardCover(photo.path);
+            onBack();
+          }}
           className="inline-flex min-h-[2.75rem] items-center gap-1 self-start type-label text-link"
         >
           <BackIcon />
@@ -205,12 +210,16 @@ export function ConfirmEdition({
       )}
 
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-        <BookCover
-          title={edits.title || matchTitle || ''}
-          url={proposal.cover?.url}
-          size="large"
-          alt={edits.title ? tCover('alt', { title: edits.title }) : ''}
-        />
+        <div className="flex flex-col gap-3 sm:w-[11rem]">
+          <BookCover
+            title={edits.title || matchTitle || ''}
+            url={photo?.url ?? proposal.cover?.url}
+            size="large"
+            alt={edits.title ? tCover('alt', { title: edits.title }) : ''}
+          />
+          <CoverPhotoField photo={photo} onChange={setPhoto} />
+          {issueText('cover') && <p className="type-small text-danger">{issueText('cover')}</p>}
+        </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <FormField
@@ -233,58 +242,21 @@ export function ConfirmEdition({
           {attach ? (
             <p className="type-small text-text-muted">{t('authorsFromWork')}</p>
           ) : (
-            <fieldset className="flex flex-col gap-2">
-              <legend className="mb-1 flex flex-wrap items-baseline gap-x-2 type-label text-text">
-                {t('fields.authors')}
-                {proposal.authorsSource && authors.map((a) => a.name).join('|') === initial.authors.join('|') && (
-                  <span className="type-small text-text-muted">
-                    {t('source', { source: sourceName(proposal.authorsSource) })}
-                  </span>
-                )}
-              </legend>
-              {authors.map((author, index) => (
-                <div key={author.key} className="flex items-center gap-2">
-                  <label htmlFor={`${id}-author-${author.key}`} className="sr-only">
-                    {t('fields.author', { number: index + 1 })}
-                  </label>
-                  <input
-                    id={`${id}-author-${author.key}`}
-                    value={author.name}
-                    onChange={(event) =>
-                      setAuthors((current) =>
-                        current.map((item) => (item.key === author.key ? { ...item, name: event.target.value } : item)),
-                      )
-                    }
-                    aria-invalid={Boolean(issueText('authors')) || undefined}
-                    className={input}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setAuthors((current) => current.filter((item) => item.key !== author.key))}
-                    aria-label={t('fields.removeAuthor', {
-                      name: author.name || t('fields.author', { number: index + 1 }),
-                    })}
-                    className="inline-flex size-[2.75rem] shrink-0 items-center justify-center rounded-pill text-text-muted hover:text-text"
-                  >
-                    <CloseIcon />
-                  </button>
-                </div>
-              ))}
-              {issueText('authors') && <p className="type-small text-danger">{issueText('authors')}</p>}
-              <button
-                type="button"
-                onClick={() =>
-                  setAuthors((current) => [
-                    ...current,
-                    { key: Math.max(-1, ...current.map((item) => item.key)) + 1, name: '' },
-                  ])
-                }
-                className="inline-flex min-h-[2.75rem] items-center gap-1 self-start type-label text-link"
-              >
-                <PlusIcon />
-                {t('fields.addAuthor')}
-              </button>
-            </fieldset>
+            <NameListField
+              id={`${id}-author`}
+              legend={t('fields.authors')}
+              hint={namesHint(
+                authors.map((a) => a.name),
+                initial.authors,
+                proposal.authorsSource,
+              )}
+              items={authors}
+              onChange={setAuthors}
+              itemLabel={(number) => t('fields.author', { number })}
+              removeLabel={(name) => t('fields.removeAuthor', { name })}
+              addLabel={t('fields.addAuthor')}
+              error={issueText('authors')}
+            />
           )}
 
           <FormField
@@ -361,6 +333,43 @@ export function ConfirmEdition({
               ))}
             </select>
           </FormField>
+
+          <FormField
+            id={`${id}-language`}
+            label={t('fields.language')}
+            hint={hint('language', proposal.language)}
+            error={issueText('language')}
+          >
+            <select
+              id={`${id}-language`}
+              value={edits.language}
+              onChange={(event) => set('language')(event.target.value)}
+              className={input}
+            >
+              <option value="">{t('languageUnknown')}</option>
+              {languages.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.name}
+                </option>
+              ))}
+            </select>
+          </FormField>
+
+          <NameListField
+            id={`${id}-translator`}
+            legend={t('fields.translators')}
+            hint={namesHint(
+              translators.map((item) => item.name),
+              initial.translators,
+              translatorSource,
+            )}
+            items={translators}
+            onChange={setTranslators}
+            itemLabel={(number) => t('fields.translator', { number })}
+            removeLabel={(name) => t('fields.removeTranslator', { name })}
+            addLabel={t('fields.addTranslator')}
+            error={issueText('translators')}
+          />
 
           {proposal.isbn13 && (
             <div className="flex flex-col gap-1">

@@ -121,6 +121,8 @@ Senza ISBN si parte da `GET /api/v1/books/search?q=` (F1.2b), con testo libero (
 
 I passi 5-6 sono la schermata `/add` (F1.3a). L'endpoint per ISBN segnala in `catalogWork` l'opera del catalogo con lo stesso ID di opera di Open Library: la nuova edizione va lì senza chiedere. Una corrispondenza solo per titolo e autore diventa una domanda all'utente. Il salvataggio è una Server Action che richiama i pacchetti: `editedCatalogEntry` applica le correzioni dell'utente (fonte `user` in `field_sources`), `findAuthorsByOpenLibraryIds` riusa gli autori già nel catalogo con lo stesso ID Open Library, `createEdition` valida e scrive. La proposta torna dal client, quindi è trattata come input dell'utente: la validano il dominio e il database.
 
+Le foto di copertina (F1.3b) vanno nel bucket pubblico `covers` di Supabase Storage. Il browser ruota e riduce la foto a un JPEG con il lato lungo di 800 px (60–100 KB), poi una Server Action la carica in `{id account}/{uuid}.jpg`: il bucket accetta solo JPEG fino a 1 MB, e le policy lasciano scrivere solo gli account attivi, ciascuno nella propria cartella. Il percorso non si indovina, quindi una foto si raggiunge solo da un'edizione. Una foto sostituita o abbandonata nel modulo si cancella subito; una già usata da un'edizione non si può cancellare. Con 1 GB gratuito ci stanno oltre 10.000 copertine.
+
 ### Import di librerie grandi
 
 L'import procede a blocchi guidati dal browser: il client invia un blocco, il server lo elabora rispettando i limiti delle fonti, l'avanzamento vive in `import_jobs`. Si può riprendere dopo un'interruzione e non richiede code né server aggiuntivi. Le corrispondenze dubbie finiscono in una schermata di revisione.

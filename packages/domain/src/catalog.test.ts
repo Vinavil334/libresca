@@ -191,6 +191,14 @@ describe('validateCatalogEntry', () => {
     expect(issuesOf({ work: { id: workId }, edition: { coverSource: 'generated' } })).toEqual([]);
   });
 
+  it('accepts only paths of uploaded cover photos', () => {
+    const path = '11111111-1111-1111-1111-111111111111/aaaaaaaa-0000-4000-8000-000000000001.jpg';
+    expect(issuesOf({ work: { id: workId }, edition: { coverSource: 'upload', coverPath: path } })).toEqual([]);
+    expect(
+      issuesOf({ work: { id: workId }, edition: { coverSource: 'upload', coverPath: 'https://example.com/a.jpg' } }),
+    ).toEqual([{ path: 'edition.coverPath', code: 'invalid_cover_path' }]);
+  });
+
   it('refuses malformed ids and repeated entries', () => {
     expect(
       issuesOf({

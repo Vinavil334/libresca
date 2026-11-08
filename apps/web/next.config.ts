@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@libresca/data', '@libresca/domain', '@libresca/i18n', '@libresca/metadata', '@libresca/tokens'],
   // Covers load straight from their sources: Vercel image optimisation has a small free quota.
   images: { unoptimized: true },
+  // Cover photos reach a Server Action already resized (at most 1 MB, the bucket limit), plus form overhead.
+  experimental: { serverActions: { bodySizeLimit: '2mb' } },
 };
 
 export default withNextIntl(nextConfig);

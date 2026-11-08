@@ -83,7 +83,12 @@
         "publishedYear": "Anno di questa edizione",
         "pageCount": "Pagine",
         "format": "Formato",
-        "isbn": "ISBN"
+        "isbn": "ISBN",
+        "language": "Lingua",
+        "translators": "Traduttori",
+        "translator": "Traduttore {number}",
+        "addTranslator": "Aggiungi un traduttore",
+        "removeTranslator": "Togli {name}"
       },
       "formats": {
         "none": "Non so",
@@ -129,7 +134,21 @@
         "duplicate": "C'è due volte.",
         "other": "Questo valore non torna."
       },
-      "answerSameWork": "Prima dicci se è la stessa opera."
+      "answerSameWork": "Prima dicci se è la stessa opera.",
+      "languageUnknown": "Non so",
+      "photo": {
+        "add": "Usa una tua foto",
+        "change": "Cambia foto",
+        "remove": "Togli la foto",
+        "uploading": "Sistemo la foto…",
+        "ready": "Foto pronta: è lei la copertina.",
+        "hint": "Basta una foto dritta, con la copertina che riempie l'inquadratura.",
+        "errors": {
+          "invalid": "Non riusciamo a leggere questa immagine. Prova con un'altra foto.",
+          "too_large": "La foto pesa troppo anche rimpicciolita. Prova a inquadrare solo la copertina.",
+          "failed": "La foto non è partita. Riprova tra un momento."
+        }
+      }
     },
     "cover": {
       "alt": "Copertina di {title}"
@@ -146,6 +165,7 @@
     "noIsbn": "Senza ISBN",
     "description": "Di cosa parla",
     "addAnother": "Aggiungi un altro libro",
-    "unknownAuthor": "Autore sconosciuto"
+    "unknownAuthor": "Autore sconosciuto",
+    "translatedBy": "Traduzione di {names}"
   }
 }

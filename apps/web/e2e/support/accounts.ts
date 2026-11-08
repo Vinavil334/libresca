@@ -84,9 +84,15 @@ export async function signInClient(account: TestAccount) {
   return { client, accessToken: data.session.access_token };
 }
 
-/** Removes a work and its editions created by a test. Catalog rows outlive accounts, so tests clean up. */
+/**
+ * Removes a work, its editions and their cover photos created by a test. Catalog rows
+ * and stored files outlive accounts, so tests clean up.
+ */
 export async function deleteWork(workId: string): Promise<void> {
   const client = admin();
+  const { data } = await client.from('editions').select('cover_path').eq('work_id', workId);
+  const photos = (data ?? []).flatMap((edition) => (edition.cover_path ? [edition.cover_path] : []));
   await client.from('editions').delete().eq('work_id', workId);
   await client.from('works').delete().eq('id', workId);
+  if (photos.length > 0) await client.storage.from('covers').remove(photos);
 }

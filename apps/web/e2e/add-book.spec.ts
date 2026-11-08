@@ -108,4 +108,53 @@ test.describe('adding a book', () => {
     await expect(page.getByLabel('Anno di questa edizione')).toHaveAttribute('aria-invalid', 'true');
     await expect(page).toHaveURL(/\/add$/);
   });
+
+  test('a book typed by hand gets a cover photo, a language and a translator', async ({ page }) => {
+    const title = `Fotografie dal sottobosco ${token()}`;
+    await page.goto('/add');
+    await page.getByRole('searchbox', { name: 'Titolo, autore o ISBN' }).fill(`nessuno ${token()}`);
+    await page.getByRole('button', { name: 'Cerca' }).click();
+    await page.getByRole('button', { name: 'Inseriscilo a mano' }).click();
+
+    // A large photo drawn in the browser, as a phone camera would hand it over: 1200 × 1800.
+    const png = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 1800;
+      const context = canvas.getContext('2d')!;
+      context.fillStyle = 'rgb(184, 73, 47)';
+      context.fillRect(0, 0, 1200, 1800);
+      return canvas.toDataURL('image/png').split(',')[1]!;
+    });
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByRole('button', { name: 'Usa una tua foto' }).click();
+    await (
+      await chooser
+    ).setFiles({ name: 'copertina.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+    await expect(page.getByText('Foto pronta')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Cambia foto' })).toBeVisible();
+
+    await page.getByRole('textbox', { name: 'Titolo', exact: true }).fill(title);
+    await expect(page.getByLabel('Lingua')).toHaveValue('it');
+    await page.getByLabel('Lingua').selectOption('fr');
+    await page.getByRole('button', { name: 'Aggiungi un traduttore' }).click();
+    await page.getByRole('textbox', { name: 'Traduttore 1', exact: true }).fill('Bruno Felce');
+    await page.getByRole('button', { name: 'Aggiungi al catalogo' }).click();
+
+    await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=1$/);
+    workIds.push(page.url().split('/books/')[1]!.split('?')[0]!);
+    await expect(page.getByText('Traduzione di Bruno Felce')).toBeVisible();
+    await expect(page.getByText('francese')).toBeVisible();
+
+    // The photo is served by the public bucket, resized to a JPEG of at most 800 px.
+    const cover = page.locator('img[src*="/storage/v1/object/public/covers/"]').first();
+    await expect(cover).toBeVisible();
+    const size = await cover.evaluate((img: HTMLImageElement) => ({
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+    }));
+    expect(size).toEqual({ width: 533, height: 800 });
+    const response = await page.request.get((await cover.getAttribute('src'))!);
+    expect(response.headers()['content-type']).toBe('image/jpeg');
+  });
 });

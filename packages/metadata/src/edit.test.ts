@@ -40,6 +40,8 @@ describe('editsFromProposal', () => {
       publishedYear: '2019',
       pageCount: '305',
       format: 'paperback',
+      language: 'it',
+      translators: ['Bruno Felce'],
     });
     expect(editsFromProposal(emptyProposal())).toEqual({
       title: '',
@@ -48,6 +50,8 @@ describe('editsFromProposal', () => {
       publishedYear: '',
       pageCount: '',
       format: '',
+      language: 'it',
+      translators: [],
     });
   });
 });
@@ -134,13 +138,43 @@ describe('editedCatalogEntry', () => {
       publishedYear: '1999',
       pageCount: '',
       format: 'hardcover',
+      language: 'it',
+      translators: ['Bruno Felce'],
     });
     expect(validateCatalogEntry(entry).ok).toBe(true);
     expect(entry.work).toMatchObject({
       title: 'Appunti di micologia',
       fieldSources: { title: 'user', authors: 'user' },
     });
-    expect(entry.edition).toMatchObject({ isbn: italianIsbn, format: 'hardcover', metadataStatus: 'incomplete' });
+    expect(entry.edition).toMatchObject({
+      isbn: italianIsbn,
+      format: 'hardcover',
+      language: 'it',
+      metadataStatus: 'incomplete',
+      contributors: [{ name: 'Bruno Felce', role: 'translator' }],
+      fieldSources: { language: 'user' },
+    });
+  });
+
+  it('replaces the source cover with the uploaded photo', () => {
+    const original = proposal();
+    const coverPhoto = '11111111-1111-1111-1111-111111111111/aaaaaaaa-0000-4000-8000-000000000001.jpg';
+    const entry = editedCatalogEntry(original, { ...editsFromProposal(original), coverPhoto });
+    expect(entry.edition).toMatchObject({ coverSource: 'upload', coverPath: coverPhoto, coverId: undefined });
+    expect(validateCatalogEntry(entry).ok).toBe(true);
+  });
+
+  it('keeps the translators the sources gave, or records the typed ones', () => {
+    const original = proposal();
+    const same = applyEdits(original, editsFromProposal(original));
+    expect(same.contributors).toEqual(original.contributors);
+    const changed = applyEdits(original, { ...editsFromProposal(original), translators: ['Elena Muffa '] });
+    expect(changed.contributors.filter((c) => c.role === 'translator')).toEqual([
+      { name: 'Elena Muffa', role: 'translator', source: 'user' },
+    ]);
+    expect(changed.contributors.filter((c) => c.role !== 'translator')).toHaveLength(
+      original.contributors.filter((c) => c.role !== 'translator').length,
+    );
   });
 });
 
