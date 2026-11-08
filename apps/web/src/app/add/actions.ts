@@ -3,12 +3,13 @@
 import {
   type CreateEditionResult,
   type UploadCoverResult,
+  addCopy,
   createEdition,
   deleteCoverPhoto,
   findAuthorsByOpenLibraryIds,
   uploadCoverPhoto,
 } from '@libresca/data';
-import { coverPhotoUrl } from '@libresca/domain';
+import { coverPhotoUrl, localDate } from '@libresca/domain';
 import { type EditionProposal, type ProposalEdits, editedCatalogEntry, openLibraryAuthorIds } from '@libresca/metadata';
 import { randomUUID } from 'node:crypto';
 
@@ -20,7 +21,12 @@ export interface AddEditionInput {
   edits: ProposalEdits;
   /** Add the edition to this catalog work instead of creating a new one. */
   workId?: string;
+  /** "Ce l'ho": also put a copy of the edition in the caller's Tana. */
+  copy?: { isLendable: boolean };
 }
+
+export type AddEditionResponse =
+  Exclude<CreateEditionResult, { ok: true }> | { ok: true; workId: string; editionId: string; copyAdded: boolean };
 
 /**
  * Saves a confirmed proposal to the catalog with the user's session. The proposal comes
@@ -28,10 +34,14 @@ export interface AddEditionInput {
  * the database checks the account and repeats the essential rules (no Google Books
  * description, no Google Books payload, cover paths of the expected shape).
  */
-export async function addEdition({ proposal, edits, workId }: AddEditionInput): Promise<CreateEditionResult> {
+export async function addEdition({ proposal, edits, workId, copy }: AddEditionInput): Promise<AddEditionResponse> {
   const client = await createSupabaseServerClient();
   const knownAuthors = workId ? {} : await findAuthorsByOpenLibraryIds(client, openLibraryAuthorIds(proposal));
-  return createEdition(client, editedCatalogEntry(proposal, edits, { workId, knownAuthors }));
+  const result = await createEdition(client, editedCatalogEntry(proposal, edits, { workId, knownAuthors }));
+  if (!result.ok) return result;
+  // The book is in the catalog either way; a failed copy shows up as "not in your Tana yet".
+  const added = copy ? await addCopy(client, result.editionId, copy, localDate(new Date())) : null;
+  return { ...result, copyAdded: added?.ok ?? false };
 }
 
 export type UploadCoverResponse = (UploadCoverResult & { ok: false }) | { ok: true; path: string; url: string };

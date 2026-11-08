@@ -51,15 +51,19 @@ test.describe('adding a book', () => {
     await page.getByRole('textbox', { name: 'Editore', exact: true }).fill('Edizioni Sottobosco');
     await page.getByLabel('Anno di questa edizione').fill('2021');
     await page.getByLabel('Formato').selectOption('paperback');
-    await page.getByRole('button', { name: 'Aggiungi al catalogo' }).click();
+    await page.getByRole('button', { name: 'Aggiungi alla Tana' }).click();
 
-    await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=1$/);
+    await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=tana$/);
     workIds.push(page.url().split('/books/')[1]!.split('?')[0]!);
-    await expect(page.getByRole('status')).toContainText('Aggiunto al catalogo');
+    await expect(page.getByRole('status')).toContainText('È nella tua Tana');
+    // "Ce l'ho" was ticked by default: the copy is in the "Ce l'hai" block, lendable.
+    const copies = page.getByRole('region', { name: "Ce l'hai" });
+    await expect(copies.getByText('Si può prestare')).toBeVisible();
     await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
     await expect(page.getByText('Àgata Funghétti')).toBeVisible();
-    await expect(page.getByText(`ISBN ${isbn13}`)).toBeVisible();
-    await expect(page.getByText('Edizioni Sottobosco · 2021')).toBeVisible();
+    const editions = page.getByRole('region', { name: 'Edizioni' });
+    await expect(editions.getByText(`ISBN ${isbn13}`)).toBeVisible();
+    await expect(editions.getByText('Edizioni Sottobosco · 2021')).toBeVisible();
 
     // The same ISBN again leads straight to the book, without a second card.
     await page.getByRole('link', { name: 'Aggiungi un altro libro' }).click();
@@ -103,7 +107,7 @@ test.describe('adding a book', () => {
 
     await page.getByRole('textbox', { name: 'Titolo', exact: true }).fill(`Senza anno ${token()}`);
     await page.getByLabel('Anno di questa edizione').fill('duemila');
-    await page.getByRole('button', { name: 'Aggiungi al catalogo' }).click();
+    await page.getByRole('button', { name: 'Aggiungi alla Tana' }).click();
     await expect(page.getByText('Scrivi un anno, per esempio 2019.')).toBeVisible();
     await expect(page.getByLabel('Anno di questa edizione')).toHaveAttribute('aria-invalid', 'true');
     await expect(page).toHaveURL(/\/add$/);
@@ -139,9 +143,9 @@ test.describe('adding a book', () => {
     await page.getByLabel('Lingua').selectOption('fr');
     await page.getByRole('button', { name: 'Aggiungi un traduttore' }).click();
     await page.getByRole('textbox', { name: 'Traduttore 1', exact: true }).fill('Bruno Felce');
-    await page.getByRole('button', { name: 'Aggiungi al catalogo' }).click();
+    await page.getByRole('button', { name: 'Aggiungi alla Tana' }).click();
 
-    await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=1$/);
+    await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=tana$/);
     workIds.push(page.url().split('/books/')[1]!.split('?')[0]!);
     await expect(page.getByText('Traduzione di Bruno Felce')).toBeVisible();
     await expect(page.getByText('francese')).toBeVisible();

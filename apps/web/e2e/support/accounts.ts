@@ -85,13 +85,16 @@ export async function signInClient(account: TestAccount) {
 }
 
 /**
- * Removes a work, its editions and their cover photos created by a test. Catalog rows
+ * Removes a work, its editions, their copies and cover photos created by a test. Catalog rows
  * and stored files outlive accounts, so tests clean up.
  */
 export async function deleteWork(workId: string): Promise<void> {
   const client = admin();
-  const { data } = await client.from('editions').select('cover_path').eq('work_id', workId);
+  const { data } = await client.from('editions').select('id, cover_path').eq('work_id', workId);
   const photos = (data ?? []).flatMap((edition) => (edition.cover_path ? [edition.cover_path] : []));
+  // Copies keep their edition in the catalog: remove them first.
+  const editionIds = (data ?? []).map((edition) => edition.id);
+  if (editionIds.length > 0) await client.from('copies').delete().in('edition_id', editionIds);
   await client.from('editions').delete().eq('work_id', workId);
   await client.from('works').delete().eq('id', workId);
   if (photos.length > 0) await client.storage.from('covers').remove(photos);

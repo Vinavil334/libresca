@@ -1,4 +1,4 @@
-import { type Edition, getWork } from '@libresca/data';
+import { type Edition, getWork, listOwnCopies } from '@libresca/data';
 import { coverPhotoUrl, coverUrl } from '@libresca/domain';
 import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
@@ -11,6 +11,8 @@ import { ButtonLink } from '@/components/button';
 import { BackIcon } from '@/components/icons';
 import { supabaseEnv } from '@/lib/supabase/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+import { OwnCopies } from './own-copies';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ added?: string; found?: string }> };
 
@@ -30,8 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The essential book card: the work, its authors and its editions. F1.7 turns it into the
- * full card, with "Ce l'hai" and the readings as two separate blocks.
+ * The essential book card: the work, its authors, the user's copies ("Ce l'hai") and the
+ * editions. F1.6 adds the readings as a separate block; F1.7 turns it into the full card.
  */
 export default async function BookPage({ params, searchParams }: Props) {
   const work = await loadWork((await params).id);
@@ -46,6 +48,15 @@ export default async function BookPage({ params, searchParams }: Props) {
   const locale = await getLocale();
   const languageNames = new Intl.DisplayNames([locale], { type: 'language' });
   const languageName = (code: string | null) => (code ? (languageNames.of(code) ?? code) : null);
+  const copies = await listOwnCopies(await createSupabaseServerClient(), work.id);
+  const editionLabel = (edition: Edition) =>
+    [
+      edition.publisher ?? edition.title ?? work.title,
+      edition.published_year === null ? null : String(edition.published_year),
+      edition.isbn13 ? t('isbn', { isbn: edition.isbn13 }) : t('noIsbn'),
+    ]
+      .filter(Boolean)
+      .join(' · ');
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-8 px-4 py-6 sm:px-6">
@@ -59,7 +70,7 @@ export default async function BookPage({ params, searchParams }: Props) {
           role="status"
           className="rounded-card border-(length:--border-ink) border-border bg-ticket p-4 type-body text-text"
         >
-          {added ? t('added') : t('found')}
+          {added === 'tana' ? t('addedToTana') : added ? t('addedToCatalog') : t('found')}
         </p>
       )}
 
@@ -77,6 +88,12 @@ export default async function BookPage({ params, searchParams }: Props) {
           )}
         </div>
       </header>
+
+      <OwnCopies
+        workId={work.id}
+        copies={copies}
+        editions={editions.map((edition) => ({ id: edition.id, label: editionLabel(edition) }))}
+      />
 
       {work.description && (
         <section aria-labelledby="description-heading" className="flex flex-col gap-2">
