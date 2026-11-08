@@ -20,4 +20,23 @@ export { type CachePolicy, type HttpClient, type HttpResult, createHttpClient } 
 export { type LookupOptions, createMetadataHttpClient, lookupIsbn, sourcePacing } from './lookup';
 export { mergeRecords, proposalToCatalogEntry } from './merge';
 export { type WindowLimiter, createWindowLimiter } from './limiter';
-export type { ApiError, IsbnLookupResponse } from './api';
+export {
+  type BookSearch,
+  type CandidateCover,
+  type CandidateEdition,
+  type SearchHit,
+  type SearchOptions,
+  type SearchSource,
+  type WorkCandidate,
+  maxCandidates,
+  searchBooks,
+} from './search';
+export {
+  type CatalogMatch,
+  type CatalogWorkRef,
+  type IdentifierMatches,
+  type MatchedCandidate,
+  identifiersOf,
+  matchCatalog,
+} from './catalog-match';
+export type { ApiError, BookSearchResponse, IsbnLookupResponse } from './api';

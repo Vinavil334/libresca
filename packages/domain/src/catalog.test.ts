@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { type CatalogEntryInput, authorSortName, coverUrl, validateCatalogEntry } from './catalog';
+import {
+  type CatalogEntryInput,
+  authorSortName,
+  cleanText,
+  coverUrl,
+  maxSearchQueryLength,
+  searchQuery,
+  validateCatalogEntry,
+} from './catalog';
 
 const workId = 'aaaaaaaa-0000-4000-8000-000000000001';
 
@@ -8,6 +16,27 @@ function issuesOf(input: CatalogEntryInput) {
   const result = validateCatalogEntry(input);
   return result.ok ? [] : result.issues;
 }
+
+describe('cleanText', () => {
+  it('composes accents sent as combining marks', () => {
+    const decomposed = 'Se questo è un uomo';
+    expect(cleanText(decomposed)).toBe('Se questo è un uomo');
+    expect(cleanText(decomposed)).toHaveLength('Se questo è un uomo'.length);
+  });
+});
+
+describe('searchQuery', () => {
+  it('cleans a usable query', () => {
+    expect(searchQuery('  il   barone  ')).toBe('il barone');
+  });
+
+  it('rejects queries too short or too long', () => {
+    expect(searchQuery(null)).toBeNull();
+    expect(searchQuery(' a ')).toBeNull();
+    expect(searchQuery('x'.repeat(maxSearchQueryLength + 1))).toBeNull();
+    expect(searchQuery('x'.repeat(maxSearchQueryLength))).not.toBeNull();
+  });
+});
 
 describe('authorSortName', () => {
   it('puts the surname first', () => {

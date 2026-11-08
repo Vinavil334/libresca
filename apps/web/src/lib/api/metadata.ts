@@ -4,16 +4,25 @@ import { createHash } from 'node:crypto';
 /** Used in the Open Library User-Agent when OPEN_LIBRARY_CONTACT is not set. */
 const fallbackContact = 'https://github.com/Vinavil334/libresca';
 
+/**
+ * `METADATA_SOURCES=off` makes every source unavailable: the end-to-end tests set it, so
+ * they never depend on, or load, the real services.
+ */
+const sourcesOff = () => process.env.METADATA_SOURCES === 'off';
+const offline: HttpClient = { getJson: async () => ({ status: 'unavailable' }) };
+
 // One client per server instance, so pacing and cache are shared by its requests.
 let client: HttpClient | undefined;
 
 export function metadataHttp(): HttpClient {
+  if (sourcesOff()) return offline;
   client ??= createMetadataHttpClient(process.env.OPEN_LIBRARY_CONTACT?.trim() || fallbackContact);
   return client;
 }
 
 /** Server-only. Without it Google Books is skipped. */
 export function googleBooksKey(): string | undefined {
+  if (sourcesOff()) return undefined;
   return process.env.GOOGLE_BOOKS_API_KEY?.trim() || undefined;
 }
 

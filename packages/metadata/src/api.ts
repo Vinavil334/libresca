@@ -1,3 +1,5 @@
+import type { MatchedCandidate } from './catalog-match';
+import type { SearchSource } from './search';
 import type { EditionProposal, SourceName, SourceStatus } from './types';
 
 /**
@@ -13,7 +15,26 @@ export type IsbnLookupResponse<Edition = unknown> =
   | { status: 'proposal'; isbn13: string; sources: Record<SourceName, SourceStatus>; proposal: EditionProposal }
   | { status: 'not_found'; isbn13: string; sources: Record<SourceName, SourceStatus> };
 
-/** Error bodies: 400 `invalid_isbn`, 401 `unauthorized`, 403 `inactive`, 429 `rate_limited`. */
+/**
+ * Body of `GET /api/v1/books/search?q=` (200). `Work` is the catalog work type of the caller
+ * (`WorkWithAuthors` in `@libresca/data`).
+ *
+ * - `catalog`: works already in the catalog matching the query, best first.
+ * - `candidates`: works found by Open Library and Google Books. `catalogMatch` points to the
+ *   catalog work they are (`identifier`) or probably are (`title_author`): the client offers
+ *   that work first instead of creating a duplicate.
+ */
+export interface BookSearchResponse<Work = unknown> {
+  query: string;
+  catalog: Work[];
+  sources: Record<SearchSource, SourceStatus>;
+  candidates: MatchedCandidate[];
+}
+
+/**
+ * Error bodies: 400 `invalid_isbn` or `invalid_query`, 401 `unauthorized`, 403 `inactive`,
+ * 429 `rate_limited`.
+ */
 export interface ApiError {
-  error: 'invalid_isbn' | 'unauthorized' | 'inactive' | 'rate_limited';
+  error: 'invalid_isbn' | 'invalid_query' | 'unauthorized' | 'inactive' | 'rate_limited';
 }

@@ -54,6 +54,7 @@ export default defineConfig({
     // These win over .env.local, so the app under test talks to the local stack.
     env: {
       NEXT_TELEMETRY_DISABLED: '1',
+      METADATA_SOURCES: 'off',
       NEXT_PUBLIC_SUPABASE_URL: supabase.url,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.publishableKey,
     },

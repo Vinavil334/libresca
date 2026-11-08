@@ -190,9 +190,25 @@ const surnameParticles = new Set([
   'ter',
 ]);
 
-/** Trims and collapses inner whitespace. */
+/**
+ * Composed Unicode (NFC), trimmed, inner whitespace collapsed. Some sources send accents
+ * as separate combining marks ("e" + U+0300): composed, the same title always compares
+ * and searches the same way.
+ */
 export function cleanText(value: string): string {
-  return value.replace(/\s+/g, ' ').trim();
+  return value.normalize('NFC').replace(/\s+/g, ' ').trim();
+}
+
+/** Longest free-text search accepted, in characters. */
+export const maxSearchQueryLength = 200;
+
+/**
+ * A free-text book search as sent to the catalog and the sources: cleaned, at least two
+ * characters and at most `maxSearchQueryLength`. `null` when it is not a usable query.
+ */
+export function searchQuery(value: string | null | undefined): string | null {
+  const clean = cleanText(value ?? '');
+  return clean.length >= 2 && clean.length <= maxSearchQueryLength ? clean : null;
 }
 
 /**
@@ -235,7 +251,7 @@ class Collector {
   /** Optional text: cleaned, `undefined` when empty. */
   optionalText(path: string, value: string | undefined, max: number, keepLines = false): string | undefined {
     if (value === undefined) return undefined;
-    const clean = keepLines ? value.trim() : cleanText(value);
+    const clean = keepLines ? value.normalize('NFC').trim() : cleanText(value);
     if (!clean) return undefined;
     if (clean.length > max) this.add(path, 'too_long');
     return clean;
