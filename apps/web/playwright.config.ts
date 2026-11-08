@@ -43,11 +43,11 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   // The phone is the main device: every test runs on a mobile viewport too. iPhone (WebKit)
-  // runs the add and scanner tests, where Safari differs most; the fake camera is Chromium only.
+  // runs the add, copies and scanner tests, where Safari differs most; the fake camera is Chromium only.
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'iphone', use: { ...devices['iPhone 14'] }, testMatch: /(add-book|scanner-photo)\.spec\.ts$/ },
+    { name: 'iphone', use: { ...devices['iPhone 14'] }, testMatch: /(add-book|copies|scanner-photo)\.spec\.ts$/ },
   ],
   webServer: {
     command: isCI ? `pnpm build && pnpm start --port ${PORT}` : `pnpm dev --port ${PORT}`,

@@ -62,7 +62,7 @@ Il catalogo è leggibile solo dagli account attivi. Nessuno lo scrive direttamen
 | `friendships` | `user_low`, `user_high`, `status`, `requested_by`, `created_at` | Una sola riga per coppia, con vincolo `user_low < user_high` |
 | `invites` | `code`, `created_by`, `expires_at`, `used_by` | Riscattare un invito attiva l'account |
 | `app_settings` | `key`, `value` | Contiene `signup_mode`: `invite_only` oppure `open` |
-| `copies` | `id`, `owner_id`, `edition_id`, `format`, `condition`, `location`, `is_lendable`, `acquired_at`, `visibility`, `notes` | Più copie possibili, anche della stessa edizione |
+| `copies` | `id`, `owner_id`, `edition_id`, `is_lendable`, `acquired_on`, `visibility`, `notes` | Più copie possibili, anche della stessa edizione. Il formato sta solo sull'edizione; condizioni e posizione non si registrano, per scelta (si possono aggiungere più avanti). Proprietario ed edizione non cambiano dopo la creazione. Cancellando l'account si cancellano le copie; un'edizione con copie non si cancella. Fino a F2.2 la policy lascia leggere solo il proprietario, qualunque sia `visibility` |
 | `readings` | `id`, `user_id`, `work_id`, `edition_id?`, `status`, `started_on`, `finished_on`, `rating_half`, `review`, `visibility` | `status`: `want`, `reading`, `read`, `abandoned` |
 | `shelves` | `id`, `owner_id`, `name`, `kind`, `visibility`, `position` | |
 | `shelf_items` | `shelf_id`, `work_id`, `position` | |

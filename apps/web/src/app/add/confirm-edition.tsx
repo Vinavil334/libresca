@@ -92,6 +92,9 @@ export function ConfirmEdition({
   const [authors, setAuthors] = useState(() => nameItems(initial.authors, true));
   const [translators, setTranslators] = useState(() => nameItems(initial.translators, false));
   const [photo, setPhoto] = useState<CoverPhoto | null>(null);
+  // "Ce l'ho" is the common case: scanning a book you hold in your hands.
+  const [owned, setOwned] = useState(true);
+  const [lendable, setLendable] = useState(true);
   // `identifier`: certainly the same work. `title_author`: the user answers.
   const [sameWork, setSameWork] = useState<boolean | null>(match?.basis === 'identifier' ? true : null);
   const [askAnswer, setAskAnswer] = useState(false);
@@ -142,8 +145,9 @@ export function ConfirmEdition({
           coverPhoto: photo?.path,
         },
         workId: attach ? match?.workId : undefined,
+        copy: owned ? { isLendable: lendable } : undefined,
       });
-      if (result.ok) return router.push(`/books/${result.workId}?added=1`);
+      if (result.ok) return router.push(`/books/${result.workId}?added=${result.copyAdded ? 'tana' : 'catalog'}`);
       setFailure(result);
     });
   }
@@ -393,6 +397,36 @@ export function ConfirmEdition({
         </div>
       </div>
 
+      <fieldset className="flex flex-col gap-1 rounded-card border-(length:--border-ink) border-border bg-surface-raised p-4">
+        <legend className="sr-only">{t('ownIt')}</legend>
+        <label className="flex min-h-[2.75rem] items-center gap-3 text-text">
+          <input
+            type="checkbox"
+            checked={owned}
+            onChange={(event) => setOwned(event.target.checked)}
+            aria-describedby="own-it-hint"
+            className="size-5 shrink-0 accent-accent"
+          />
+          <span className="flex flex-col">
+            <span className="type-body-strong">{t('ownIt')}</span>
+            <span id="own-it-hint" className="type-small text-text-muted">
+              {t('ownItHint')}
+            </span>
+          </span>
+        </label>
+        {owned && (
+          <label className="ml-8 flex min-h-[2.75rem] items-center gap-3 type-body text-text">
+            <input
+              type="checkbox"
+              checked={lendable}
+              onChange={(event) => setLendable(event.target.checked)}
+              className="size-5 accent-accent"
+            />
+            {t('lendable')}
+          </label>
+        )}
+      </fieldset>
+
       {failure && (
         <p role="alert" className="type-body text-danger">
           {t(`errors.${failure.reason}`)}
@@ -400,7 +434,7 @@ export function ConfirmEdition({
       )}
 
       <Button type="submit" disabled={saving} className="self-stretch sm:self-start">
-        {saving ? t('saving') : t('save')}
+        {saving ? t('saving') : owned ? t('saveToTana') : t('save')}
       </Button>
     </form>
   );

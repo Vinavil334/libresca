@@ -148,7 +148,11 @@
           "too_large": "La foto pesa troppo anche rimpicciolita. Prova a inquadrare solo la copertina.",
           "failed": "La foto non è partita. Riprova tra un momento."
         }
-      }
+      },
+      "ownIt": "Ce l'ho",
+      "ownItHint": "Lo metto nella tua Tana · la tua libreria",
+      "lendable": "Si può prestare",
+      "saveToTana": "Aggiungi alla Tana"
     },
     "cover": {
       "alt": "Copertina di {title}"
@@ -177,7 +181,6 @@
     }
   },
   "book": {
-    "added": "Aggiunto al catalogo. Presto potrai dire che ce l'hai e quando l'hai letto.",
     "found": "Questo libro era già nel catalogo.",
     "back": "Torna all'inizio",
     "firstPublished": "Prima edizione: {year}",
@@ -189,6 +192,40 @@
     "addAnother": "Aggiungi un altro libro",
     "unknownAuthor": "Autore sconosciuto",
     "translatedBy": "Traduzione di {names}",
-    "scanAnother": "Scansiona un altro"
+    "scanAnother": "Scansiona un altro",
+    "addedToTana": "È nella tua Tana.",
+    "addedToCatalog": "Aggiunto al catalogo. Quando vuoi, puoi dire che ce l'hai."
+  },
+  "copies": {
+    "heading": "Ce l'hai",
+    "none": "Non è ancora nella tua Tana.",
+    "own": "Ce l'ho",
+    "ownAnother": "Ne ho un'altra copia",
+    "chooseEdition": "Quale edizione hai?",
+    "lendable": "Si può prestare",
+    "notLendable": "Non la presti",
+    "acquiredOn": "Presa il {date}",
+    "edit": "Modifica",
+    "save": "Salva",
+    "add": "Mettila nella Tana",
+    "cancel": "Annulla",
+    "delete": "Togli dalla Tana",
+    "deleteQuestion": "Togliere questa copia dalla tua Tana? Il libro resta nel catalogo.",
+    "confirmDelete": "Sì, toglila",
+    "fields": {
+      "lendable": "Si può prestare",
+      "acquiredOn": "Quando l'hai presa",
+      "notes": "Note"
+    },
+    "notesHint": "Solo per te: una dedica, da chi l'hai avuta…",
+    "errors": {
+      "invalid_date": "Scrivi una data valida.",
+      "future_date": "Questa data non è ancora arrivata.",
+      "too_long": "Le note sono un po' troppo lunghe.",
+      "invalid_option": "Questo valore non torna.",
+      "not_found": "Questa copia non c'è più: ricarica la pagina.",
+      "forbidden": "Il tuo account non può modificare la Tana, per ora.",
+      "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
+    }
   }
 }

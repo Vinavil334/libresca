@@ -56,3 +56,16 @@ export {
 } from './cover-photo';
 export { commonLanguages, defaultBookLanguage } from './languages';
 export { type ScannedCode, bookBarcodeFormats, isbnFromBarcode, isbnFromBarcodes } from './barcode';
+export {
+  type CopyInput,
+  type CopyIssue,
+  type CopyIssueCode,
+  type CopyPayload,
+  type CopyValidation,
+  type Visibility,
+  copyNotesMaxLength,
+  defaultVisibility,
+  localDate,
+  validateCopy,
+  visibilities,
+} from './copies';

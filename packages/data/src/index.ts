@@ -23,5 +23,14 @@ export {
   getWork,
   searchWorks,
 } from './catalog';
+export {
+  type Copy,
+  type CopyResult,
+  type CopyWithEdition,
+  addCopy,
+  deleteCopy,
+  listOwnCopies,
+  updateCopy,
+} from './copies';
 export { type UploadCoverResult, deleteCoverPhoto, uploadCoverPhoto } from './covers';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate, Enums } from './database.types';

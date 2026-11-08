@@ -104,6 +104,58 @@ export type Database = {
           },
         ];
       };
+      copies: {
+        Row: {
+          acquired_on: string | null;
+          created_at: string;
+          edition_id: string;
+          id: string;
+          is_lendable: boolean;
+          notes: string | null;
+          owner_id: string;
+          updated_at: string;
+          visibility: Database['public']['Enums']['visibility'];
+        };
+        ComputedFields: never;
+        Insert: {
+          acquired_on?: string | null;
+          created_at?: string;
+          edition_id: string;
+          id?: string;
+          is_lendable?: boolean;
+          notes?: string | null;
+          owner_id?: string;
+          updated_at?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+        };
+        Update: {
+          acquired_on?: string | null;
+          created_at?: string;
+          edition_id?: string;
+          id?: string;
+          is_lendable?: boolean;
+          notes?: string | null;
+          owner_id?: string;
+          updated_at?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'copies_edition_id_fkey';
+            columns: ['edition_id'];
+            isOneToOne: false;
+            referencedRelation: 'editions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'copies_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       editions: {
         Row: {
           cover_id: string | null;
@@ -399,6 +451,7 @@ export type Database = {
       metadata_source: 'openlibrary' | 'googlebooks' | 'sbn' | 'goodreads' | 'user';
       metadata_status: 'incomplete' | 'complete';
       profile_status: 'pending' | 'active' | 'suspended';
+      visibility: 'private' | 'friends' | 'public';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -512,6 +565,7 @@ export const Constants = {
       metadata_source: ['openlibrary', 'googlebooks', 'sbn', 'goodreads', 'user'],
       metadata_status: ['incomplete', 'complete'],
       profile_status: ['pending', 'active', 'suspended'],
+      visibility: ['private', 'friends', 'public'],
     },
   },
 } as const;
