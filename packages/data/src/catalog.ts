@@ -128,6 +128,61 @@ export async function searchWorks(client: LibrescaClient, query: string, maxResu
   return data.map(({ work_authors, ...work }) => ({ ...work, authors: toAuthors(work_authors) }));
 }
 
+/** Catalog works reached through identifiers: identifier value to work id. */
+export interface WorksByIdentifier {
+  openLibraryWorks: Record<string, string>;
+  isbns: Record<string, string>;
+}
+
+/** ISBNs per query: a whole Open Library work can list hundreds, and each goes in the URL. */
+const isbnsPerQuery = 150;
+
+type LinkedWork = { id: string; merged_into: string | null };
+
+/** One merge hop: enough for search suggestions, `getWork` follows the full chain. */
+const liveWorkId = (work: LinkedWork) => work.merged_into ?? work.id;
+
+/**
+ * The catalog works that share an identifier with search results: an Open Library work id
+ * or the ISBN of one of their editions. Invalid values are ignored; a failed query only
+ * means fewer matches.
+ */
+export async function findWorksByIdentifiers(
+  client: LibrescaClient,
+  identifiers: { openLibraryWorkIds: string[]; isbns: string[] },
+): Promise<WorksByIdentifier> {
+  const found: WorksByIdentifier = { openLibraryWorks: {}, isbns: {} };
+  const workIds = [...new Set(identifiers.openLibraryWorkIds.filter((id) => /^OL\d+W$/.test(id)))];
+  const isbns = [...new Set(identifiers.isbns.flatMap((isbn) => toIsbn13(isbn) ?? []))];
+
+  const queries: PromiseLike<void>[] = [];
+  if (workIds.length > 0) {
+    queries.push(
+      client
+        .from('external_ids')
+        .select('value, work:works!inner(id, merged_into)')
+        .eq('source', 'openlibrary')
+        .in('value', workIds)
+        .then(({ data }) => {
+          for (const row of data ?? []) found.openLibraryWorks[row.value] = liveWorkId(row.work);
+        }),
+    );
+  }
+  for (let start = 0; start < isbns.length; start += isbnsPerQuery) {
+    queries.push(
+      client
+        .from('editions')
+        .select('isbn13, work:works!inner(id, merged_into)')
+        .in('isbn13', isbns.slice(start, start + isbnsPerQuery))
+        .then(({ data }) => {
+          for (const row of data ?? []) if (row.isbn13) found.isbns[row.isbn13] = liveWorkId(row.work);
+        }),
+    );
+  }
+  await Promise.all(queries);
+  return found;
+}
+
 export type CreateEditionResult =
   | { ok: true; workId: string; editionId: string }
   | { ok: false; reason: 'invalid'; issues: CatalogIssue[] }

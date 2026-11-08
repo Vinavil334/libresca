@@ -111,3 +111,104 @@ export const sbnFull = {
   localizzazioni: [{ biblioteca: 'Biblioteca inventata' }],
   citazioni: [{ standard: 'mla', valore: 'Muschio, Ada. Il bosco dei funghi.' }],
 };
+
+/**
+ * Title search (F1.2b). Open Library groups editions by work, lists every ISBN of the work
+ * and, with `lang=it`, puts the best Italian edition under `editions`. Titles may carry
+ * combining accents, as in live answers.
+ */
+export const searchIsbnA = '9788806031329';
+export const searchIsbnB = '9788804598893';
+export const searchIsbnGoogleOnly = '9791254960011';
+
+export const openLibrarySearch = {
+  numFound: 2,
+  start: 0,
+  numFoundExact: true,
+  docs: [
+    {
+      key: '/works/OL15W',
+      title: 'La topina rampante',
+      author_name: ['Ada Muskio'],
+      author_key: ['OL77A'],
+      first_publish_year: 1957,
+      edition_count: 3,
+      cover_i: 1159,
+      isbn: ['8806031325', searchIsbnA, searchIsbnB, 'not-an-isbn'],
+      editions: {
+        numFound: 3,
+        start: 0,
+        numFoundExact: true,
+        docs: [
+          {
+            key: '/books/OL165M',
+            title: 'La topina rampante',
+            cover_i: 1076,
+            language: ['ita'],
+            publisher: ['Edizioni Sottobosco'],
+            publish_year: [1971],
+            isbn: ['8806031325', searchIsbnA],
+          },
+        ],
+      },
+    },
+    {
+      key: '/works/OL99W',
+      title: 'Il funghetto è nel bosco',
+      author_name: ['Bruno Felce'],
+      first_publish_year: 1981,
+      edition_count: 1,
+      editions: {
+        numFound: 1,
+        start: 0,
+        numFoundExact: true,
+        docs: [{ key: '/books/OL430M', title: 'Il funghetto è nel bosco', publish_year: [1984] }],
+      },
+    },
+    { title: 'A doc without a key is ignored' },
+  ],
+};
+
+export const googleBooksSearch = {
+  kind: 'books#volumes',
+  totalItems: 4,
+  items: [
+    {
+      id: 'vol_Top-B',
+      volumeInfo: {
+        title: 'La topina rampante',
+        authors: ['Ada Muschio'],
+        publisher: 'Muffa',
+        publishedDate: '2010-05-04',
+        industryIdentifiers: [
+          { type: 'ISBN_10', identifier: '8804598891' },
+          { type: 'ISBN_13', identifier: searchIsbnB },
+        ],
+        language: 'it',
+        imageLinks: { thumbnail: 'http://books.google.com/books/content?id=vol_Top-B&printsec=frontcover&img=1' },
+      },
+    },
+    {
+      id: 'vol_Spora-1',
+      volumeInfo: {
+        title: 'Spore di città',
+        authors: ['Chiara Spora'],
+        publisher: 'Lichene',
+        publishedDate: '2024',
+        industryIdentifiers: [{ type: 'ISBN_13', identifier: searchIsbnGoogleOnly }],
+        language: 'it',
+      },
+    },
+    {
+      id: 'vol_Spora-2',
+      volumeInfo: {
+        title: 'Spore di Città',
+        authors: ['Chiara Spora'],
+        publishedDate: '2025-01',
+        industryIdentifiers: [{ type: 'OTHER', identifier: 'UOM:39015' }],
+        language: 'it',
+      },
+    },
+    { id: 'vol_Notitle', volumeInfo: { authors: ['Nessuno'] } },
+  ],
+};

@@ -34,6 +34,8 @@ Ricorda che alcuni codici a barre sui libri non sono ISBN e che l'editore può a
 
 - Non unire le opere in base al solo titolo: i falsi positivi sono peggiori dei doppioni, perché i doppioni si possono unire dopo.
 - Una corrispondenza sicura richiede un identificatore condiviso, oppure titolo e autore normalizzati con conferma.
+- Nella ricerca per titolo un volume di Google Books entra in un'opera di Open Library solo tramite un ISBN condiviso. `matchCatalog` segnala le opere già nel catalogo (`identifier` o `title_author`) senza unire nulla.
+- I testi delle fonti passano da `cleanText`, che li compone in NFC: Open Library a volte manda gli accenti come segni combinanti.
 - Gestisci accenti, articoli iniziali e sottotitoli.
 - I traduttori stanno in `contributors` come dato dell'edizione.
 
