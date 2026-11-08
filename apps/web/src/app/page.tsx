@@ -1,7 +1,7 @@
 import { getOwnProfile } from '@libresca/data';
 import { getTranslations } from 'next-intl/server';
 
-import { Button } from '@/components/button';
+import { Button, ButtonLink } from '@/components/button';
 import { signOut } from '@/lib/auth-actions';
 import { createSupabaseServerClient, currentUserId } from '@/lib/supabase/server';
 
@@ -19,6 +19,9 @@ export default async function HomePage() {
       <p className="type-heading text-text-muted">{t('intro')}</p>
       {profile && <p className="type-title text-text">{t('greeting', { name: profile.display_name })}</p>}
       <p className="type-body text-text">{t('body')}</p>
+      <ButtonLink href="/add" className="self-start">
+        {t('addBook')}
+      </ButtonLink>
       <form action={signOut}>
         <Button type="submit" variant="quiet">
           {tAuth('signOut')}

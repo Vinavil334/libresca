@@ -183,6 +183,25 @@ export async function findWorksByIdentifiers(
   return found;
 }
 
+/**
+ * Catalog authors with one of these Open Library author ids, by id: a new work by the
+ * same person reuses the author instead of creating a twin. Merged authors resolve
+ * to the one that replaced them (one hop). A failed query only means no reuse.
+ */
+export async function findAuthorsByOpenLibraryIds(
+  client: LibrescaClient,
+  openLibraryIds: string[],
+): Promise<Record<string, string>> {
+  const ids = [...new Set(openLibraryIds.filter((id) => /^OL\d+A$/.test(id)))];
+  if (ids.length === 0) return {};
+  const { data } = await client
+    .from('external_ids')
+    .select('value, author:authors!inner(id, merged_into)')
+    .eq('source', 'openlibrary')
+    .in('value', ids);
+  return Object.fromEntries((data ?? []).map((row) => [row.value, row.author.merged_into ?? row.author.id]));
+}
+
 export type CreateEditionResult =
   | { ok: true; workId: string; editionId: string }
   | { ok: false; reason: 'invalid'; issues: CatalogIssue[] }

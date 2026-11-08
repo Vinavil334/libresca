@@ -51,7 +51,7 @@ apps/web/            Next.js: pagine, componenti, API /api/v1
 apps/mobile/         App Expo, solo dalla F5
 packages/domain/     Logica pura: ISBN, parser degli import, regole, schemi di validazione
 packages/data/       Accesso ai dati via Supabase, senza React né Next.js
-packages/metadata/   Fonti dei metadati (Open Library, Google Books, SBN): client, parser, unione per campo; solo lato server
+packages/metadata/   Fonti dei metadati (Open Library, Google Books, SBN): client, parser, unione per campo; solo lato server, tranne `@libresca/metadata/client` (tipi delle risposte e funzioni pure per la schermata di aggiunta)
 packages/i18n/       Messaggi per lingua (messages/it.json)
 packages/tokens/     Design token in JSON, da cui si genera il CSS
 supabase/
@@ -118,6 +118,8 @@ Senza ISBN si parte da `GET /api/v1/books/search?q=` (F1.2b), con testo libero (
 
 5. Collega l'edizione a un'opera esistente, se la corrispondenza è sicura; altrimenti creane una nuova, che potrà essere unita in seguito.
 6. Se nessuna fonte risponde, apri l'inserimento manuale con i dati già noti.
+
+I passi 5-6 sono la schermata `/add` (F1.3a). L'endpoint per ISBN segnala in `catalogWork` l'opera del catalogo con lo stesso ID di opera di Open Library: la nuova edizione va lì senza chiedere. Una corrispondenza solo per titolo e autore diventa una domanda all'utente. Il salvataggio è una Server Action che richiama i pacchetti: `editedCatalogEntry` applica le correzioni dell'utente (fonte `user` in `field_sources`), `findAuthorsByOpenLibraryIds` riusa gli autori già nel catalogo con lo stesso ID Open Library, `createEdition` valida e scrive. La proposta torna dal client, quindi è trattata come input dell'utente: la validano il dominio e il database.
 
 ### Import di librerie grandi
 

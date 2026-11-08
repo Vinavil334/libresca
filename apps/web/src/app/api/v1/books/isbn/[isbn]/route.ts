@@ -1,4 +1,4 @@
-import { type EditionDetails, getEditionByIsbn } from '@libresca/data';
+import { type EditionDetails, findWorksByIdentifiers, getEditionByIsbn, getWork } from '@libresca/data';
 import { toIsbn13 } from '@libresca/domain';
 import { type IsbnLookupResponse, lookupIsbn } from '@libresca/metadata';
 import { type NextRequest, NextResponse } from 'next/server';
@@ -34,7 +34,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   });
   if (!lookup) return apiError('invalid_isbn', 400);
 
-  return lookup.proposal
-    ? reply({ status: 'proposal', isbn13, sources: lookup.sources, proposal: lookup.proposal })
-    : reply({ status: 'not_found', isbn13, sources: lookup.sources }, 404);
+  if (!lookup.proposal) return reply({ status: 'not_found', isbn13, sources: lookup.sources }, 404);
+
+  // A new edition of a work already in the catalog: same Open Library work id.
+  const workIds = lookup.proposal.workExternalIds.flatMap((id) => (id.source === 'openlibrary' ? [id.value] : []));
+  const matches = await findWorksByIdentifiers(auth.client, { openLibraryWorkIds: workIds, isbns: [] });
+  const matchedId = workIds.map((id) => matches.openLibraryWorks[id]).find((id) => id !== undefined);
+  const work = matchedId ? await getWork(auth.client, matchedId) : null;
+
+  return reply({
+    status: 'proposal',
+    isbn13,
+    sources: lookup.sources,
+    proposal: lookup.proposal,
+    ...(work && { catalogWork: { id: work.id, title: work.title } }),
+  });
 }

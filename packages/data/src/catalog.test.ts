@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createEdition, findWorksByIdentifiers, getEditionByIsbn, getWork, searchWorks } from './catalog';
+import {
+  createEdition,
+  findAuthorsByOpenLibraryIds,
+  findWorksByIdentifiers,
+  getEditionByIsbn,
+  getWork,
+  searchWorks,
+} from './catalog';
 import type { LibrescaClient } from './client';
 
 type Result = { data: unknown; error: unknown };
@@ -164,6 +171,31 @@ describe('findWorksByIdentifiers', () => {
       isbns: {},
     });
     expect(calls.in.map(([, values]) => values.length)).toEqual([150, 50]);
+  });
+});
+
+describe('findAuthorsByOpenLibraryIds', () => {
+  it('asks nothing without a valid author id', async () => {
+    const { client } = fakeClient([]);
+    expect(await findAuthorsByOpenLibraryIds(client, ['OL15W', 'x'])).toEqual({});
+    expect(client.from).not.toHaveBeenCalled();
+  });
+
+  it('maps ids to live authors', async () => {
+    const { client, calls } = fakeClient([
+      {
+        data: [
+          { value: 'OL77A', author: { id: 'a1', merged_into: null } },
+          { value: 'OL78A', author: { id: 'old', merged_into: 'a2' } },
+        ],
+        error: null,
+      },
+    ]);
+    expect(await findAuthorsByOpenLibraryIds(client, ['OL77A', 'OL78A', 'OL77A'])).toEqual({
+      OL77A: 'a1',
+      OL78A: 'a2',
+    });
+    expect(calls.in).toEqual([['value', ['OL77A', 'OL78A']]]);
   });
 });
 
