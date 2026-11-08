@@ -65,7 +65,7 @@ export default async function BookPage({ params, searchParams }: Props) {
 
       <header className="flex flex-col gap-6 sm:flex-row sm:items-end">
         <BookCover title={work.title} url={cover} size="large" />
-        <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-[0] flex-col gap-2">
           <h1 className="type-display-l wrap-break-word text-text">{work.title}</h1>
           <p className="type-body-strong wrap-break-word text-text">
             {authors.length > 0 ? format.list(authors, { type: 'conjunction' }) : t('unknownAuthor')}
@@ -98,7 +98,7 @@ export default async function BookPage({ params, searchParams }: Props) {
               className="flex items-center gap-4 rounded-card border-(length:--border-ink) border-border bg-surface-raised p-3"
             >
               <BookCover title={edition.title ?? work.title} url={editionCover(edition)} size="small" />
-              <div className="flex min-w-0 flex-col">
+              <div className="flex min-w-[0] flex-col">
                 <p className="type-title-s wrap-break-word text-text">{edition.title ?? work.title}</p>
                 <p className="type-small wrap-break-word text-text-muted">
                   {[
@@ -129,9 +129,12 @@ export default async function BookPage({ params, searchParams }: Props) {
         </ul>
       </section>
 
-      <ButtonLink href="/add" variant="secondary" className="self-start">
-        {t('addAnother')}
-      </ButtonLink>
+      <div className="flex flex-wrap gap-3">
+        {added && <ButtonLink href="/add?scan=1">{t('scanAnother')}</ButtonLink>}
+        <ButtonLink href="/add" variant="secondary">
+          {t('addAnother')}
+        </ButtonLink>
+      </div>
     </main>
   );
 }

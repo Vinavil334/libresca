@@ -7,6 +7,13 @@ import tseslint from 'typescript-eslint';
 
 const HEX_COLOR = String.raw`#[0-9a-fA-F]{3,8}\b`;
 
+// Spacing utilities outside the token scale (1-6 and 8, see packages/tokens): Tailwind
+// silently drops them, so `pl-12` or `inset-0` render nothing. Use a token step or an
+// arbitrary value such as `inset-[0]`.
+const SPACING =
+  '(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y|inset|inset-x|inset-y|top|bottom|left|right|w|h|size|min-w|min-h|translate-x|translate-y)';
+const OFF_SCALE = String.raw`(?:^|\s|:)-?${SPACING}-(?:0|7|9|[1-9][0-9]+|px|[0-9]\.5)(?:\s|$)`;
+
 export default defineConfig([
   globalIgnores([
     '**/node_modules/',
@@ -64,6 +71,14 @@ export default defineConfig([
         {
           selector: `TemplateElement[value.raw=/${HEX_COLOR}/]`,
           message: 'Use a token class (bg-surface, text-text…) instead of a hex color.',
+        },
+        {
+          selector: `Literal[value=/${OFF_SCALE}/]`,
+          message: 'Spacing outside the token scale (1-6, 8) renders nothing: use a token step or an arbitrary value.',
+        },
+        {
+          selector: `TemplateElement[value.raw=/${OFF_SCALE}/]`,
+          message: 'Spacing outside the token scale (1-6, 8) renders nothing: use a token step or an arbitrary value.',
         },
       ],
     },

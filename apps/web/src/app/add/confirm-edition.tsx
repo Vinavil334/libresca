@@ -221,7 +221,7 @@ export function ConfirmEdition({
           {issueText('cover') && <p className="type-small text-danger">{issueText('cover')}</p>}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <div className="flex min-w-[0] flex-1 flex-col gap-4">
           <FormField
             id={`${id}-title`}
             label={t('fields.title')}

@@ -16,12 +16,15 @@ import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
 import { Button } from '@/components/button';
-import { SearchIcon } from '@/components/icons';
+import { ScanIcon, SearchIcon } from '@/components/icons';
 
+import { BarcodeScanner } from './barcode-scanner';
 import { ConfirmEdition, type WorkMatch } from './confirm-edition';
+import { PhotoCodeButton, type PhotoCodeResult } from './photo-code-button';
 import { SearchResults } from './search-results';
 
-type Failure = 'network' | 'rateLimited' | 'session' | 'tooShort' | 'invalidIsbn';
+type Failure =
+  'network' | 'rateLimited' | 'session' | 'tooShort' | 'invalidIsbn' | 'photoEmpty' | 'photoNotIsbn' | 'unsupported';
 
 interface Confirming {
   proposal: EditionProposal;
@@ -45,11 +48,13 @@ async function getJson<T>(url: string): Promise<Fetched<T>> {
 }
 
 /**
- * The add screen: one search box for a title, an author or an ISBN, the results, then
- * the card to confirm. Searching and saving live in the packages and in `/api/v1`;
- * this component only moves between the steps.
+ * The add screen: the barcode scanner, one search box for a title, an author or an ISBN,
+ * the results, then the card to confirm. Searching and saving live in the packages and
+ * in `/api/v1`; this component only moves between the steps.
+ *
+ * `startScanning`: open the camera at once, as after "Scansiona un altro".
  */
-export function AddBook() {
+export function AddBook({ startScanning = false }: { startScanning?: boolean }) {
   const t = useTranslations('add');
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -57,6 +62,7 @@ export function AddBook() {
   const [failure, setFailure] = useState<Failure | null>(null);
   const [results, setResults] = useState<BookSearchResponse<WorkWithAuthors> | null>(null);
   const [confirming, setConfirming] = useState<Confirming | null>(null);
+  const [scanning, setScanning] = useState(startScanning);
 
   async function lookUpIsbn(isbn13: string, match?: WorkMatch) {
     setLoading(true);
@@ -78,9 +84,26 @@ export function AddBook() {
     setConfirming({ proposal: emptyProposal(isbn13), match, notice: 'notFound' });
   }
 
+  /** A code read by the camera or from a photo goes down the same path as a typed ISBN. */
+  function scanned(isbn13: string) {
+    setScanning(false);
+    setQuery(isbn13);
+    void lookUpIsbn(isbn13);
+  }
+
+  function photoRead(result: PhotoCodeResult) {
+    if (result === 'unsupported') return setFailure('unsupported');
+    if (result === null) return setFailure('photoEmpty');
+    if (result.kind === 'not_isbn') return setFailure('photoNotIsbn');
+    scanned(result.isbn13);
+  }
+
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const parsed = parseBookQuery(query);
+    // The form is the source of truth: text typed before hydration never reached the state.
+    const typed = String(new FormData(event.currentTarget).get('q') ?? '');
+    setQuery(typed);
+    const parsed = parseBookQuery(typed);
     if (!parsed) return setFailure('tooShort');
     if (parsed.kind === 'invalid_isbn') return setFailure('invalidIsbn');
     if (parsed.kind === 'isbn') return lookUpIsbn(parsed.isbn13);
@@ -124,10 +147,32 @@ export function AddBook() {
     session: t('errors.session'),
     tooShort: t('search.tooShort'),
     invalidIsbn: t('search.invalidIsbn'),
+    photoEmpty: t('scan.errors.photoEmpty'),
+    photoNotIsbn: t('scan.errors.photoNotIsbn'),
+    unsupported: t('scan.errors.unsupported'),
   };
 
   return (
     <div className="flex flex-col gap-6">
+      {scanning && (
+        <BarcodeScanner
+          onIsbn={scanned}
+          onClose={() => setScanning(false)}
+          fallback={<PhotoCodeButton onResult={photoRead} />}
+        />
+      )}
+
+      <div className="flex flex-col gap-2">
+        <Button type="button" onClick={() => setScanning(true)} className="self-stretch sm:self-start">
+          <ScanIcon />
+          {t('scan.open')}
+        </Button>
+        <div className="flex flex-wrap items-center gap-x-2">
+          <span className="type-small text-text-muted">{t('scan.or')}</span>
+          <PhotoCodeButton onResult={photoRead} variant="quiet" />
+        </div>
+      </div>
+
       <form role="search" onSubmit={search} className="flex flex-col gap-3 sm:flex-row" noValidate>
         <label htmlFor="book-query" className="sr-only">
           {t('search.label')}

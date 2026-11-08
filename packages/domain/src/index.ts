@@ -55,3 +55,4 @@ export {
   isCoverPath,
 } from './cover-photo';
 export { commonLanguages, defaultBookLanguage } from './languages';
+export { type ScannedCode, bookBarcodeFormats, isbnFromBarcode, isbnFromBarcodes } from './barcode';

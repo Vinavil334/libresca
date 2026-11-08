@@ -152,6 +152,28 @@
     },
     "cover": {
       "alt": "Copertina di {title}"
+    },
+    "scan": {
+      "open": "Scansiona il codice a barre",
+      "photo": "Fotografa il codice",
+      "or": "Niente fotocamera a portata?",
+      "title": "Scansiona il codice a barre",
+      "aim": "Inquadra il codice con il 978 o il 979, di solito sopra il prezzo.",
+      "starting": "Accendo la fotocamera…",
+      "reading": "Sto leggendo il codice…",
+      "found": "Trovato: {isbn}",
+      "notIsbn": "Questo codice non è un ISBN: cerca quello che inizia con 978 o 979.",
+      "close": "Chiudi la fotocamera",
+      "torchOn": "Accendi la luce",
+      "torchOff": "Spegni la luce",
+      "errors": {
+        "denied": "La fotocamera resta chiusa senza il tuo permesso. Puoi fotografare il codice o scrivere l'ISBN.",
+        "noCamera": "Non troviamo una fotocamera. Puoi fotografare il codice o scrivere l'ISBN.",
+        "failed": "La fotocamera non si è accesa. Riprova, oppure fotografa il codice.",
+        "unsupported": "Questo browser non sa leggere i codici a barre. Scrivi l'ISBN nella casella.",
+        "photoEmpty": "In questa foto non vediamo un codice a barre. Avvicinati e riprova, con un po' di luce.",
+        "photoNotIsbn": "Il codice in questa foto non è un ISBN: cerca quello che inizia con 978 o 979."
+      }
     }
   },
   "book": {
@@ -166,6 +188,7 @@
     "description": "Di cosa parla",
     "addAnother": "Aggiungi un altro libro",
     "unknownAuthor": "Autore sconosciuto",
-    "translatedBy": "Traduzione di {names}"
+    "translatedBy": "Traduzione di {names}",
+    "scanAnother": "Scansiona un altro"
   }
 }
