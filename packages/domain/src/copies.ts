@@ -1,3 +1,5 @@
+import { checkPastDate } from './dates';
+
 /**
  * Owned copies (F1.5): what a person may say about a volume on their shelves.
  * Format belongs to the edition; condition and location are not tracked for now.
@@ -38,17 +40,6 @@ export interface CopyIssue {
 
 export type CopyValidation = { ok: true; payload: CopyPayload } | { ok: false; issues: CopyIssue[] };
 
-/** A real calendar date in `YYYY-MM-DD`, from 1450 on. */
-function isCalendarDate(value: string): boolean {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return false;
-  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return (
-    year >= 1450 && date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
-  );
-}
-
 /**
  * Checks and normalises a copy. `today` (`YYYY-MM-DD`, in the user's time zone) refuses
  * acquisition dates in the future; tests pass a fixed day.
@@ -56,9 +47,9 @@ function isCalendarDate(value: string): boolean {
 export function validateCopy(input: CopyInput, today: string): CopyValidation {
   const issues: CopyIssue[] = [];
 
-  const acquiredOn = input.acquiredOn?.trim() || null;
-  if (acquiredOn && !isCalendarDate(acquiredOn)) issues.push({ path: 'acquiredOn', code: 'invalid_date' });
-  else if (acquiredOn && acquiredOn > today) issues.push({ path: 'acquiredOn', code: 'future_date' });
+  const date = checkPastDate(input.acquiredOn, today);
+  const acquiredOn = date === 'invalid_date' || date === 'future_date' ? null : date;
+  if (date === 'invalid_date' || date === 'future_date') issues.push({ path: 'acquiredOn', code: date });
 
   const notes = input.notes?.trim() || null;
   if (notes && notes.length > copyNotesMaxLength) issues.push({ path: 'notes', code: 'too_long' });
@@ -80,9 +71,4 @@ export function validateCopy(input: CopyInput, today: string): CopyValidation {
       ...(input.visibility === undefined ? {} : { visibility: input.visibility }),
     },
   };
-}
-
-/** Today's date as `YYYY-MM-DD` in a time zone, for `validateCopy`. */
-export function localDate(now: Date, timeZone?: string): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 }

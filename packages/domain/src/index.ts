@@ -65,7 +65,24 @@ export {
   type Visibility,
   copyNotesMaxLength,
   defaultVisibility,
-  localDate,
   validateCopy,
   visibilities,
 } from './copies';
+export { type DateIssueCode, checkPastDate, isCalendarDate, localDate } from './dates';
+export {
+  type ReadingInput,
+  type ReadingIssue,
+  type ReadingIssueCode,
+  type ReadingPayload,
+  type ReadingStatus,
+  type ReadingValidation,
+  isFinishedStatus,
+  isOpenStatus,
+  maxRatingHalf,
+  openReading,
+  ratingMushrooms,
+  readingStatuses,
+  reviewMaxLength,
+  sortReadings,
+  validateReading,
+} from './readings';

@@ -322,6 +322,74 @@ export type Database = {
         };
         Relationships: [];
       };
+      readings: {
+        Row: {
+          created_at: string;
+          edition_id: string | null;
+          finished_on: string | null;
+          id: string;
+          rating_half: number | null;
+          review: string | null;
+          started_on: string | null;
+          status: Database['public']['Enums']['reading_status'];
+          updated_at: string;
+          user_id: string;
+          visibility: Database['public']['Enums']['visibility'];
+          work_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          edition_id?: string | null;
+          finished_on?: string | null;
+          id?: string;
+          rating_half?: number | null;
+          review?: string | null;
+          started_on?: string | null;
+          status: Database['public']['Enums']['reading_status'];
+          updated_at?: string;
+          user_id?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+          work_id: string;
+        };
+        Update: {
+          created_at?: string;
+          edition_id?: string | null;
+          finished_on?: string | null;
+          id?: string;
+          rating_half?: number | null;
+          review?: string | null;
+          started_on?: string | null;
+          status?: Database['public']['Enums']['reading_status'];
+          updated_at?: string;
+          user_id?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+          work_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'readings_edition_id_fkey';
+            columns: ['edition_id'];
+            isOneToOne: false;
+            referencedRelation: 'editions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'readings_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'readings_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       work_authors: {
         Row: {
           author_id: string;
@@ -451,6 +519,7 @@ export type Database = {
       metadata_source: 'openlibrary' | 'googlebooks' | 'sbn' | 'goodreads' | 'user';
       metadata_status: 'incomplete' | 'complete';
       profile_status: 'pending' | 'active' | 'suspended';
+      reading_status: 'want' | 'reading' | 'read' | 'abandoned';
       visibility: 'private' | 'friends' | 'public';
     };
     CompositeTypes: {
@@ -565,6 +634,7 @@ export const Constants = {
       metadata_source: ['openlibrary', 'googlebooks', 'sbn', 'goodreads', 'user'],
       metadata_status: ['incomplete', 'complete'],
       profile_status: ['pending', 'active', 'suspended'],
+      reading_status: ['want', 'reading', 'read', 'abandoned'],
       visibility: ['private', 'friends', 'public'],
     },
   },

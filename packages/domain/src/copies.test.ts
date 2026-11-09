@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { copyNotesMaxLength, localDate, validateCopy } from './copies';
+import { copyNotesMaxLength, validateCopy } from './copies';
+import { localDate } from './dates';
 
 const today = '2026-11-08';
 
