@@ -17,9 +17,16 @@ export {
   type JsonValue,
   type MetadataSource,
   type MetadataStatus,
+  type EditValidation,
+  type EditionEditInput,
+  type EditionEditPayload,
+  type WorkEditInput,
+  type WorkEditPayload,
   type WorkInput,
   authorSortName,
+  authorsForEdit,
   cleanText,
+  withoutControls,
   contributorRoles,
   coverSources,
   coverUrl,
@@ -30,6 +37,8 @@ export {
   metadataStatuses,
   searchQuery,
   validateCatalogEntry,
+  validateEditionEdit,
+  validateWorkEdit,
 } from './catalog';
 export { cleanIsbn, isValidIsbn10, isValidIsbn13, isbn10To13, toIsbn13 } from './isbn';
 export {
@@ -121,6 +130,7 @@ export {
   parseCsv,
   parseGoodreadsExport,
   plannedReadings,
+  quarters as goodreadsRatingQuarters,
   sameGoodreadsBook,
   stripSeries,
   summarizeGoodreads,

@@ -1,6 +1,8 @@
 import {
   type CatalogEntryInput,
   type CatalogIssue,
+  type EditionEditInput,
+  type WorkEditInput,
   type ContributorRole,
   type CoverSource,
   type EditionFormat,
@@ -8,6 +10,8 @@ import {
   type MetadataStatus,
   toIsbn13,
   validateCatalogEntry,
+  validateEditionEdit,
+  validateWorkEdit,
 } from '@libresca/domain';
 
 import type { LibrescaClient } from './client';
@@ -239,4 +243,50 @@ export async function createEdition(client: LibrescaClient, input: CatalogEntryI
   const ids = data as { work_id?: unknown; edition_id?: unknown } | null;
   if (typeof ids?.work_id !== 'string' || typeof ids.edition_id !== 'string') return { ok: false, reason: 'failed' };
   return { ok: true, workId: ids.work_id, editionId: ids.edition_id };
+}
+
+export type CatalogEditResult =
+  | { ok: true }
+  | { ok: false; reason: 'invalid'; issues: CatalogIssue[] }
+  /** `not_found`: the work, edition or an author is gone or was merged. `forbidden`: account not active. */
+  | { ok: false; reason: 'not_found' | 'forbidden' | 'rejected' | 'failed' };
+
+function editFailure(code: string | undefined): CatalogEditResult {
+  const reason = code ? failureReasons[code] : undefined;
+  if (reason === 'not_found' || reason === 'forbidden' || reason === 'rejected') return { ok: false, reason };
+  return { ok: false, reason: 'failed' };
+}
+
+/**
+ * Corrects a work of the shared catalog: title, authors, first year, description. The
+ * database marks the changed fields as written by a person. Authors whose name did not
+ * change keep their id (`authorsForEdit`).
+ */
+export async function updateWork(
+  client: LibrescaClient,
+  workId: string,
+  input: WorkEditInput,
+): Promise<CatalogEditResult> {
+  const validation = validateWorkEdit(input);
+  if (!validation.ok) return { ok: false, reason: 'invalid', issues: validation.issues };
+  const { error } = await client.rpc('update_work', {
+    target_work_id: workId,
+    changes: validation.payload as unknown as Json,
+  });
+  return error ? editFailure(error.code) : { ok: true };
+}
+
+/** Corrects an edition: its details, its translators and, with a new photo, its cover. */
+export async function updateEdition(
+  client: LibrescaClient,
+  editionId: string,
+  input: EditionEditInput,
+): Promise<CatalogEditResult> {
+  const validation = validateEditionEdit(input);
+  if (!validation.ok) return { ok: false, reason: 'invalid', issues: validation.issues };
+  const { error } = await client.rpc('update_edition', {
+    target_edition_id: editionId,
+    changes: validation.payload as unknown as Json,
+  });
+  return error ? editFailure(error.code) : { ok: true };
 }

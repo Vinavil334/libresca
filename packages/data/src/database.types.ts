@@ -692,6 +692,8 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      update_edition: { Args: { changes: Json; target_edition_id: string }; Returns: undefined };
+      update_work: { Args: { changes: Json; target_work_id: string }; Returns: undefined };
     };
     Enums: {
       contributor_role: 'translator' | 'editor' | 'illustrator' | 'introduction' | 'other';

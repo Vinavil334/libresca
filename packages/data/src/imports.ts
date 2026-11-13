@@ -11,7 +11,7 @@ import { createEdition, getEditionByIsbn, getWork, searchWorks } from './catalog
 import type { LibrescaClient } from './client';
 import { addCopy, listOwnCopies } from './copies';
 import type { Json, Tables } from './database.types';
-import { addReading, listOwnReadings } from './readings';
+import { type Reading, addReading, listOwnReadings, updateReading } from './readings';
 import { createShelf, listOwnShelves, setOnShelf } from './shelves';
 
 /**
@@ -51,6 +51,8 @@ export interface ImportProgress {
   status: 'running' | 'finished';
   total: number;
   counts: Record<ImportRowStatus, number>;
+  /** Books already in the Tana whose truncated rating got its quarters back. */
+  ratingsUpdated: number;
 }
 
 export type StartImportResult =
@@ -92,24 +94,19 @@ export async function getImportProgress(client: LibrescaClient, jobId: string): 
       counts[status] = count ?? 0;
     }),
   );
+  const { count: ratingsUpdated } = await client
+    .from('import_rows')
+    .select('id', { count: 'exact', head: true })
+    .eq('job_id', jobId)
+    .eq('note', 'rating_updated');
   const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
-  return { jobId, status: job.status === 'finished' ? 'finished' : 'running', total, counts };
-}
-
-/** Source keys the caller already brought in with an earlier import. */
-async function importedBefore(client: LibrescaClient): Promise<Set<string>> {
-  const keys = new Set<string>();
-  for (let from = 0; ; from += 1000) {
-    const { data, error } = await client
-      .from('import_rows')
-      .select('source_key')
-      .in('status', ['imported', 'skipped'])
-      .order('id')
-      .range(from, from + 999);
-    if (error || !data) return keys;
-    for (const row of data) keys.add(row.source_key);
-    if (data.length < 1000) return keys;
-  }
+  return {
+    jobId,
+    status: job.status === 'finished' ? 'finished' : 'running',
+    total,
+    counts,
+    ratingsUpdated: ratingsUpdated ?? 0,
+  };
 }
 
 /**
@@ -125,21 +122,19 @@ export async function startGoodreadsImport(client: LibrescaClient, csv: string):
   const { data: job, error } = await client.from('import_jobs').insert({ source: 'goodreads' }).select().single();
   if (error || !job) return { ok: false, reason: error?.code === '42501' ? 'forbidden' : 'failed' };
 
-  const before = await importedBefore(client);
+  // Every row is processed, even one brought in by an earlier import: a book already in
+  // the Tana keeps its readings and copies, and only gets a truncated rating repaired.
   const seen = new Set<string>();
   const rows = parsed.books.flatMap((book) => {
     const key = book.goodreadsId || `line-${book.line}`;
     if (seen.has(key)) return [];
     seen.add(key);
-    const done = before.has(key);
     return [
       {
         job_id: job.id,
         line: book.line,
         source_key: key,
         raw: book as unknown as { [key: string]: Json },
-        status: done ? 'skipped' : 'pending',
-        note: done ? 'imported_before' : null,
       },
     ];
   });
@@ -297,7 +292,7 @@ async function bringIn(
   placed: Placed,
   shelves: ShelfIds,
   today: string,
-): Promise<'imported' | 'already_in_tana'> {
+): Promise<'imported' | 'already_in_tana' | 'rating_updated'> {
   const [readings, copies] = await Promise.all([
     listOwnReadings(client, placed.workId),
     listOwnCopies(client, placed.workId),
@@ -319,7 +314,45 @@ async function bringIn(
     const id = await shelfId(client, shelves, name);
     if (id) await setOnShelf(client, id, placed.workId, true);
   }
+  if (readings.length > 0 && (await repairRating(client, book, readings, today))) return 'rating_updated';
   return readings.length > 0 || copies.length > 0 ? 'already_in_tana' : 'imported';
+}
+
+/**
+ * An import before November 2026 read `My Rating` as a whole number, so 4.5 became 4.
+ * When the book's finished reading still has exactly that truncated rating, it gets the
+ * exported one; a rating the user changed since is left alone.
+ */
+async function repairRating(
+  client: LibrescaClient,
+  book: GoodreadsBook,
+  readings: Reading[],
+  today: string,
+): Promise<boolean> {
+  const exported = book.ratingQuarter;
+  if (exported === null || exported % 4 === 0) return false;
+  const truncated = Math.floor(exported / 4) * 4 || null;
+  const target = readings.find(
+    (reading) =>
+      (reading.status === 'read' || reading.status === 'abandoned') &&
+      reading.rating_quarter === truncated &&
+      reading.finished_on === book.finishedOn,
+  );
+  if (!target) return false;
+  const result = await updateReading(
+    client,
+    target.id,
+    {
+      status: target.status,
+      startedOn: target.started_on ?? '',
+      finishedOn: target.finished_on ?? '',
+      ratingQuarter: exported,
+      review: target.review ?? '',
+      editionId: target.edition_id,
+    },
+    today,
+  );
+  return result.ok;
 }
 
 async function updateRow(
@@ -373,9 +406,9 @@ export async function runImportStep(
       if (placement.kind === 'placed') {
         if (placement.usedGoogle) calls += 1;
         const outcome = await bringIn(client, book, placement.placed, shelves, options.today);
-        await updateRow(client, row.id, 'imported', {
+        await updateRow(client, row.id, outcome === 'imported' ? 'imported' : 'skipped', {
           work_id: placement.placed.workId,
-          note: outcome === 'already_in_tana' ? 'already_in_tana' : placement.note,
+          note: outcome === 'imported' ? placement.note : outcome,
         });
       } else if (placement.kind === 'review') {
         await updateRow(client, row.id, 'review', { candidates: placement.candidates as unknown as Json });
@@ -457,9 +490,9 @@ export async function resolveImportRow(
   }
   if (placement.kind !== 'placed') return false;
   const outcome = await bringIn(client, book, placement.placed, await loadShelves(client), today);
-  await updateRow(client, row.id, 'imported', {
+  await updateRow(client, row.id, outcome === 'imported' ? 'imported' : 'skipped', {
     work_id: placement.placed.workId,
-    note: outcome === 'already_in_tana' ? 'already_in_tana' : placement.note,
+    note: outcome === 'imported' ? placement.note : outcome,
   });
   return true;
 }

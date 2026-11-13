@@ -97,6 +97,12 @@ export default async function BookPage({ params, searchParams }: Props) {
           <BackIcon />
           {t('back')}
         </Link>
+        <Link
+          href={`/books/${work.id}/edit`}
+          className="inline-flex min-h-[2.75rem] items-center type-label underline underline-offset-4"
+        >
+          {t('edit')}
+        </Link>
       </CanopyHeader>
 
       <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 pb-8 sm:px-6">

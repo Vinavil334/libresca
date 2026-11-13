@@ -193,12 +193,21 @@ const surnameParticles = new Set([
 ]);
 
 /**
- * Composed Unicode (NFC), trimmed, inner whitespace collapsed. Some sources send accents
+ * Composed Unicode (NFC), without control characters, trimmed, inner whitespace collapsed. Some sources send accents
  * as separate combining marks ("e" + U+0300): composed, the same title always compares
  * and searches the same way.
  */
 export function cleanText(value: string): string {
-  return value.normalize('NFC').replace(/\s+/g, ' ').trim();
+  return withoutControls(value).normalize('NFC').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Removes invisible control characters, keeping tabs and line breaks. Library catalogues
+ * such as OPAC SBN wrap a leading article in U+0098 and U+009C so that "Le origini del
+ * male" sorts under O: in a title they show up as boxes.
+ */
+export function withoutControls(value: string): string {
+  return value.replace(/(?![\t\n\r])\p{Cc}/gu, '');
 }
 
 /** Longest free-text search accepted, in characters. */
@@ -253,7 +262,7 @@ class Collector {
   /** Optional text: cleaned, `undefined` when empty. */
   optionalText(path: string, value: string | undefined, max: number, keepLines = false): string | undefined {
     if (value === undefined) return undefined;
-    const clean = keepLines ? value.normalize('NFC').trim() : cleanText(value);
+    const clean = keepLines ? withoutControls(value).normalize('NFC').trim() : cleanText(value);
     if (!clean) return undefined;
     if (clean.length > max) this.add(path, 'too_long');
     return clean;
@@ -430,6 +439,107 @@ export function validateCatalogEntry(input: CatalogEntryInput): CatalogValidatio
   const edition = validateEdition(c, input.edition);
   if (c.issues.length > 0) return { ok: false, issues: c.issues };
   return { ok: true, entry: { work: compact(work), edition: compact(edition) } };
+}
+
+/**
+ * A correction of a work already in the catalog (F1.8): every field is given, so an
+ * empty one clears it. Authors keep their catalog id when their name did not change.
+ */
+export interface WorkEditInput {
+  title: string;
+  authors: AuthorInput[];
+  firstPublishedYear?: number;
+  description?: string;
+}
+
+/** The body of `public.update_work`. `null` clears a field. */
+export interface WorkEditPayload {
+  title: string;
+  first_published_year: number | null;
+  description: string | null;
+  authors: AuthorPayload[];
+}
+
+/** A correction of an edition: the same fields as adding it by hand, translators included. */
+export interface EditionEditInput {
+  title?: string;
+  publisher?: string;
+  publishedYear?: number;
+  pageCount?: number;
+  format?: EditionFormat;
+  language?: string;
+  translators: string[];
+  /** A new photo of the cover, already uploaded; absent to keep the current cover. */
+  coverPath?: string;
+}
+
+/** The body of `public.update_edition`. `null` clears a field. */
+export interface EditionEditPayload {
+  title: string | null;
+  publisher: string | null;
+  published_year: number | null;
+  page_count: number | null;
+  format: EditionFormat | null;
+  language: string | null;
+  translators: string[];
+  cover_path?: string;
+}
+
+export type EditValidation<T> = { ok: true; payload: T } | { ok: false; issues: CatalogIssue[] };
+
+/** Validates a work correction with the rules of a new entry. */
+export function validateWorkEdit(input: WorkEditInput): EditValidation<WorkEditPayload> {
+  const c = new Collector();
+  const payload: WorkEditPayload = {
+    title: c.requiredText('work.title', input.title, limits.title),
+    first_published_year:
+      c.integer('work.firstPublishedYear', input.firstPublishedYear, -3000, 2100, 'invalid_year') ?? null,
+    description: c.optionalText('work.description', input.description, limits.description, true) ?? null,
+    authors: validateAuthors(c, input.authors),
+  };
+  return c.issues.length > 0 ? { ok: false, issues: c.issues } : { ok: true, payload };
+}
+
+/** Validates an edition correction with the rules of a new entry. */
+export function validateEditionEdit(input: EditionEditInput): EditValidation<EditionEditPayload> {
+  const c = new Collector();
+  const coverPath = c.optionalText('edition.coverPath', input.coverPath, limits.coverPath);
+  if (coverPath && !isCoverPath(coverPath)) c.add('edition.coverPath', 'invalid_cover_path');
+  const seen = new Set<string>();
+  const translators: string[] = [];
+  input.translators.forEach((value, i) => {
+    const name = c.optionalText(`edition.contributors.${i}.name`, value, limits.name);
+    if (!name) return;
+    if (seen.has(name.toLowerCase())) return c.add(`edition.contributors.${i}`, 'duplicate');
+    seen.add(name.toLowerCase());
+    translators.push(name);
+  });
+  const payload: EditionEditPayload = {
+    title: c.optionalText('edition.title', input.title, limits.title) ?? null,
+    publisher: c.optionalText('edition.publisher', input.publisher, limits.publisher) ?? null,
+    published_year: c.integer('edition.publishedYear', input.publishedYear, 1450, 2100, 'invalid_year') ?? null,
+    page_count: c.integer('edition.pageCount', input.pageCount, 1, 100000, 'invalid_page_count') ?? null,
+    format: c.option('edition.format', editionFormats, input.format) ?? null,
+    language: c.language('edition.language', input.language) ?? null,
+    translators,
+    ...(coverPath ? { cover_path: coverPath } : {}),
+  };
+  return c.issues.length > 0 ? { ok: false, issues: c.issues } : { ok: true, payload };
+}
+
+/**
+ * The authors of a corrected work: a name already among the current authors keeps its
+ * id, so fixing the order or adding a co-author never duplicates a person.
+ */
+export function authorsForEdit(names: string[], current: { id: string; name: string }[]): AuthorInput[] {
+  const byName = new Map(current.map((author) => [cleanText(author.name).toLowerCase(), author.id]));
+  return names
+    .map(cleanText)
+    .filter(Boolean)
+    .map((name) => {
+      const id = byName.get(name.toLowerCase());
+      return id ? { id } : { name };
+    });
 }
 
 export type CoverSize = 'small' | 'medium' | 'large';

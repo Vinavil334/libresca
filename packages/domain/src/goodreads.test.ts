@@ -6,6 +6,7 @@ import {
   parseCsv,
   parseGoodreadsExport,
   plannedReadings,
+  quarters,
   sameGoodreadsBook,
   stripSeries,
   summarizeGoodreads,
@@ -185,5 +186,23 @@ describe('goodreadsCatalogEntry and sameGoodreadsBook', () => {
     expect(sameGoodreadsBook(topina, 'La topina il fungo e la luna (Sottobosco, #1)', ['Ada Muskìo'])).toBe(true);
     expect(sameGoodreadsBook(topina, 'La topina', ['Ada Muskio'])).toBe(false);
     expect(sameGoodreadsBook(topina, 'La topina, il fungo e la luna', ['Bruno Felce'])).toBe(false);
+  });
+});
+
+describe('quarters', () => {
+  it('reads whole and decimal ratings, with a point or a comma', () => {
+    expect(quarters('4')).toBe(16);
+    expect(quarters('4.5')).toBe(18);
+    expect(quarters('4,5')).toBe(18);
+    expect(quarters('3.75')).toBe(15);
+    expect(quarters('3.8')).toBe(15);
+    expect(quarters('0.25')).toBe(1);
+  });
+
+  it('treats 0, nothing and nonsense as no rating', () => {
+    expect(quarters('0')).toBeNull();
+    expect(quarters('')).toBeNull();
+    expect(quarters('6')).toBeNull();
+    expect(quarters('bello')).toBeNull();
   });
 });

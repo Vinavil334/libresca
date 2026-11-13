@@ -115,6 +115,16 @@ function count(value: string): number {
   return Number.isFinite(number) && number > 0 ? number : 0;
 }
 
+/**
+ * `My Rating` in quarter mushrooms: "4", "4.5" or "4,5" (a spreadsheet may write the
+ * comma), rounded to the nearest quarter. 0 or nothing means no rating.
+ */
+export function quarters(value: string): number | null {
+  const number = Number.parseFloat(value.trim().replace(',', '.'));
+  if (!Number.isFinite(number) || number <= 0 || number > 5) return null;
+  return Math.min(20, Math.max(1, Math.round(number * 4)));
+}
+
 function year(value: string): number | null {
   const number = Number.parseInt(value.trim(), 10);
   return Number.isInteger(number) && number >= 1000 && number <= 2100 ? number : null;
@@ -173,7 +183,7 @@ export function parseGoodreadsExport(text: string): GoodreadsParse {
     const status: ReadingStatus | null = builtIn ?? (pausedShelves.has(exclusiveShelf) ? 'abandoned' : null);
     if (!status) issues.push({ line, code: 'custom_shelf', shelf: exclusiveShelf });
 
-    const rating = count(field(row, 'My Rating'));
+    const ratingQuarter = quarters(field(row, 'My Rating'));
     const dateRead = field(row, 'Date Read').replace(/\//g, '-');
     const finishedOn = dateRead && isCalendarDate(dateRead) ? dateRead : null;
     if (dateRead && !finishedOn) issues.push({ line, code: 'invalid_date' });
@@ -212,7 +222,7 @@ export function parseGoodreadsExport(text: string): GoodreadsParse {
       originalYear: year(field(row, 'Original Publication Year')),
       status,
       exclusiveShelf,
-      ratingQuarter: rating >= 1 && rating <= 5 ? rating * 4 : null,
+      ratingQuarter,
       finishedOn,
       readCount: status === 'read' ? Math.max(1, readCount) : readCount,
       // Every book read is taken as owned; the user removes the ones they do not have.

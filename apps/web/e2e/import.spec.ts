@@ -66,7 +66,7 @@ test.describe('importing from Goodreads', () => {
         '',
         '',
         `="${isbnNew}"`,
-        '4',
+        '4.5',
         'Edizioni Sottobosco',
         'Paperback',
         '212',
@@ -155,7 +155,7 @@ test.describe('importing from Goodreads', () => {
     await summary.getByRole('button', { name: 'Importa 3 libri' }).click();
 
     await expect(page.getByRole('heading', { name: 'Fatto!' })).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByText('3 libri sono nella tua Tana.')).toBeVisible();
+    await expect(page.getByText('3 libri nuovi sono nella tua Tana.')).toBeVisible();
 
     await page.getByRole('link', { name: 'Vai alla Tana' }).click();
     await expect(page.getByText('la tua libreria · 3 libri')).toBeVisible();
@@ -164,7 +164,8 @@ test.describe('importing from Goodreads', () => {
     await page.getByRole('button', { name: 'Elenco' }).click();
     const topina = all.getByRole('listitem').filter({ hasText: 'La topina e la luna' });
     await expect(topina).toContainText('Letto 2 volte');
-    await expect(topina.getByRole('img', { name: '4 funghetti' })).toBeVisible();
+    // A decimal rating keeps its quarters.
+    await expect(topina.getByRole('img', { name: '4,5 funghetti' })).toBeVisible();
 
     await topina.getByRole('link').click();
     const readings = page.getByRole('region', { name: 'Le tue letture' });
@@ -175,7 +176,13 @@ test.describe('importing from Goodreads', () => {
     ).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByRole('region', { name: "Ce l'hai" })).toContainText('Si può prestare');
 
-    // The same file again brings nothing new.
+    // An earlier import truncated 4.5 to 4: the same file again repairs that and adds nothing.
+    const { error: truncate } = await client
+      .from('readings')
+      .update({ rating_quarter: 16 })
+      .eq('finished_on', '2024-03-18')
+      .eq('rating_quarter', 18);
+    expect(truncate).toBeNull();
     await page.goto('/import');
     await page.getByRole('button', { name: 'Importa un altro file' }).click();
     await page.getByLabel('File CSV di Goodreads').setInputFiles({
@@ -185,9 +192,13 @@ test.describe('importing from Goodreads', () => {
     });
     await page.getByRole('button', { name: 'Importa 3 libri' }).click();
     await expect(page.getByRole('heading', { name: 'Fatto!' })).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByText('3 erano già stati importati.')).toBeVisible();
+    await expect(page.getByText('3 erano già nella Tana: non li abbiamo toccati.')).toBeVisible();
+    await expect(page.getByText('A 1 di questi abbiamo ridato i quarti di funghetto del voto.')).toBeVisible();
     await page.goto('/');
     await expect(page.getByText('la tua libreria · 3 libri')).toBeVisible();
+    await page.getByRole('searchbox', { name: 'Cerca nella tua Tana' }).fill('topina');
+    await page.getByRole('button', { name: 'Elenco' }).click();
+    await expect(all.getByRole('img', { name: '4,5 funghetti' })).toBeVisible();
   });
 
   test('a doubtful book waits for the user to pick it', async ({ page, context, baseURL }) => {
