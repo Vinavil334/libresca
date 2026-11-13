@@ -193,12 +193,21 @@ const surnameParticles = new Set([
 ]);
 
 /**
- * Composed Unicode (NFC), trimmed, inner whitespace collapsed. Some sources send accents
+ * Composed Unicode (NFC), without control characters, trimmed, inner whitespace collapsed. Some sources send accents
  * as separate combining marks ("e" + U+0300): composed, the same title always compares
  * and searches the same way.
  */
 export function cleanText(value: string): string {
-  return value.normalize('NFC').replace(/\s+/g, ' ').trim();
+  return withoutControls(value).normalize('NFC').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Removes invisible control characters, keeping tabs and line breaks. Library catalogues
+ * such as OPAC SBN wrap a leading article in U+0098 and U+009C so that "Le origini del
+ * male" sorts under O: in a title they show up as boxes.
+ */
+export function withoutControls(value: string): string {
+  return value.replace(/(?![\t\n\r])\p{Cc}/gu, '');
 }
 
 /** Longest free-text search accepted, in characters. */
@@ -253,7 +262,7 @@ class Collector {
   /** Optional text: cleaned, `undefined` when empty. */
   optionalText(path: string, value: string | undefined, max: number, keepLines = false): string | undefined {
     if (value === undefined) return undefined;
-    const clean = keepLines ? value.normalize('NFC').trim() : cleanText(value);
+    const clean = keepLines ? withoutControls(value).normalize('NFC').trim() : cleanText(value);
     if (!clean) return undefined;
     if (clean.length > max) this.add(path, 'too_long');
     return clean;

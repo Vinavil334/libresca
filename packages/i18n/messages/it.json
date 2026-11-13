@@ -459,7 +459,7 @@
       "heading": "Cosa arriva nella Tana",
       "books": "{count, plural, one {# libro} other {# libri}} nell'export",
       "statuses": "{read, plural, one {# letto} other {# letti}} · {reading} in lettura · {want} in Dispensa · {abandoned, plural, one {# messo da parte} other {# messi da parte}}",
-      "rated": "{count, plural, =0 {Nessun voto} one {# libro con il voto} other {# libri con il voto}}, in funghetti interi",
+      "rated": "{count, plural, =0 {Nessun voto} one {# libro con il voto} other {# libri con il voto}}",
       "copies": "{count, plural, =0 {Nessuna copia} one {# copia} other {# copie}} nella Tana: ogni libro letto lo diamo per posseduto. Toglierai a mano quelli che non hai.",
       "noIsbn": "{count, plural, =0 {Tutti hanno l'ISBN.} one {# senza ISBN: lo cerchiamo per titolo e autore.} other {# senza ISBN: li cerchiamo per titolo e autore.}} Quelli incerti te li chiediamo alla fine.",
       "noDate": "{count, plural, =0 {Tutti i letti hanno la data di fine.} one {# letto senza data di fine: resta vuota.} other {# letti senza data di fine: restano vuote.}}",
@@ -487,11 +487,12 @@
     },
     "done": {
       "heading": "Fatto!",
-      "text": "{imported, plural, one {# libro è} other {# libri sono}} nella tua Tana.",
-      "skipped": "{count, plural, =0 {} one {# era già stato importato.} other {# erano già stati importati.}}",
+      "text": "{imported, plural, =0 {Nessun libro nuovo.} one {# libro nuovo è nella tua Tana.} other {# libri nuovi sono nella tua Tana.}}",
+      "skipped": "{count, plural, =0 {} one {# era già nella Tana: non l'abbiamo toccato.} other {# erano già nella Tana: non li abbiamo toccati.}}",
       "failed": "{count, plural, =0 {} one {# non siamo riusciti a importarlo.} other {# non siamo riusciti a importarli.}}",
       "toTana": "Vai alla Tana",
-      "again": "Importa un altro file"
+      "again": "Importa un altro file",
+      "ratings": "{count, plural, =0 {} one {A # di questi abbiamo ridato i quarti di funghetto del voto.} other {A # di questi abbiamo ridato i quarti di funghetto del voto.}}"
     },
     "review": {
       "heading": "Da controllare",

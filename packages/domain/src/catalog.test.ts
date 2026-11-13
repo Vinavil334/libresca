@@ -23,6 +23,11 @@ describe('cleanText', () => {
     expect(cleanText(decomposed)).toBe('Se questo è un uomo');
     expect(cleanText(decomposed)).toHaveLength('Se questo è un uomo'.length);
   });
+
+  it('drops the control characters library catalogues put around a leading article', () => {
+    expect(cleanText('\u0098Le \u009Corigini del male')).toBe('Le origini del male');
+    expect(cleanText('Il\u0000 bosco\u007F')).toBe('Il bosco');
+  });
 });
 
 describe('searchQuery', () => {

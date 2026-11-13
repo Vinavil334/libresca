@@ -17,7 +17,7 @@ Leggi le colonne per nome, mai per posizione.
 | `Exclusive Shelf` = `read` | `readings.status = read` |
 | `Exclusive Shelf` = `currently-reading` | `readings.status = reading` |
 | `Exclusive Shelf` = `to-read` | `readings.status = want` |
-| `My Rating` da 1 a 5 | `rating_quarter` = voto × 4 |
+| `My Rating` da 1 a 5, anche decimale (`4.5`, o `4,5` dopo un foglio di calcolo) | `rating_quarter` = voto × 4, arrotondato al quarto. Mai leggerlo come intero |
 | `My Rating` = 0 | `rating_quarter` = NULL: significa nessun voto |
 | `Date Read` | `finished_on`; se è vuota resta `NULL` |
 | Non esiste | `started_on` resta `NULL` |
@@ -35,6 +35,7 @@ Leggi le colonne per nome, mai per posizione.
 - Molte righe possono non avere ISBN; in tal caso cerca per titolo e autore, chiedendo conferma.
 - L'edizione esportata può differire da quella che possiedi.
 - `Average Rating` cambia nel tempo: non importarlo.
+- I titoli che arrivano da OPAC SBN racchiudono l'articolo iniziale tra U+0098 e U+009C (caratteri di non ordinamento): `cleanText` li toglie, non vanno mai salvati.
 - L'ordine degli scaffali in `Bookshelves` non è affidabile.
 - Aprire e salvare il file in Excel può alterare ISBN e date: importa sempre il file originale.
 - L'export si scarica da desktop: **My Books → Import and export → Export Library**.

@@ -250,6 +250,9 @@ function ProgressCard({
         {counts.skipped > 0 && (
           <p className="type-small text-text-muted">{t('done.skipped', { count: counts.skipped })}</p>
         )}
+        {progress.ratingsUpdated > 0 && (
+          <p className="type-small text-text-muted">{t('done.ratings', { count: progress.ratingsUpdated })}</p>
+        )}
         {counts.failed > 0 && (
           <p className="type-small text-text-muted">{t('done.failed', { count: counts.failed })}</p>
         )}
