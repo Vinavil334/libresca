@@ -1,6 +1,7 @@
 'use server';
 
 import {
+  type CatalogEditResult,
   type CopyResult,
   type ReadingResult,
   addCopy,
@@ -8,9 +9,11 @@ import {
   deleteCopy,
   deleteReading,
   updateCopy,
+  updateEdition,
   updateReading,
+  updateWork,
 } from '@libresca/data';
-import type { CopyInput, ReadingInput } from '@libresca/domain';
+import type { CopyInput, EditionEditInput, ReadingInput, WorkEditInput } from '@libresca/domain';
 import { revalidatePath } from 'next/cache';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -69,4 +72,26 @@ export async function removeOwnReading(workId: string, readingId: string): Promi
   const removed = await deleteReading(await createSupabaseServerClient(), readingId);
   if (removed) revalidatePath(`/books/${workId}`);
   return removed;
+}
+
+export type CorrectionResult =
+  { ok: true } | { ok: false; part: 'work' | 'edition'; result: Exclude<CatalogEditResult, { ok: true }> };
+
+/**
+ * Saves the corrections of a book card: the work first, then the chosen edition. Both
+ * go through the catalog functions, which mark what changed as written by a person.
+ */
+export async function saveCorrections(
+  workId: string,
+  editionId: string,
+  work: WorkEditInput,
+  edition: EditionEditInput,
+): Promise<CorrectionResult> {
+  const client = await createSupabaseServerClient();
+  const workResult = await updateWork(client, workId, work);
+  if (!workResult.ok) return { ok: false, part: 'work', result: workResult };
+  const editionResult = await updateEdition(client, editionId, edition);
+  revalidatePath(`/books/${workId}`);
+  revalidatePath('/');
+  return editionResult.ok ? { ok: true } : { ok: false, part: 'edition', result: editionResult };
 }

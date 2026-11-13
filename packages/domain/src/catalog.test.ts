@@ -3,12 +3,74 @@ import { describe, expect, it } from 'vitest';
 import {
   type CatalogEntryInput,
   authorSortName,
+  authorsForEdit,
   cleanText,
   coverUrl,
   maxSearchQueryLength,
   searchQuery,
   validateCatalogEntry,
+  validateEditionEdit,
+  validateWorkEdit,
 } from './catalog';
+
+describe('corrections to the catalog', () => {
+  it('validates a work correction and clears empty fields', () => {
+    expect(
+      validateWorkEdit({ title: '  Le origini  del male ', authors: [{ name: 'Yu-jŏng Chŏng' }], description: ' ' }),
+    ).toEqual({
+      ok: true,
+      payload: {
+        title: 'Le origini del male',
+        first_published_year: null,
+        description: null,
+        authors: [{ name: 'Yu-jŏng Chŏng', sort_name: 'Chŏng, Yu-jŏng', alternate_names: [], external_ids: [] }],
+      },
+    });
+    expect(validateWorkEdit({ title: '', authors: [], firstPublishedYear: 3000 })).toEqual({
+      ok: false,
+      issues: [
+        { path: 'work.title', code: 'required' },
+        { path: 'work.firstPublishedYear', code: 'invalid_year' },
+      ],
+    });
+  });
+
+  it('keeps an author id when the name did not change', () => {
+    const current = [{ id: workId, name: 'Italo Calvino' }];
+    expect(authorsForEdit(['italo calvino', ' Esther Calvino ', ''], current)).toEqual([
+      { id: workId },
+      { name: 'Esther Calvino' },
+    ]);
+  });
+
+  it('validates an edition correction, translators and a new photo', () => {
+    expect(
+      validateEditionEdit({ publisher: 'Einaudi', pageCount: 165, translators: ['Anna', ' ', 'anna'], language: 'IT' }),
+    ).toEqual({
+      ok: false,
+      issues: [{ path: 'edition.contributors.2', code: 'duplicate' }],
+    });
+    expect(validateEditionEdit({ translators: [], pageCount: 0, coverPath: 'nope' })).toMatchObject({
+      ok: false,
+      issues: [
+        { path: 'edition.coverPath', code: 'invalid_cover_path' },
+        { path: 'edition.pageCount', code: 'invalid_page_count' },
+      ],
+    });
+    expect(validateEditionEdit({ translators: ['Anna Rossi'], format: 'paperback' })).toEqual({
+      ok: true,
+      payload: {
+        title: null,
+        publisher: null,
+        published_year: null,
+        page_count: null,
+        format: 'paperback',
+        language: null,
+        translators: ['Anna Rossi'],
+      },
+    });
+  });
+});
 
 const workId = 'aaaaaaaa-0000-4000-8000-000000000001';
 

@@ -17,8 +17,14 @@ export {
   type JsonValue,
   type MetadataSource,
   type MetadataStatus,
+  type EditValidation,
+  type EditionEditInput,
+  type EditionEditPayload,
+  type WorkEditInput,
+  type WorkEditPayload,
   type WorkInput,
   authorSortName,
+  authorsForEdit,
   cleanText,
   withoutControls,
   contributorRoles,
@@ -31,6 +37,8 @@ export {
   metadataStatuses,
   searchQuery,
   validateCatalogEntry,
+  validateEditionEdit,
+  validateWorkEdit,
 } from './catalog';
 export { cleanIsbn, isValidIsbn10, isValidIsbn13, isbn10To13, toIsbn13 } from './isbn';
 export {

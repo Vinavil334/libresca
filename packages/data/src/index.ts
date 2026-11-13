@@ -9,6 +9,7 @@ export { getAccess, getOwnProfile, type OwnProfile } from './profiles';
 export {
   type CatalogAuthor,
   type Contributor,
+  type CatalogEditResult,
   type CreateEditionResult,
   type Edition,
   type EditionDetails,
@@ -17,6 +18,8 @@ export {
   type WorkWithAuthors,
   type WorksByIdentifier,
   createEdition,
+  updateEdition,
+  updateWork,
   findAuthorsByOpenLibraryIds,
   findWorksByIdentifiers,
   getEditionByIsbn,

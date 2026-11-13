@@ -137,7 +137,7 @@ Si valuta solo dopo un uso reale. Le due strade sono indipendenti. Qui i piccoli
 
 ### Apertura al pubblico
 
-- [ ] **F5.4** (M) Blocco utenti, segnalazioni, moderazione di recensioni e modifiche al catalogo
+- [ ] **F5.4** (M) Blocco utenti, segnalazioni, moderazione di recensioni e modifiche al catalogo (oggi ogni account attivo corregge le schede con `update_work` e `update_edition`, senza revisione)
 - [ ] **F5.5** (S) Termini d'uso e informativa privacy, con revisione legale
 - [ ] **F5.6** (M) Dominio e SMTP: email transazionali, login via email, notifiche
 - [ ] **F5.7** (M) Passaggio a Supabase Pro; Vercel Pro in caso di entrate o pubblicità
@@ -194,3 +194,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-13 | Chiusa F1.7 in tre fasi nella stessa PR: la Tana si carica tutta e si filtra nel browser; uno scaffale contiene opere, non copie, e mettere un libro su uno scaffale lo porta nella Tana; scaffali privati per impostazione e senza `kind`; "Altre azioni" della scheda libro e lucciole della chioma rinviate a quando ci saranno azioni e creature (D4) | Decisioni prese durante F1.7, con la divisione chiesta dall'utente |
 | 2026-11-13 | Chiusa F1.8, da M a L, in quattro fasi nella stessa PR: voto a quarti (ADR-0009); ogni libro letto si dà per posseduto; le date di inizio restano vuote e si aggiungono dalla scheda, senza elenco guidato; Google Books non rimanda al giorno dopo: oltre il tetto si usano i dati dell'export | Decisioni dell'utente all'avvio di F1.8 |
 | 2026-11-13 | Correzioni dopo il primo import reale: i caratteri di non ordinamento di SBN (U+0098, U+009C) si tolgono dai testi e dal catalogo già salvato; `My Rating` si legge come decimale, e rilanciare l'import ripara i voti troncati | Segnalazione dell'utente dopo il primo import |
+| 2026-11-13 | Correzione delle schede del catalogo (`/books/{id}/edit`): titolo, autori, anno, descrizione, dettagli dell'edizione, traduttori e foto. Qualunque account attivo può correggere; la moderazione resta in F5.4 | Richiesta dell'utente dopo il primo import |
