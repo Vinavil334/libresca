@@ -47,10 +47,10 @@ describe('listOwnReadings', () => {
 describe('addReading', () => {
   it('validates before writing', async () => {
     const { client } = fakeClient({ data: null, error: null });
-    expect(await addReading(client, 'w1', { status: 'read', ratingHalf: 12 }, today)).toEqual({
+    expect(await addReading(client, 'w1', { status: 'read', ratingQuarter: 22 }, today)).toEqual({
       ok: false,
       reason: 'invalid',
-      issues: [{ path: 'ratingHalf', code: 'invalid_rating' }],
+      issues: [{ path: 'ratingQuarter', code: 'invalid_rating' }],
     });
     expect(client.from).not.toHaveBeenCalled();
   });
@@ -64,7 +64,7 @@ describe('addReading', () => {
     });
     expect(calls).toContainEqual([
       'insert',
-      [{ work_id: 'w1', status: 'want', started_on: null, finished_on: null, rating_half: null, review: null }],
+      [{ work_id: 'w1', status: 'want', started_on: null, finished_on: null, rating_quarter: null, review: null }],
     ]);
   });
 
@@ -82,7 +82,7 @@ describe('updateReading', () => {
     const saved = row('r1', 'read', '2026-11-01', '2026-10-01');
     const { client, calls } = fakeClient({ data: saved, error: null });
     expect(
-      await updateReading(client, 'r1', { status: 'read', finishedOn: '2026-11-01', ratingHalf: 8 }, today),
+      await updateReading(client, 'r1', { status: 'read', finishedOn: '2026-11-01', ratingQuarter: 8 }, today),
     ).toEqual({ ok: true, reading: saved });
     expect(calls).toContainEqual(['eq', ['id', 'r1']]);
     expect(

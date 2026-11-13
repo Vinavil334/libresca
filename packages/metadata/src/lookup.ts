@@ -1,7 +1,7 @@
 import { toIsbn13 } from '@libresca/domain';
 
 import { googleBooksIsbnUrl, parseGoogleBooks } from './googlebooks';
-import { type CachePolicy, type HttpClient, type HttpResult, createHttpClient } from './http';
+import { type CachePolicy, type HttpClient, type HttpResult, type SharedCache, createHttpClient } from './http';
 import { mergeRecords } from './merge';
 import {
   openLibraryEdition,
@@ -13,8 +13,11 @@ import {
 import { isItalianIsbn, parseSbn, sbnBidFromSearch, sbnFullUrl, sbnSearchUrl } from './sbn';
 import type { IsbnLookup, SourceName, SourceRecord, SourceStatus } from './types';
 
-/** Open data may be kept for a while; Google Books only as long as its headers allow. */
-const openData: CachePolicy = { kind: 'fixed', ttlMs: 60 * 60 * 1000 };
+/**
+ * Open data may be kept for a while, and shared for a month when a shared cache is given;
+ * Google Books only as long as its headers allow, and never shared.
+ */
+const openData: CachePolicy = { kind: 'fixed', ttlMs: 60 * 60 * 1000, sharedTtlSeconds: 30 * 24 * 60 * 60 };
 const googleData: CachePolicy = { kind: 'header' };
 
 /** The pacing the sources ask for (docs/ARCHITECTURE.md): Open Library 3/s when identified, SBN 1/s. */
@@ -41,6 +44,13 @@ export interface LookupOptions {
   /** Without a key Google Books is skipped: its anonymous quota is zero. */
   googleBooksKey?: string;
   quotaUser?: string;
+  /** Postgres cache of the open sources, for imports. */
+  shared?: SharedCache;
+  /**
+   * Ask Google Books only when the open sources found nothing, as an import does to save
+   * the daily quota (docs/ARCHITECTURE.md). By default the three sources go in parallel.
+   */
+  googleOnlyForGaps?: boolean;
 }
 
 type SourceOutcome = { status: SourceStatus; record?: SourceRecord };
@@ -49,15 +59,15 @@ function failed(result: Exclude<HttpResult, { status: 'ok' }>): SourceOutcome {
   return { status: result.status === 'not_found' ? 'not_found' : 'unavailable' };
 }
 
-async function fromOpenLibrary(isbn13: string, http: HttpClient): Promise<SourceOutcome> {
-  const response = await http.getJson(openLibraryEditionUrl(isbn13), openData);
+async function fromOpenLibrary(isbn13: string, http: HttpClient, shared?: SharedCache): Promise<SourceOutcome> {
+  const response = await http.getJson(openLibraryEditionUrl(isbn13), openData, shared);
   if (response.status !== 'ok') return failed(response);
   const edition = openLibraryEdition(isbn13, response.data);
   if (!edition) return { status: 'not_found' };
 
   // The work holds the description; without it the edition is still useful.
   const workId = openLibraryWorkId(edition);
-  const work = workId ? await http.getJson(openLibraryWorkUrl(workId), openData) : null;
+  const work = workId ? await http.getJson(openLibraryWorkUrl(workId), openData, shared) : null;
   const record = parseOpenLibrary(edition, work?.status === 'ok' ? work.data : null);
   return record ? { status: 'found', record } : { status: 'not_found' };
 }
@@ -71,14 +81,14 @@ async function fromGoogleBooks(isbn13: string, options: LookupOptions): Promise<
   return record ? { status: 'found', record } : { status: 'not_found' };
 }
 
-async function fromSbn(isbn13: string, http: HttpClient): Promise<SourceOutcome> {
+async function fromSbn(isbn13: string, http: HttpClient, shared?: SharedCache): Promise<SourceOutcome> {
   if (!isItalianIsbn(isbn13)) return { status: 'skipped' };
-  const search = await http.getJson(sbnSearchUrl(isbn13), openData);
+  const search = await http.getJson(sbnSearchUrl(isbn13), openData, shared);
   if (search.status !== 'ok') return failed(search);
   const bid = sbnBidFromSearch(search.data);
   if (!bid) return { status: 'not_found' };
 
-  const full = await http.getJson(sbnFullUrl(bid), openData);
+  const full = await http.getJson(sbnFullUrl(bid), openData, shared);
   if (full.status !== 'ok') return failed(full);
   const record = parseSbn(full.data);
   return record ? { status: 'found', record } : { status: 'not_found' };
@@ -92,11 +102,20 @@ export async function lookupIsbn(isbn: string, options: LookupOptions): Promise<
   const isbn13 = toIsbn13(isbn);
   if (!isbn13) return null;
 
-  const [openlibrary, googlebooks, sbn] = await Promise.all([
-    fromOpenLibrary(isbn13, options.http),
-    fromGoogleBooks(isbn13, options),
-    fromSbn(isbn13, options.http),
-  ]);
+  let openlibrary: SourceOutcome, googlebooks: SourceOutcome, sbn: SourceOutcome;
+  if (options.googleOnlyForGaps) {
+    [openlibrary, sbn] = await Promise.all([
+      fromOpenLibrary(isbn13, options.http, options.shared),
+      fromSbn(isbn13, options.http, options.shared),
+    ]);
+    googlebooks = openlibrary.record || sbn.record ? { status: 'skipped' } : await fromGoogleBooks(isbn13, options);
+  } else {
+    [openlibrary, googlebooks, sbn] = await Promise.all([
+      fromOpenLibrary(isbn13, options.http, options.shared),
+      fromGoogleBooks(isbn13, options),
+      fromSbn(isbn13, options.http, options.shared),
+    ]);
+  }
   const outcomes: Record<SourceName, SourceOutcome> = { openlibrary, googlebooks, sbn };
 
   const records = Object.values(outcomes).flatMap((outcome) => (outcome.record ? [outcome.record] : []));

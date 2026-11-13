@@ -56,7 +56,7 @@ export async function listOwnTana(client: LibrescaClient): Promise<TanaBook[] | 
     readAll((from, to) =>
       client
         .from('readings')
-        .select(`status, started_on, finished_on, rating_half, edition_id, created_at, ${workColumns}`)
+        .select(`status, started_on, finished_on, rating_quarter, edition_id, created_at, ${workColumns}`)
         .order('id')
         .range(from, to),
     ),

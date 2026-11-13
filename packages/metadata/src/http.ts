@@ -1,7 +1,7 @@
 /**
  * Small JSON client for the metadata sources: per-host pacing, short timeouts and a
- * bounded in-memory cache. On serverless hosts each instance has its own state, which
- * is enough for a private beta; a shared cache waits for the Goodreads import (F1.8).
+ * bounded in-memory cache. On serverless hosts each instance has its own state; open data
+ * can also go through a `SharedCache` (Postgres, F1.8) so a big import asks each book once.
  */
 
 export type HttpResult = { status: 'ok'; data: unknown } | { status: 'not_found' } | { status: 'unavailable' };
@@ -10,7 +10,17 @@ export type HttpResult = { status: 'ok'; data: unknown } | { status: 'not_found'
  * `fixed`: keep for the given time (open sources). `header`: keep only as long as the
  * response's Cache-Control allows, as the Google APIs terms require.
  */
-export type CachePolicy = { kind: 'fixed'; ttlMs: number } | { kind: 'header' } | { kind: 'none' };
+export type CachePolicy =
+  { kind: 'fixed'; ttlMs: number; sharedTtlSeconds?: number } | { kind: 'header' } | { kind: 'none' };
+
+/**
+ * A cache shared by every server instance, for open data only (never Google Books).
+ * Its failures never fail a request: it is just skipped.
+ */
+export interface SharedCache {
+  get(url: string): Promise<HttpResult | null>;
+  set(url: string, result: HttpResult, ttlSeconds: number): Promise<void>;
+}
 
 export interface HttpClientOptions {
   userAgent: string;
@@ -25,7 +35,7 @@ export interface HttpClientOptions {
 }
 
 export interface HttpClient {
-  getJson(url: string, cache: CachePolicy): Promise<HttpResult>;
+  getJson(url: string, cache: CachePolicy, shared?: SharedCache): Promise<HttpResult>;
 }
 
 /** Query parameters that must never reach a cache key or a log: secrets and per-user ids. */
@@ -86,11 +96,20 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
   }
 
   return {
-    async getJson(url, policy) {
+    async getJson(url, policy, shared) {
       const key = cacheKey(url);
       const hit = cache.get(key);
       if (hit && hit.expires > now()) return hit.result;
       if (hit) cache.delete(key);
+
+      const sharedTtl = policy.kind === 'fixed' && shared ? (policy.sharedTtlSeconds ?? 0) : 0;
+      if (shared && sharedTtl > 0) {
+        const stored = await shared.get(key).catch(() => null);
+        if (stored) {
+          remember(key, stored, policy.kind === 'fixed' ? policy.ttlMs : 0);
+          return stored;
+        }
+      }
 
       if (!(await pace(new URL(url).host))) return { status: 'unavailable' };
 
@@ -124,6 +143,7 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
             ? maxAgeSeconds(response.headers.get('cache-control')) * 1000
             : 0;
       remember(key, result, ttlMs);
+      if (shared && sharedTtl > 0) await shared.set(key, result, sharedTtl).catch(() => undefined);
       return result;
     },
   };

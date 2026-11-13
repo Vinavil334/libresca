@@ -109,10 +109,10 @@ function BookTile({ book }: { book: TanaEntry }) {
             </span>
           )}
         </span>
-        {(book.status || book.ratingHalf !== null) && (
+        {(book.status || book.ratingQuarter !== null) && (
           <span className="hidden flex-wrap items-center gap-2 lg:flex">
             {book.status && <StatusPill status={book.status} readCount={book.readCount} />}
-            {book.ratingHalf !== null && <RatingNumber ratingHalf={book.ratingHalf} />}
+            {book.ratingQuarter !== null && <RatingNumber ratingQuarter={book.ratingQuarter} />}
           </span>
         )}
       </Link>

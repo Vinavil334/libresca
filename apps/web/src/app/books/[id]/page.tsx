@@ -83,7 +83,7 @@ export default async function BookPage({ params, searchParams }: Props) {
   // Readings come newest first (`sortReadings`).
   const finished = readings.filter((reading) => reading.status === 'read');
   const lastFinished = finished.find((reading) => reading.finished_on !== null)?.finished_on;
-  const rating = readings.find((reading) => reading.rating_half !== null)?.rating_half ?? null;
+  const rating = readings.find((reading) => reading.rating_quarter !== null)?.rating_quarter ?? null;
   const latest = readings[0];
   const notes = readings.flatMap((reading, index) =>
     reading.review ? [{ id: reading.id, number: readings.length - index, review: reading.review }] : [],
@@ -107,8 +107,8 @@ export default async function BookPage({ params, searchParams }: Props) {
             </div>
             {rating !== null && (
               <span className="mb-2 inline-flex items-center gap-1 rounded-pill border-(length:--border-ink) border-border bg-honey py-1 pr-3 pl-2 type-label text-on-honey">
-                <Mushroom fill="full" />
-                {tReadings('rating.value', { count: rating / 2 })}
+                <Mushroom />
+                {tReadings('rating.value', { count: rating / 4 })}
               </span>
             )}
           </div>

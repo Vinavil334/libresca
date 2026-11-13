@@ -39,9 +39,22 @@ export interface BookSearchResponse<Work = unknown> {
 }
 
 /**
- * Error bodies: 400 `invalid_isbn` or `invalid_query`, 401 `unauthorized`, 403 `inactive`,
- * 429 `rate_limited`.
+ * Error bodies: 400 `invalid_isbn`, `invalid_query`, `invalid_choice`, `empty` or
+ * `not_goodreads`, 401 `unauthorized`, 403 `inactive` or `forbidden`, 404 `not_found`,
+ * 413 `too_large`, 429 `rate_limited`, 500 `failed`.
  */
 export interface ApiError {
-  error: 'invalid_isbn' | 'invalid_query' | 'unauthorized' | 'inactive' | 'rate_limited';
+  error:
+    | 'invalid_isbn'
+    | 'invalid_query'
+    | 'invalid_choice'
+    | 'empty'
+    | 'not_goodreads'
+    | 'unauthorized'
+    | 'inactive'
+    | 'forbidden'
+    | 'not_found'
+    | 'too_large'
+    | 'rate_limited'
+    | 'failed';
 }

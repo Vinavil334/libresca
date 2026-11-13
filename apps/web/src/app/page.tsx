@@ -36,7 +36,9 @@ async function EmptyTana() {
       <div className="flex w-full flex-col gap-2 rounded-card border-(length:--border-ink) border-dashed border-border bg-ticket p-4 text-left">
         <p className="type-body-strong text-text">{t('importTitle')}</p>
         <p className="type-body text-text">{t('importText')}</p>
-        <p className="type-small text-text-muted">{t('importSoon')}</p>
+        <ButtonLink href="/import" variant="secondary" className="self-start">
+          {t('import')}
+        </ButtonLink>
       </div>
     </div>
   );

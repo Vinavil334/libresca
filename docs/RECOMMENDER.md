@@ -89,7 +89,7 @@ Ogni consiglio deve avere almeno un motivo. `reasons` è JSON strutturato e il t
 
 ```json
 [
-  {"type": "friend_loved", "friend_id": "...", "rating_half": 9},
+  {"type": "friend_loved", "friend_id": "...", "rating_quarter": 18},
   {"type": "similar_to", "work_id": "...", "similarity": 0.81},
   {"type": "available_from", "friend_id": "..."}
 ]

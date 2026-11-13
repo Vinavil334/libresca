@@ -1,60 +1,70 @@
 'use client';
 
-import { maxRatingHalf, ratingMushrooms, tapRating } from '@libresca/domain';
+import { maxRatingQuarter, ratingMushrooms, tapRating } from '@libresca/domain';
 import { useFormatter, useTranslations } from 'next-intl';
 
 const cap = 'M2 18C2 8 10 2 20 2s18 6 18 16Z';
-/** The left half of the cap, for half a mushroom: no clip paths, so ids never collide. */
-const leftHalf = 'M2 18C2 8 10 2 20 2V18Z';
+const mushrooms = maxRatingQuarter / 4;
 
-/** One mushroom cap: full, half or empty. */
-export function Mushroom({ fill }: { fill: 'full' | 'half' | 'empty' }) {
+/**
+ * One mushroom cap, filled by quarters from the left (0 to 4). The filling is the same
+ * cap drawn inside a narrower nested <svg>, which clips it: no clip path ids to collide.
+ */
+export function Mushroom({ quarters = 4 }: { quarters?: number }) {
+  // The cap runs from x 2 to 38: each quarter is 9 units wide.
+  const width = quarters >= 4 ? 40 : 2 + 9 * quarters;
   return (
     <svg viewBox="0 0 40 20" className="h-[1.25rem] w-[2.5rem]" aria-hidden focusable="false">
-      <path d={cap} className={fill === 'full' ? 'fill-cap' : 'fill-surface'} />
-      {fill === 'half' && <path d={leftHalf} className="fill-cap" />}
+      <path d={cap} className="fill-surface" />
+      {quarters > 0 && (
+        <svg x="0" y="0" width={width} height="20" viewBox={`0 0 ${width} 20`}>
+          <path d={cap} className="fill-cap" />
+        </svg>
+      )}
       <path d={cap} className="fill-none stroke-border" strokeWidth="2" strokeLinejoin="round" />
     </svg>
   );
 }
 
+/** How many quarters of the i-th mushroom a rating fills. */
+const quartersOf = (rating: number, index: number) => Math.min(4, Math.max(0, rating - index * 4));
+
 /**
- * The rating as half to five mushroom caps (DESIGN_SYSTEM.md, MushroomRating), with the
- * value in words for screen readers: "4,5 funghetti".
+ * The rating as a quarter to five mushroom caps (DESIGN_SYSTEM.md, MushroomRating), with
+ * the value in words for screen readers: "4,25 funghetti".
  */
-export function MushroomRating({ ratingHalf }: { ratingHalf: number }) {
+export function MushroomRating({ ratingQuarter }: { ratingQuarter: number }) {
   const t = useTranslations('readings.rating');
   return (
-    <span role="img" aria-label={t('value', { count: ratingMushrooms(ratingHalf) })} className="inline-flex gap-1">
-      {Array.from({ length: maxRatingHalf / 2 }, (_, i) => {
-        const filled = ratingHalf - i * 2;
-        return <Mushroom key={i} fill={filled >= 2 ? 'full' : filled === 1 ? 'half' : 'empty'} />;
-      })}
+    <span role="img" aria-label={t('value', { count: ratingMushrooms(ratingQuarter) })} className="inline-flex gap-1">
+      {Array.from({ length: mushrooms }, (_, i) => (
+        <Mushroom key={i} quarters={quartersOf(ratingQuarter, i)} />
+      ))}
     </span>
   );
 }
 
 /**
  * The rating in a small space, such as a row of the Tana: one cap and the number,
- * "4,5", read as "4,5 funghetti".
+ * "4,25", read as "4,25 funghetti".
  */
-export function RatingNumber({ ratingHalf }: { ratingHalf: number }) {
+export function RatingNumber({ ratingQuarter }: { ratingQuarter: number }) {
   const t = useTranslations('readings.rating');
   const format = useFormatter();
-  const mushrooms = ratingMushrooms(ratingHalf);
+  const value = ratingMushrooms(ratingQuarter);
   return (
-    <span role="img" aria-label={t('value', { count: mushrooms })} className="inline-flex items-center gap-1">
-      <Mushroom fill="full" />
+    <span role="img" aria-label={t('value', { count: value })} className="inline-flex items-center gap-1">
+      <Mushroom />
       <span aria-hidden className="type-label text-text">
-        {format.number(mushrooms)}
+        {format.number(value)}
       </span>
     </span>
   );
 }
 
 /**
- * Picks a rating by tapping the mushrooms (SCHERMATE_TANA.md): a tap gives that many,
- * a second tap on the same one takes half off, "Senza voto" clears it. Each mushroom is a
+ * Picks a rating by tapping the mushrooms: a tap gives that many, each new tap on the
+ * same one takes a quarter off (`tapRating`), "Senza voto" clears it. Each mushroom is a
  * button that says what it will do; the current value is announced politely.
  */
 export function RatingInput({
@@ -77,10 +87,9 @@ export function RatingInput({
       </p>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <div className="flex">
-          {Array.from({ length: maxRatingHalf / 2 }, (_, i) => {
+          {Array.from({ length: mushrooms }, (_, i) => {
             const mushroom = i + 1;
             const next = tapRating(value, mushroom);
-            const filled = current - i * 2;
             return (
               <button
                 key={mushroom}
@@ -89,7 +98,7 @@ export function RatingInput({
                 onClick={() => onChange(next)}
                 className="grid size-[2.75rem] place-items-center rounded-card"
               >
-                <Mushroom fill={filled >= 2 ? 'full' : filled === 1 ? 'half' : 'empty'} />
+                <Mushroom quarters={quartersOf(current, i)} />
               </button>
             );
           })}

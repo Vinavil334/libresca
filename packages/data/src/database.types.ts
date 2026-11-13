@@ -288,6 +288,106 @@ export type Database = {
           },
         ];
       };
+      import_jobs: {
+        Row: {
+          created_at: string;
+          google_calls: number;
+          google_day: string | null;
+          id: string;
+          source: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          google_calls?: number;
+          google_day?: string | null;
+          id?: string;
+          source: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          google_calls?: number;
+          google_day?: string | null;
+          id?: string;
+          source?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'import_jobs_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      import_rows: {
+        Row: {
+          candidates: Json | null;
+          created_at: string;
+          id: string;
+          job_id: string;
+          line: number;
+          note: string | null;
+          raw: NonNullable<Json>;
+          source_key: string;
+          status: string;
+          updated_at: string;
+          work_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          candidates?: Json | null;
+          created_at?: string;
+          id?: string;
+          job_id: string;
+          line: number;
+          note?: string | null;
+          raw: NonNullable<Json>;
+          source_key: string;
+          status?: string;
+          updated_at?: string;
+          work_id?: string | null;
+        };
+        Update: {
+          candidates?: Json | null;
+          created_at?: string;
+          id?: string;
+          job_id?: string;
+          line?: number;
+          note?: string | null;
+          raw?: NonNullable<Json>;
+          source_key?: string;
+          status?: string;
+          updated_at?: string;
+          work_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'import_rows_job_id_fkey';
+            columns: ['job_id'];
+            isOneToOne: false;
+            referencedRelation: 'import_jobs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'import_rows_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_creature: string | null;
@@ -328,7 +428,7 @@ export type Database = {
           edition_id: string | null;
           finished_on: string | null;
           id: string;
-          rating_half: number | null;
+          rating_quarter: number | null;
           review: string | null;
           started_on: string | null;
           status: Database['public']['Enums']['reading_status'];
@@ -343,7 +443,7 @@ export type Database = {
           edition_id?: string | null;
           finished_on?: string | null;
           id?: string;
-          rating_half?: number | null;
+          rating_quarter?: number | null;
           review?: string | null;
           started_on?: string | null;
           status: Database['public']['Enums']['reading_status'];
@@ -357,7 +457,7 @@ export type Database = {
           edition_id?: string | null;
           finished_on?: string | null;
           id?: string;
-          rating_half?: number | null;
+          rating_quarter?: number | null;
           review?: string | null;
           started_on?: string | null;
           status?: Database['public']['Enums']['reading_status'];
@@ -565,6 +665,11 @@ export type Database = {
     Functions: {
       create_edition: { Args: { entry: Json }; Returns: Json };
       health_check: { Args: Record<PropertyKey, never>; Returns: boolean };
+      metadata_cache_get: { Args: { cache_url: string }; Returns: Json };
+      metadata_cache_put: {
+        Args: { cache_response: Json; cache_url: string; ttl_seconds: number };
+        Returns: undefined;
+      };
       search_works: {
         Args: { max_results?: number; query: string };
         Returns: {

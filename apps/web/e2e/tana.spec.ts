@@ -51,13 +51,13 @@ test.describe('the Tana', () => {
     const { client } = citta;
     // Owned and read twice; read now, not owned; owned and in the Dispensa.
     expect((await client.from('copies').insert({ edition_id: citta.edition_id, is_lendable: true })).error).toBeNull();
-    for (const [finished_on, rating_half] of [
-      ['2019-05-01', 7],
-      ['2024-03-18', 9],
+    for (const [finished_on, rating_quarter] of [
+      ['2019-05-01', 14],
+      ['2024-03-18', 18],
     ] as const) {
       const { error } = await client
         .from('readings')
-        .insert({ work_id: citta.work_id, status: 'read', finished_on, rating_half });
+        .insert({ work_id: citta.work_id, status: 'read', finished_on, rating_quarter });
       expect(error).toBeNull();
     }
     expect((await client.from('readings').insert({ work_id: rosa.work_id, status: 'reading' })).error).toBeNull();

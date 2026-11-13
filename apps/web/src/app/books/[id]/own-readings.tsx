@@ -32,7 +32,7 @@ interface FormValues {
   status: ReadingStatus;
   startedOn: string;
   finishedOn: string;
-  ratingHalf: number | null;
+  ratingQuarter: number | null;
   review: string;
   editionId: string;
 }
@@ -73,7 +73,7 @@ function valuesOf(reading: Reading): FormValues {
     status: reading.status,
     startedOn: reading.started_on ?? '',
     finishedOn: reading.finished_on ?? '',
-    ratingHalf: reading.rating_half,
+    ratingQuarter: reading.rating_quarter,
     review: reading.review ?? '',
     editionId: reading.edition_id ?? '',
   };
@@ -254,10 +254,10 @@ function ReadingSheet({
             <RatingInput
               id={`${id}-rating`}
               label={t('sheet.rating')}
-              value={values.ratingHalf}
-              onChange={(value) => set('ratingHalf', value)}
+              value={values.ratingQuarter}
+              onChange={(value) => set('ratingQuarter', value)}
             />
-            {issueText('ratingHalf') && <p className="type-small text-danger">{issueText('ratingHalf')}</p>}
+            {issueText('ratingQuarter') && <p className="type-small text-danger">{issueText('ratingQuarter')}</p>}
           </div>
         )}
 
@@ -349,18 +349,18 @@ function FinishedTicket({
   book: Book;
   reading: Reading;
   onClose: () => void;
-  onWrite: (ratingHalf: number | null) => void;
+  onWrite: (ratingQuarter: number | null) => void;
 }) {
   const t = useTranslations('readings');
   const id = useId();
-  const [rating, setRating] = useState(reading.rating_half);
+  const [rating, setRating] = useState(reading.rating_quarter);
   const [failure, setFailure] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
 
   const save = () => {
-    if (rating === reading.rating_half) return onClose();
+    if (rating === reading.rating_quarter) return onClose();
     startSaving(async () => {
-      const input = { ...toInput(valuesOf(reading)), ratingHalf: rating };
+      const input = { ...toInput(valuesOf(reading)), ratingQuarter: rating };
       const result = await saveOwnReading(book.workId, reading.id, input, today());
       if (result.ok) return onClose();
       setFailure(t(failureKey(result)));
@@ -435,7 +435,7 @@ export function OwnReadings({
     status,
     startedOn: '',
     finishedOn: '',
-    ratingHalf: null,
+    ratingQuarter: null,
     review: '',
     editionId: defaultEdition,
   });
@@ -517,7 +517,7 @@ export function OwnReadings({
                 </div>
                 {dates && <p className="type-small text-text-muted">{dates}</p>}
                 {edition && <p className="type-small wrap-break-word text-text-muted">{edition.label}</p>}
-                {reading.rating_half !== null && <MushroomRating ratingHalf={reading.rating_half} />}
+                {reading.rating_quarter !== null && <MushroomRating ratingQuarter={reading.rating_quarter} />}
 
                 <div className="flex flex-wrap items-center gap-3">
                   {reading.status === 'want' && (
@@ -581,11 +581,11 @@ export function OwnReadings({
           book={book}
           reading={finished}
           onClose={() => setFinishedId(null)}
-          onWrite={(ratingHalf) => {
+          onWrite={(ratingQuarter) => {
             setFinishedId(null);
             setSheet({
               reading: finished,
-              initial: { ...valuesOf(finished), ratingHalf },
+              initial: { ...valuesOf(finished), ratingQuarter },
               number: numberOf(finished),
               focusReview: true,
             });

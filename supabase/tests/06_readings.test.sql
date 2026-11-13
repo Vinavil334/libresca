@@ -31,14 +31,14 @@ select throws_ok(
   '23514', null, 'a reading in progress has no end date'
 );
 select throws_ok(
-  $$ insert into public.readings (user_id, work_id, status, rating_half)
+  $$ insert into public.readings (user_id, work_id, status, rating_quarter)
      values ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-0000-0000-0000-000000000001', 'want', 8) $$,
   '23514', null, 'a book not read yet has no rating'
 );
 select throws_ok(
-  $$ insert into public.readings (user_id, work_id, status, rating_half)
-     values ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-0000-0000-0000-000000000001', 'read', 11) $$,
-  '23514', null, 'a rating goes from half a mushroom to five'
+  $$ insert into public.readings (user_id, work_id, status, rating_quarter)
+     values ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-0000-0000-0000-000000000001', 'read', 21) $$,
+  '23514', null, 'a rating goes from a quarter of a mushroom to five'
 );
 select throws_ok(
   $$ insert into public.readings (user_id, work_id, status, started_on, finished_on)
@@ -68,7 +68,7 @@ select throws_ok(
   '23505', null, 'only one open reading per book: starting it updates the Dispensa row'
 );
 select lives_ok(
-  $$ update public.readings set status = 'read', started_on = '2024-03-01', finished_on = '2024-03-20', rating_half = 9,
+  $$ update public.readings set status = 'read', started_on = '2024-03-01', finished_on = '2024-03-20', rating_quarter = 18,
        review = 'Una topina indimenticabile'
      where id = 'eeeeeeee-0000-0000-0000-000000000001' $$,
   'the owner finishes and rates the reading'
@@ -98,7 +98,7 @@ select throws_ok(
 set local request.jwt.claims = '{"sub": "33333333-3333-3333-3333-333333333333", "role": "authenticated"}';
 
 select is_empty($$ select id from public.readings $$, 'another account does not see someone else''s readings');
-update public.readings set rating_half = 1 where id = 'eeeeeeee-0000-0000-0000-000000000001';
+update public.readings set rating_quarter = 2 where id = 'eeeeeeee-0000-0000-0000-000000000001';
 delete from public.readings where id = 'eeeeeeee-0000-0000-0000-000000000001';
 select lives_ok(
   $$ insert into public.readings (work_id, status) values ('aaaaaaaa-0000-0000-0000-000000000001', 'want') $$,
@@ -129,8 +129,8 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub": "11111111-1111-1111-1111-111111111111", "role": "authenticated"}';
 
 select results_eq(
-  $$ select status::text, rating_half::int, review from public.readings where id = 'eeeeeeee-0000-0000-0000-000000000001' $$,
-  $$ values ('read', 9, 'Una topina indimenticabile'::text) $$,
+  $$ select status::text, rating_quarter::int, review from public.readings where id = 'eeeeeeee-0000-0000-0000-000000000001' $$,
+  $$ values ('read', 18, 'Una topina indimenticabile'::text) $$,
   'another account could neither edit nor delete the reading'
 );
 

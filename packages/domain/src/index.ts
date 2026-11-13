@@ -79,7 +79,7 @@ export {
   finishesReading,
   isFinishedStatus,
   isOpenStatus,
-  maxRatingHalf,
+  maxRatingQuarter,
   openReading,
   ratingMushrooms,
   readingStatuses,
@@ -109,3 +109,19 @@ export {
   tanaReadingFilters,
 } from './tana';
 export { type ShelfNameIssue, type ShelfNameValidation, shelfNameMaxLength, validateShelfName } from './shelves';
+export {
+  type GoodreadsBook,
+  type GoodreadsIssue,
+  type GoodreadsParse,
+  type GoodreadsSummary,
+  type PlannedReading,
+  goodreadsCatalogEntry,
+  goodreadsExternalIds,
+  goodreadsShelfName,
+  parseCsv,
+  parseGoodreadsExport,
+  plannedReadings,
+  sameGoodreadsBook,
+  stripSeries,
+  summarizeGoodreads,
+} from './goodreads';

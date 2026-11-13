@@ -57,7 +57,7 @@ Definiti nel design system su Claude con anteprime e linee guida; nell'app si ri
 | Chip | Filtri combinabili, `aria-pressed`, miele quando attivo |
 | Segmented | Due o tre viste esclusive: "Elenco / Griglia", "Scansiona / Cerca / A mano" |
 | StatusPill | `read`, `reading`, `loan`, `pantry`, `late`, `paused` ("Messo da parte"): forma + icona + parola |
-| MushroomRating | Voto da mezzo a cinque funghetti, con testo per lettori di schermo |
+| MushroomRating | Voto da un quarto a cinque funghetti, riempiti per quarti, con testo per lettori di schermo |
 | BookCover | Copertina 2:3 con contorno; senza immagine, copertina generata stabile dal titolo |
 | BookRow | Riga della Tana: copertina, titolo, autore, uno stato, voto |
 | Card | Contenitore con intestazione in corsivo; `honey` solo per ciò che chiede risposta |
@@ -86,7 +86,7 @@ Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2
 | spora | Consiglio diretto da un amico, con una nota | "una spora · un consiglio da un amico" | `spores` |
 | Micelio | Consigli automatici, sempre con il perché | "Micelio · consigli per te" | `reco_candidates` (`reasons`) |
 | Messo da parte | Lettura interrotta, senza giudizio: mai "abbandonato" | "Messo da parte" | `readings.status = 'abandoned'` |
-| funghetti | Il voto, da mezzo a cinque | "4,5 funghetti" | `readings.rating_half` (1–10) |
+| funghetti | Il voto, da un quarto a cinque | "4,25 funghetti" | `readings.rating_quarter` (1–20) |
 | Fungo raro | Consiglio inaspettato | "Fungo raro · inaspettato" | candidato di esplorazione |
 | In viaggio | Un tuo libro prestato | "In viaggio da Luca" | `loans` aperto |
 | Con calma | Prestito lungo, senza rimprovero | "Sara, con calma" | `loans` aperto oltre la soglia |

@@ -63,16 +63,18 @@ Il catalogo è leggibile solo dagli account attivi. Nessuno lo scrive direttamen
 | `invites` | `code`, `created_by`, `expires_at`, `used_by` | Riscattare un invito attiva l'account |
 | `app_settings` | `key`, `value` | Contiene `signup_mode`: `invite_only` oppure `open` |
 | `copies` | `id`, `owner_id`, `edition_id`, `is_lendable`, `acquired_on`, `visibility`, `notes` | Più copie possibili, anche della stessa edizione. Il formato sta solo sull'edizione; condizioni e posizione non si registrano, per scelta (si possono aggiungere più avanti). Proprietario ed edizione non cambiano dopo la creazione. Cancellando l'account si cancellano le copie; un'edizione con copie non si cancella. Fino a F2.2 la policy lascia leggere solo il proprietario, qualunque sia `visibility` |
-| `readings` | `id`, `user_id`, `work_id`, `edition_id?`, `status`, `started_on`, `finished_on`, `rating_half`, `review`, `visibility` | `status`: `want`, `reading`, `read`, `abandoned`. Al massimo una lettura aperta (`want` o `reading`) per persona e opera, con un indice unico parziale. In Dispensa niente date; data di fine e voto solo per `read` e `abandoned`; la fine non precede l'inizio; l'edizione, se c'è, è dell'opera. Date esatte e facoltative. Persona e opera non cambiano dopo la creazione; fino a F2.2 la policy lascia leggere solo il proprietario |
+| `readings` | `id`, `user_id`, `work_id`, `edition_id?`, `status`, `started_on`, `finished_on`, `rating_quarter`, `review`, `visibility` | `status`: `want`, `reading`, `read`, `abandoned`. Al massimo una lettura aperta (`want` o `reading`) per persona e opera, con un indice unico parziale. In Dispensa niente date; data di fine e voto solo per `read` e `abandoned`; la fine non precede l'inizio; l'edizione, se c'è, è dell'opera. Date esatte e facoltative. Persona e opera non cambiano dopo la creazione; fino a F2.2 la policy lascia leggere solo il proprietario |
 | `shelves` | `id`, `owner_id`, `name`, `visibility`, `position` | Scaffali scelti dalla persona ("Comodino"). Nome di 1-60 caratteri senza spazi ai bordi, unico per account senza badare alle maiuscole. Privati per impostazione; fino a F2.2 la policy lascia leggere solo il proprietario. Niente `kind`: Dispensa e desideri hanno già le loro tabelle |
 | `shelf_items` | `shelf_id`, `work_id`, `position` | Uno scaffale contiene opere, non copie: ci sta anche un libro letto in biblioteca. Un'opera al massimo una volta per scaffale, ma su quanti scaffali si vuole. Le policy seguono il proprietario dello scaffale; si cancella con lo scaffale o con l'opera |
 | `wishes` | `user_id`, `work_id`, `note`, `priority`, `visibility` | Distinto da "da leggere": desidero possederlo |
-| `import_jobs` | `id`, `user_id`, `source`, `status`, `total`, `done`, `report` | Import ripristinabili |
-| `import_rows` | `job_id`, `raw`, `match_status`, `work_id?` | Revisione delle corrispondenze dubbie |
+| `import_jobs` | `id`, `user_id`, `source`, `status`, `google_day`, `google_calls` | Un import, elaborato a passi dal browser: `running` finché resta una riga da fare, poi `finished`. `google_calls` conta le chiamate a Google Books del giorno `google_day`, per il tetto giornaliero. Solo il proprietario |
+| `import_rows` | `job_id`, `line`, `source_key`, `raw`, `status`, `work_id?`, `candidates`, `note` | Una riga dell'export (`raw` è la riga letta dal parser e non cambia), unica per `source_key` nell'import. `status`: `pending`, `imported`, `review` (libro senza ISBN da scegliere tra `candidates`), `skipped`, `failed`. Le policy seguono il proprietario dell'import |
+
+La cache condivisa delle fonti aperte sta in `private.metadata_cache` (URL, risposta, scadenza), fuori dall'API: si legge e si scrive solo con `public.metadata_cache_get` e `public.metadata_cache_put`, per account attivi, e accetta solo Open Library e OPAC SBN, mai Google Books (ADR-0008).
 
 `started_on` e `finished_on` sono facoltative: l'export Goodreads non contiene la data di inizio e a volte nemmeno quella di fine. Una data sconosciuta resta `NULL`, mai stimata.
 
-`rating_half` va da 1 a 10: mezzo funghetto per unità. Si evitano così i decimali nel database. Vale `NULL` quando manca il voto: un libro senza voto è diverso da un voto basso.
+`rating_quarter` va da 1 a 20: un quarto di funghetto per unità ([ADR-0009](adr/0009-voto-a-quarti-di-funghetto.md)). Si evitano così i decimali nel database. Vale `NULL` quando manca il voto: un libro senza voto è diverso da un voto basso.
 
 ## Sociale
 

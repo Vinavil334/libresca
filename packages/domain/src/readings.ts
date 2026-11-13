@@ -20,13 +20,13 @@ export function isFinishedStatus(status: ReadingStatus): boolean {
   return status === 'read' || status === 'abandoned';
 }
 
-/** The rating in half mushrooms: 1 is half a mushroom, 10 is five. */
-export const maxRatingHalf = 10;
+/** The rating in quarter mushrooms: 1 is a quarter of a mushroom, 20 is five. */
+export const maxRatingQuarter = 20;
 export const reviewMaxLength = 5000;
 
-/** Mushrooms for a rating, for display and screen readers: 9 gives 4.5. */
-export function ratingMushrooms(ratingHalf: number): number {
-  return ratingHalf / 2;
+/** Mushrooms for a rating, for display and screen readers: 17 gives 4.25. */
+export function ratingMushrooms(ratingQuarter: number): number {
+  return ratingQuarter / 4;
 }
 
 export interface ReadingInput {
@@ -34,8 +34,8 @@ export interface ReadingInput {
   /** `YYYY-MM-DD`, or empty when unknown. */
   startedOn?: string;
   finishedOn?: string;
-  /** 1 to 10, or null for no rating. */
-  ratingHalf?: number | null;
+  /** 1 to 20 quarter mushrooms, or null for no rating. */
+  ratingQuarter?: number | null;
   review?: string;
   editionId?: string | null;
   visibility?: Visibility;
@@ -46,7 +46,7 @@ export interface ReadingPayload {
   status: ReadingStatus;
   started_on: string | null;
   finished_on: string | null;
-  rating_half: number | null;
+  rating_quarter: number | null;
   review: string | null;
   edition_id?: string | null;
   visibility?: Visibility;
@@ -56,7 +56,7 @@ export type ReadingIssueCode =
   'invalid_option' | 'invalid_date' | 'future_date' | 'dates_order' | 'invalid_rating' | 'too_long' | 'invalid_id';
 
 export interface ReadingIssue {
-  path: 'status' | 'startedOn' | 'finishedOn' | 'ratingHalf' | 'review' | 'editionId' | 'visibility';
+  path: 'status' | 'startedOn' | 'finishedOn' | 'ratingQuarter' | 'review' | 'editionId' | 'visibility';
   code: ReadingIssueCode;
 }
 
@@ -88,9 +88,9 @@ export function validateReading(input: ReadingInput, today: string): ReadingVali
   const finishedOn = isFinishedStatus(status) ? date('finishedOn', input.finishedOn) : null;
   if (startedOn && finishedOn && startedOn > finishedOn) issues.push({ path: 'finishedOn', code: 'dates_order' });
 
-  const rating = isFinishedStatus(status) ? (input.ratingHalf ?? null) : null;
-  if (rating !== null && !(Number.isInteger(rating) && rating >= 1 && rating <= maxRatingHalf)) {
-    issues.push({ path: 'ratingHalf', code: 'invalid_rating' });
+  const rating = isFinishedStatus(status) ? (input.ratingQuarter ?? null) : null;
+  if (rating !== null && !(Number.isInteger(rating) && rating >= 1 && rating <= maxRatingQuarter)) {
+    issues.push({ path: 'ratingQuarter', code: 'invalid_rating' });
   }
 
   const review = input.review?.trim() || null;
@@ -108,7 +108,7 @@ export function validateReading(input: ReadingInput, today: string): ReadingVali
       status,
       started_on: startedOn,
       finished_on: finishedOn,
-      rating_half: rating,
+      rating_quarter: rating,
       review,
       ...(input.editionId === undefined ? {} : { edition_id: input.editionId }),
       ...(input.visibility === undefined ? {} : { visibility: input.visibility }),
@@ -138,12 +138,13 @@ export function sortReadings<T extends DatedReading>(readings: T[]): T[] {
 }
 
 /**
- * Tapping a mushroom of the rating (SCHERMATE_TANA.md): the first tap gives that many
- * mushrooms, a second tap on the same one takes half a mushroom off. In half mushrooms.
+ * Tapping a mushroom of the rating: the first tap gives that many mushrooms, each new tap
+ * on the same one takes a quarter off (4, 3¾, 3½, 3¼), then it starts again. In quarters.
  */
 export function tapRating(current: number | null, mushroom: number): number {
-  const full = mushroom * 2;
-  return current === full ? full - 1 : full;
+  const full = mushroom * 4;
+  // Within this mushroom, above three quarters off: one more quarter off.
+  return current !== null && current > full - 3 && current <= full ? current - 1 : full;
 }
 
 /**

@@ -386,8 +386,8 @@
       "scan": "Scansiona il codice a barre",
       "search": "Cercalo per titolo o autore",
       "importTitle": "Hai già i tuoi libri su Goodreads?",
-      "importText": "Presto potrai portarli qui in un colpo solo, con voti e date.",
-      "importSoon": "L'import arriva tra poco."
+      "importText": "Porta qui la tua libreria con voti, date di fine e scaffali.",
+      "import": "Importa da Goodreads"
     },
     "view": {
       "label": "Vista",
@@ -401,7 +401,8 @@
     "title": "Tu",
     "subtitle": "il tuo account",
     "greeting": "Ciao, {name}",
-    "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici."
+    "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici.",
+    "import": "Importa da Goodreads"
   },
   "shelves": {
     "title": "Scaffali",
@@ -437,5 +438,71 @@
       "manage": "Gestisci gli scaffali",
       "failed": "Non siamo riusciti a spostare il libro. Riprova tra un momento."
     }
+  },
+  "import": {
+    "title": "Importa da Goodreads",
+    "subtitle": "porta qui la tua libreria",
+    "back": "Tana",
+    "how": "Su Goodreads, da computer: My Books → Import and export → Export Library. Scarica il file e sceglilo qui. Usa il file così com'è: aprirlo e salvarlo con Excel può rovinare ISBN e date.",
+    "choose": "Scegli il file dell'export",
+    "fileLabel": "File CSV di Goodreads",
+    "reading": "Leggo il file…",
+    "errors": {
+      "empty": "Il file è vuoto.",
+      "not_goodreads": "Questo non sembra un export di Goodreads: mancano le colonne che ci servono.",
+      "too_large": "Il file è troppo grande.",
+      "failed": "Non siamo riusciti a cominciare. Riprova tra un momento.",
+      "network": "La connessione si è interrotta. Riprendi quando vuoi: ripartiamo da dove eravamo.",
+      "unreadable": "Non riusciamo a leggere il file."
+    },
+    "summary": {
+      "heading": "Cosa arriva nella Tana",
+      "books": "{count, plural, one {# libro} other {# libri}} nell'export",
+      "statuses": "{read, plural, one {# letto} other {# letti}} · {reading} in lettura · {want} in Dispensa · {abandoned, plural, one {# messo da parte} other {# messi da parte}}",
+      "rated": "{count, plural, =0 {Nessun voto} one {# libro con il voto} other {# libri con il voto}}, in funghetti interi",
+      "copies": "{count, plural, =0 {Nessuna copia} one {# copia} other {# copie}} nella Tana: ogni libro letto lo diamo per posseduto. Toglierai a mano quelli che non hai.",
+      "noIsbn": "{count, plural, =0 {Tutti hanno l'ISBN.} one {# senza ISBN: lo cerchiamo per titolo e autore.} other {# senza ISBN: li cerchiamo per titolo e autore.}} Quelli incerti te li chiediamo alla fine.",
+      "noDate": "{count, plural, =0 {Tutti i letti hanno la data di fine.} one {# letto senza data di fine: resta vuota.} other {# letti senza data di fine: restano vuote.}}",
+      "rereads": "{count, plural, =0 {} one {# riletto: la data va solo all'ultima lettura.} other {# riletti: la data va solo all'ultima lettura.}}",
+      "startDates": "Le date di inizio non sono nell'export: puoi aggiungerle dalla scheda di ogni libro.",
+      "shelves": "Scaffali",
+      "shelf": "{name} · {count}",
+      "issues": "{count, plural, one {# riga da guardare} other {# righe da guardare}}",
+      "issue": {
+        "missing_title": "Riga {line}: senza titolo, la lasciamo fuori.",
+        "invalid_date": "Riga {line}: la data di lettura non è valida, resta vuota.",
+        "review_cut": "Riga {line}: le note erano troppo lunghe, le abbiamo accorciate.",
+        "invalid_isbn": "Riga {line}: l'ISBN non è valido, lo cerchiamo per titolo e autore.",
+        "custom_shelf": "Riga {line}: lo scaffale esclusivo «{shelf}» diventa uno scaffale, senza lettura."
+      },
+      "start": "Importa {count, plural, one {# libro} other {# libri}}",
+      "another": "Scegli un altro file"
+    },
+    "progress": {
+      "heading": "Sto importando",
+      "status": "{done} su {total}",
+      "keepOpen": "Puoi chiudere la pagina: quando torni, riprendiamo da qui.",
+      "resume": "Riprendi l'import",
+      "pause": "Fermati qui"
+    },
+    "done": {
+      "heading": "Fatto!",
+      "text": "{imported, plural, one {# libro è} other {# libri sono}} nella tua Tana.",
+      "skipped": "{count, plural, =0 {} one {# era già stato importato.} other {# erano già stati importati.}}",
+      "failed": "{count, plural, =0 {} one {# non siamo riusciti a importarlo.} other {# non siamo riusciti a importarli.}}",
+      "toTana": "Vai alla Tana",
+      "again": "Importa un altro file"
+    },
+    "review": {
+      "heading": "Da controllare",
+      "intro": "Per questi libri senza ISBN abbiamo trovato qualcosa di simile, ma non siamo sicuri. Scegli tu.",
+      "row": "Riga {line} dell'export",
+      "pick": "È questo",
+      "asExported": "Nessuno: usa i dati di Goodreads",
+      "skip": "Lascialo fuori",
+      "failed": "Non siamo riusciti a salvare la scelta. Riprova.",
+      "none": "Niente da controllare."
+    },
+    "entry": "Importa da Goodreads"
   }
 }
