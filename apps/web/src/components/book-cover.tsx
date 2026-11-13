@@ -1,11 +1,13 @@
 import { type CoverTone, coverTone } from '@libresca/domain';
 
-type Size = 'small' | 'medium' | 'large';
+/** `fill` takes the width of its container, as in a grid of covers. */
+type Size = 'small' | 'medium' | 'large' | 'fill';
 
 const widths: Record<Size, string> = {
   small: 'w-[3.5rem]',
   medium: 'w-[5.5rem]',
   large: 'w-[8.5rem]',
+  fill: 'w-full',
 };
 
 const tones: Record<CoverTone, string> = {

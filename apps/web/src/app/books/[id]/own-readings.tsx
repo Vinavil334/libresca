@@ -20,6 +20,7 @@ import { CloseIcon } from '@/components/icons';
 import { MousePlaceholder } from '@/components/mouse-placeholder';
 import { MushroomRating, RatingInput } from '@/components/mushroom-rating';
 import { Sheet } from '@/components/sheet';
+import { StatusPill } from '@/components/status-pill';
 
 import { inputClasses } from '../../add/form-field';
 import { addOwnReading, removeOwnReading, saveOwnReading } from './actions';
@@ -510,14 +511,13 @@ export function OwnReadings({
             const number = numberOf(reading);
             return (
               <li key={reading.id} className={`${card} flex flex-col gap-2`}>
-                <div className="flex flex-col">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="type-title-s text-text">{t('number', { number })}</p>
-                  <p className="type-body-strong text-text">{t(`status.${reading.status}`)}</p>
+                  <StatusPill status={reading.status} />
                 </div>
                 {dates && <p className="type-small text-text-muted">{dates}</p>}
                 {edition && <p className="type-small wrap-break-word text-text-muted">{edition.label}</p>}
                 {reading.rating_half !== null && <MushroomRating ratingHalf={reading.rating_half} />}
-                {reading.review && <p className="type-note whitespace-pre-line text-text">{reading.review}</p>}
 
                 <div className="flex flex-wrap items-center gap-3">
                   {reading.status === 'want' && (

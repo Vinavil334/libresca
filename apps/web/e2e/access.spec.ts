@@ -54,11 +54,13 @@ test.describe('an active account', () => {
   test('enters the app, is greeted by name, and can sign out', async ({ page }) => {
     await page.goto('/login');
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByText(`Ciao, ${account.displayName}`)).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: it.tana.title })).toBeVisible();
 
     await page.goto('/waiting');
     await expect(page).toHaveURL(/\/$/);
 
+    await page.getByRole('link', { name: it.nav.me }).click();
+    await expect(page.getByText(`Ciao, ${account.displayName}`)).toBeVisible();
     await page.getByRole('button', { name: it.auth.signOut }).click();
     await expect(page).toHaveURL(/\/login$/);
     await page.goto('/');

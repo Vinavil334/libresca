@@ -39,7 +39,7 @@ test.describe('readings', () => {
 
     await ask.getByRole('button', { name: 'Voglio leggerlo · in Dispensa' }).click();
     const readings = page.getByRole('region', { name: 'Le tue letture' });
-    await expect(readings.getByText('In Dispensa · da leggere')).toBeVisible();
+    await expect(readings.getByText('Dispensa', { exact: true })).toBeVisible();
 
     await readings.getByRole('button', { name: 'Comincio a leggerlo' }).click();
     await expect(readings.getByText('In lettura', { exact: true })).toBeVisible();
@@ -69,7 +69,13 @@ test.describe('readings', () => {
     await expect(readings.getByText('Letto', { exact: true })).toBeVisible();
     await expect(readings.getByText('dal 1 al 20 marzo 2024')).toBeVisible();
     await expect(readings.getByRole('img', { name: '4,5 funghetti' })).toBeVisible();
-    await expect(readings.getByText('Una topina indimenticabile')).toBeVisible();
+    // Notes have their own block; the rating shows up as the badge next to the cover too.
+    await expect(
+      page.getByRole('region', { name: 'Le tue note' }).getByText('Una topina indimenticabile'),
+    ).toBeVisible();
+    await expect(page.getByText('4,5 funghetti', { exact: true })).toBeVisible();
+    const summary = page.getByRole('navigation', { name: 'In breve' });
+    await expect(summary.getByText('ultima a marzo 2024')).toBeVisible();
 
     // A reread is a new reading; the first one stays with its dates and rating.
     await readings.getByRole('button', { name: 'Inizia una rilettura' }).click();

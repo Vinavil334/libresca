@@ -390,6 +390,82 @@ export type Database = {
           },
         ];
       };
+      shelf_items: {
+        Row: {
+          created_at: string;
+          position: number;
+          shelf_id: string;
+          work_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          position?: number;
+          shelf_id: string;
+          work_id: string;
+        };
+        Update: {
+          created_at?: string;
+          position?: number;
+          shelf_id?: string;
+          work_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shelf_items_shelf_id_fkey';
+            columns: ['shelf_id'];
+            isOneToOne: false;
+            referencedRelation: 'shelves';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'shelf_items_work_id_fkey';
+            columns: ['work_id'];
+            isOneToOne: false;
+            referencedRelation: 'works';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      shelves: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          owner_id: string;
+          position: number;
+          updated_at: string;
+          visibility: Database['public']['Enums']['visibility'];
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          owner_id?: string;
+          position?: number;
+          updated_at?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          owner_id?: string;
+          position?: number;
+          updated_at?: string;
+          visibility?: Database['public']['Enums']['visibility'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shelves_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       work_authors: {
         Row: {
           author_id: string;

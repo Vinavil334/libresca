@@ -13,7 +13,7 @@ import {
 } from '@libresca/metadata/client';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/button';
 import { ScanIcon, SearchIcon } from '@/components/icons';
@@ -53,16 +53,18 @@ async function getJson<T>(url: string): Promise<Fetched<T>> {
  * in `/api/v1`; this component only moves between the steps.
  *
  * `startScanning`: open the camera at once, as after "Scansiona un altro".
+ * `initialQuery`: search at once, as from "Cercalo nel catalogo" in the Tana.
  */
-export function AddBook({ startScanning = false }: { startScanning?: boolean }) {
+export function AddBook({ startScanning = false, initialQuery }: { startScanning?: boolean; initialQuery?: string }) {
   const t = useTranslations('add');
   const router = useRouter();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [loading, setLoading] = useState(false);
   const [failure, setFailure] = useState<Failure | null>(null);
   const [results, setResults] = useState<BookSearchResponse<WorkWithAuthors> | null>(null);
   const [confirming, setConfirming] = useState<Confirming | null>(null);
   const [scanning, setScanning] = useState(startScanning);
+  const searchedInitial = useRef(false);
 
   async function lookUpIsbn(isbn13: string, match?: WorkMatch) {
     setLoading(true);
@@ -101,7 +103,10 @@ export function AddBook({ startScanning = false }: { startScanning?: boolean }) 
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // The form is the source of truth: text typed before hydration never reached the state.
-    const typed = String(new FormData(event.currentTarget).get('q') ?? '');
+    await searchFor(String(new FormData(event.currentTarget).get('q') ?? ''));
+  }
+
+  async function searchFor(typed: string) {
     setQuery(typed);
     const parsed = parseBookQuery(typed);
     if (!parsed) return setFailure('tooShort');
@@ -117,6 +122,14 @@ export function AddBook({ startScanning = false }: { startScanning?: boolean }) 
     if (!answer.ok) return setFailure(answer.failure);
     setResults(answer.body);
   }
+
+  // A search handed over in the address runs once, as if typed and sent.
+  useEffect(() => {
+    if (!initialQuery || searchedInitial.current) return;
+    searchedInitial.current = true;
+    void searchFor(initialQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on arrival
+  }, []);
 
   function chooseEdition(candidate: MatchedCandidate, edition: CandidateEdition) {
     const found = candidate.catalogMatch;

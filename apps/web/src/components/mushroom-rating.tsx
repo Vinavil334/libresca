@@ -1,14 +1,14 @@
 'use client';
 
 import { maxRatingHalf, ratingMushrooms, tapRating } from '@libresca/domain';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 const cap = 'M2 18C2 8 10 2 20 2s18 6 18 16Z';
 /** The left half of the cap, for half a mushroom: no clip paths, so ids never collide. */
 const leftHalf = 'M2 18C2 8 10 2 20 2V18Z';
 
 /** One mushroom cap: full, half or empty. */
-function Mushroom({ fill }: { fill: 'full' | 'half' | 'empty' }) {
+export function Mushroom({ fill }: { fill: 'full' | 'half' | 'empty' }) {
   return (
     <svg viewBox="0 0 40 20" className="h-[1.25rem] w-[2.5rem]" aria-hidden focusable="false">
       <path d={cap} className={fill === 'full' ? 'fill-cap' : 'fill-surface'} />
@@ -30,6 +30,24 @@ export function MushroomRating({ ratingHalf }: { ratingHalf: number }) {
         const filled = ratingHalf - i * 2;
         return <Mushroom key={i} fill={filled >= 2 ? 'full' : filled === 1 ? 'half' : 'empty'} />;
       })}
+    </span>
+  );
+}
+
+/**
+ * The rating in a small space, such as a row of the Tana: one cap and the number,
+ * "4,5", read as "4,5 funghetti".
+ */
+export function RatingNumber({ ratingHalf }: { ratingHalf: number }) {
+  const t = useTranslations('readings.rating');
+  const format = useFormatter();
+  const mushrooms = ratingMushrooms(ratingHalf);
+  return (
+    <span role="img" aria-label={t('value', { count: mushrooms })} className="inline-flex items-center gap-1">
+      <Mushroom fill="full" />
+      <span aria-hidden className="type-label text-text">
+        {format.number(mushrooms)}
+      </span>
     </span>
   );
 }

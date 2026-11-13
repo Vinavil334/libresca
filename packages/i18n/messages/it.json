@@ -3,13 +3,6 @@
     "title": "Libresca",
     "description": "La tua Tana di libri, con gli amici del Bosco."
   },
-  "home": {
-    "title": "Libresca",
-    "greeting": "Ciao, {name}",
-    "intro": "La tua Tana · la tua libreria",
-    "body": "Qui stanno spuntando i primi funghetti. Presto potrai mettere al riparo i tuoi libri.",
-    "addBook": "Aggiungi un libro"
-  },
   "login": {
     "title": "Libresca",
     "intro": "La tua Tana · la tua libreria",
@@ -188,7 +181,7 @@
   },
   "book": {
     "found": "Questo libro era già nel catalogo.",
-    "back": "Torna all'inizio",
+    "back": "Tana",
     "firstPublished": "Prima edizione: {year}",
     "editions": "Edizioni",
     "pages": "{count, plural, one {# pagina} other {# pagine}}",
@@ -200,7 +193,19 @@
     "translatedBy": "Traduzione di {names}",
     "scanAnother": "Scansiona un altro",
     "addedToTana": "È nella tua Tana.",
-    "addedToCatalog": "Aggiunto al catalogo. Quando vuoi, puoi dire che ce l'hai."
+    "addedToCatalog": "Aggiunto al catalogo. Quando vuoi, puoi dire che ce l'hai.",
+    "yourCopy": "La tua copia",
+    "notesHeading": "Le tue note",
+    "summary": {
+      "label": "In breve",
+      "copies": "Ce l'hai",
+      "copiesNone": "Non ce l'hai",
+      "copiesDetail": "{count, plural, one {# copia} other {# copie}} · {lendable, select, yes {si può prestare} other {non la presti}}",
+      "copiesNoneDetail": "Non è nella tua Tana",
+      "read": "{count, plural, =0 {Non l'hai letto} one {Letto} other {Letto # volte}}",
+      "lastRead": "ultima a {date}",
+      "noReadings": "Né letto né in Dispensa"
+    }
   },
   "copies": {
     "heading": "Ce l'hai",
@@ -240,12 +245,6 @@
     "heading": "Le tue letture",
     "askHeading": "L'hai letto?",
     "askHint": "Vale anche se non ce l'hai: un prestito, la biblioteca, un regalo che hai ridato.",
-    "status": {
-      "want": "In Dispensa · da leggere",
-      "reading": "In lettura",
-      "read": "Letto",
-      "abandoned": "Messo da parte"
-    },
     "choices": {
       "want": "Voglio leggerlo",
       "reading": "Lo sto leggendo",
@@ -324,6 +323,119 @@
       "forbidden": "Il tuo account non può modificare le letture, per ora.",
       "rejected": "Qualcosa non torna: controlla i campi.",
       "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
+    }
+  },
+  "nav": {
+    "label": "Navigazione",
+    "brand": "Libresca",
+    "tana": "Tana",
+    "scan": "Scansiona",
+    "me": "Tu",
+    "add": "Aggiungi un libro"
+  },
+  "statusPill": {
+    "want": "Dispensa",
+    "reading": "In lettura",
+    "read": "Letto",
+    "abandoned": "Messo da parte",
+    "readTimes": "Letto {count} volte"
+  },
+  "tana": {
+    "title": "La tua Tana",
+    "subtitle": "la tua libreria · {count, plural, one {# libro} other {# libri}}",
+    "subtitleEmpty": "la tua libreria · ancora vuota",
+    "error": "Non riusciamo a leggere la tua Tana adesso. Riprova tra un momento.",
+    "search": "Cerca nella tua Tana",
+    "filterGroups": {
+      "reading": "Lettura",
+      "copies": "Copie",
+      "shelves": "Scaffali"
+    },
+    "filters": {
+      "reading": "In lettura",
+      "read": "Letti",
+      "want": "Dispensa",
+      "abandoned": "Messi da parte",
+      "owned": "Ce l'ho",
+      "lendable": "Si può prestare"
+    },
+    "orderLabel": "Ordine",
+    "orders": {
+      "recent": "Aggiunti di recente",
+      "title": "Per titolo",
+      "author": "Per autore"
+    },
+    "readingNow": "Stai leggendo",
+    "all": "Tutta la Tana",
+    "count": "{count, plural, one {# libro} other {# libri}}",
+    "shown": "{shown} su {total}",
+    "notOwned": "non ce l'hai",
+    "noResults": {
+      "title": "{filter, select, reading {Nessun libro in lettura} read {Nessun libro letto} want {Nessun libro in Dispensa} abandoned {Nessun libro messo da parte} owned {Nessun libro che hai} lendable {Nessun libro da prestare} many {Nessun libro con questi filtri} other {Nessun libro}}",
+      "query": " con «{query}»",
+      "textRead": "Forse non l'hai ancora segnato come letto, oppure non è nella tua Tana.",
+      "text": "Forse non è nella tua Tana, oppure è segnato in un altro modo.",
+      "clearFilter": "Togli il filtro {name}",
+      "clearFilters": "Togli i filtri",
+      "clearQuery": "Cancella la ricerca",
+      "searchCatalog": "Cercalo nel catalogo"
+    },
+    "empty": {
+      "title": "Qui stanno spuntando i primi funghetti",
+      "text": "Metti al riparo il primo libro: quello più vicino a te va benissimo.",
+      "scan": "Scansiona il codice a barre",
+      "search": "Cercalo per titolo o autore",
+      "importTitle": "Hai già i tuoi libri su Goodreads?",
+      "importText": "Presto potrai portarli qui in un colpo solo, con voti e date.",
+      "importSoon": "L'import arriva tra poco."
+    },
+    "view": {
+      "label": "Vista",
+      "list": "Elenco",
+      "grid": "Griglia"
+    },
+    "shownOnly": "{shown} su {total} · solo {filters}",
+    "allShelves": "Tutti gli scaffali"
+  },
+  "me": {
+    "title": "Tu",
+    "subtitle": "il tuo account",
+    "greeting": "Ciao, {name}",
+    "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici."
+  },
+  "shelves": {
+    "title": "Scaffali",
+    "subtitle": "come li sistemi tu · {count, plural, =0 {ancora nessuno} one {# scaffale} other {# scaffali}}",
+    "new": "Nuovo scaffale",
+    "nameLabel": "Nome dello scaffale",
+    "namePlaceholder": "Comodino, Da regalare…",
+    "create": "Crea lo scaffale",
+    "cancel": "Annulla",
+    "note": "Un libro può stare su più scaffali. Gli scaffali sono solo tuoi: dentro la Tana ritrovi comunque tutto.",
+    "empty": "Ancora nessuno scaffale. Ne basta uno per cominciare: il comodino, per esempio.",
+    "books": "{count, plural, one {# libro} other {# libri}}",
+    "all": "Tutti gli scaffali",
+    "shelfSubtitle": "uno scaffale della tua Tana · {count, plural, one {# libro} other {# libri}}",
+    "shelfEmpty": "Questo scaffale è ancora vuoto. Apri un libro della Tana e mettilo qui.",
+    "edit": "Modifica lo scaffale",
+    "rename": "Salva il nome",
+    "delete": "Elimina lo scaffale",
+    "deleteQuestion": "Eliminare lo scaffale? I libri restano nella tua Tana.",
+    "confirmDelete": "Sì, eliminalo",
+    "errors": {
+      "required": "Dai un nome allo scaffale.",
+      "too_long": "Il nome è un po' troppo lungo.",
+      "duplicate": "Hai già uno scaffale con questo nome.",
+      "not_found": "Questo scaffale non c'è più: ricarica la pagina.",
+      "forbidden": "Il tuo account non può modificare gli scaffali, per ora.",
+      "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
+    },
+    "onBook": {
+      "heading": "Sui tuoi scaffali",
+      "none": "Non hai ancora scaffali.",
+      "hint": "Tocca uno scaffale per metterci il libro, tocca di nuovo per toglierlo.",
+      "manage": "Gestisci gli scaffali",
+      "failed": "Non siamo riusciti a spostare il libro. Riprova tra un momento."
     }
   }
 }

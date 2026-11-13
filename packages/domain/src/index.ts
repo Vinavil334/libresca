@@ -88,3 +88,24 @@ export {
   tapRating,
   validateReading,
 } from './readings';
+export {
+  type CoverEdition,
+  type TanaBook,
+  type TanaCopyRow,
+  type TanaFilter,
+  type TanaOrder,
+  type TanaReadingRow,
+  type TanaShelfRow,
+  type TanaWork,
+  buildTana,
+  editionCoverUrl,
+  foldText,
+  matchesTana,
+  sortTana,
+  tanaCopyFilters,
+  tanaCounts,
+  tanaFilters,
+  tanaOrders,
+  tanaReadingFilters,
+} from './tana';
+export { type ShelfNameIssue, type ShelfNameValidation, shelfNameMaxLength, validateShelfName } from './shelves';
