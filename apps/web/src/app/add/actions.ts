@@ -4,6 +4,7 @@ import {
   type CreateEditionResult,
   type UploadCoverResult,
   addCopy,
+  addReading,
   createEdition,
   deleteCoverPhoto,
   findAuthorsByOpenLibraryIds,
@@ -23,6 +24,8 @@ export interface AddEditionInput {
   workId?: string;
   /** "Ce l'ho": also put a copy of the edition in the caller's Tana. */
   copy?: { isLendable: boolean };
+  /** "L'hai letto?": also start a reading of the work, without dates; nothing when "Non ancora". */
+  reading?: 'reading' | 'read';
 }
 
 export type AddEditionResponse =
@@ -34,13 +37,24 @@ export type AddEditionResponse =
  * the database checks the account and repeats the essential rules (no Google Books
  * description, no Google Books payload, cover paths of the expected shape).
  */
-export async function addEdition({ proposal, edits, workId, copy }: AddEditionInput): Promise<AddEditionResponse> {
+export async function addEdition({
+  proposal,
+  edits,
+  workId,
+  copy,
+  reading,
+}: AddEditionInput): Promise<AddEditionResponse> {
   const client = await createSupabaseServerClient();
   const knownAuthors = workId ? {} : await findAuthorsByOpenLibraryIds(client, openLibraryAuthorIds(proposal));
   const result = await createEdition(client, editedCatalogEntry(proposal, edits, { workId, knownAuthors }));
   if (!result.ok) return result;
-  // The book is in the catalog either way; a failed copy shows up as "not in your Tana yet".
-  const added = copy ? await addCopy(client, result.editionId, copy, localDate(new Date())) : null;
+  // The book is in the catalog either way; a failed copy or reading shows up on the book page
+  // as "not in your Tana yet" or "L'hai letto?", where the user can try again.
+  const today = localDate(new Date());
+  const [added] = await Promise.all([
+    copy ? addCopy(client, result.editionId, copy, today) : null,
+    reading ? addReading(client, result.workId, { status: reading, editionId: result.editionId }, today) : null,
+  ]);
   return { ...result, copyAdded: added?.ok ?? false };
 }
 

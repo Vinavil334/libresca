@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
   type ReadingStatus,
+  finishesReading,
   openReading,
   ratingMushrooms,
   reviewMaxLength,
   sortReadings,
+  tapRating,
   validateReading,
 } from './readings';
 
@@ -113,5 +115,26 @@ describe('openReading and sortReadings', () => {
     expect(sorted).toEqual([open, second, first]);
     expect(openReading(sorted)).toBe(open);
     expect(openReading([first, second])).toBeUndefined();
+  });
+});
+
+describe('tapRating', () => {
+  it('gives the tapped mushrooms, then half a mushroom less on a second tap', () => {
+    expect(tapRating(null, 3)).toBe(6);
+    expect(tapRating(6, 3)).toBe(5);
+    expect(tapRating(5, 3)).toBe(6);
+    expect(tapRating(6, 4)).toBe(8);
+    expect(tapRating(2, 1)).toBe(1);
+  });
+});
+
+describe('finishesReading', () => {
+  it('is the moment an open reading becomes read', () => {
+    expect(finishesReading('reading', 'read')).toBe(true);
+    expect(finishesReading('want', 'read')).toBe(true);
+    expect(finishesReading('read', 'read')).toBe(false);
+    expect(finishesReading('abandoned', 'read')).toBe(false);
+    expect(finishesReading('reading', 'abandoned')).toBe(false);
+    expect(finishesReading(null, 'read')).toBe(false);
   });
 });

@@ -51,6 +51,10 @@ test.describe('adding a book', () => {
     await page.getByRole('textbox', { name: 'Editore', exact: true }).fill('Edizioni Sottobosco');
     await page.getByLabel('Anno di questa edizione').fill('2021');
     await page.getByLabel('Formato').selectOption('paperback');
+    // "L'hai letto?" is its own question, "Non ancora" unless the user says otherwise.
+    const readIt = page.getByRole('group', { name: "L'hai letto?" });
+    await expect(readIt.getByRole('radio', { name: 'Non ancora' })).toBeChecked();
+    await readIt.getByRole('radio', { name: "L'ho letto" }).check();
     await page.getByRole('button', { name: 'Aggiungi alla Tana' }).click();
 
     await expect(page).toHaveURL(/\/books\/[0-9a-f-]{36}\?added=tana$/);
@@ -59,6 +63,11 @@ test.describe('adding a book', () => {
     // "Ce l'ho" was ticked by default: the copy is in the "Ce l'hai" block, lendable.
     const copies = page.getByRole('region', { name: "Ce l'hai" });
     await expect(copies.getByText('Si può prestare')).toBeVisible();
+    // A book read in the past: a reading without dates, and no "Finito!" moment.
+    const readings = page.getByRole('region', { name: 'Le tue letture' });
+    await expect(readings.getByText('Letto', { exact: true })).toBeVisible();
+    await expect(readings.getByText('date non segnate')).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
     await expect(page.getByText('Àgata Funghétti')).toBeVisible();
     const editions = page.getByRole('region', { name: 'Edizioni' });

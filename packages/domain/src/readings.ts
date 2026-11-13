@@ -136,3 +136,20 @@ export function sortReadings<T extends DatedReading>(readings: T[]): T[] {
     return key(b).localeCompare(key(a)) || b.created_at.localeCompare(a.created_at);
   });
 }
+
+/**
+ * Tapping a mushroom of the rating (SCHERMATE_TANA.md): the first tap gives that many
+ * mushrooms, a second tap on the same one takes half a mushroom off. In half mushrooms.
+ */
+export function tapRating(current: number | null, mushroom: number): number {
+  const full = mushroom * 2;
+  return current === full ? full - 1 : full;
+}
+
+/**
+ * Whether a change finishes a book: an open reading, in the Dispensa or in progress,
+ * becomes read. That is the "Finito!" moment; adding a reading of the past is not.
+ */
+export function finishesReading(from: ReadingStatus | null, to: ReadingStatus): boolean {
+  return to === 'read' && from !== null && isOpenStatus(from);
+}

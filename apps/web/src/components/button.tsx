@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ButtonHTMLAttributes, ComponentProps } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'quiet';
+type Variant = 'primary' | 'secondary' | 'quiet' | 'danger';
 
 const base =
   'inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-pill type-label transition-[transform,box-shadow] duration-(--motion-gentle) ease-gentle motion-reduce:transition-none disabled:cursor-wait disabled:opacity-70';
@@ -14,6 +14,8 @@ const variants: Record<Variant, string> = {
   primary: `${pressable} bg-accent text-on-accent`,
   secondary: `${pressable} bg-surface-raised text-text`,
   quiet: 'text-link underline underline-offset-4',
+  // Removing something: a quiet link in the danger colour, always followed by a confirmation.
+  danger: 'text-danger underline underline-offset-4',
 };
 
 /** The classes of a button, for elements that look like one, such as links. */
