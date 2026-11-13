@@ -95,6 +95,8 @@ export function ConfirmEdition({
   // "Ce l'ho" is the common case: scanning a book you hold in your hands.
   const [owned, setOwned] = useState(true);
   const [lendable, setLendable] = useState(true);
+  // "L'hai letto?" is a separate question: owning and reading never merge (DATA_MODEL.md).
+  const [readIt, setReadIt] = useState<'none' | 'reading' | 'read'>('none');
   // `identifier`: certainly the same work. `title_author`: the user answers.
   const [sameWork, setSameWork] = useState<boolean | null>(match?.basis === 'identifier' ? true : null);
   const [askAnswer, setAskAnswer] = useState(false);
@@ -146,6 +148,7 @@ export function ConfirmEdition({
         },
         workId: attach ? match?.workId : undefined,
         copy: owned ? { isLendable: lendable } : undefined,
+        reading: readIt === 'none' ? undefined : readIt,
       });
       if (result.ok) return router.push(`/books/${result.workId}?added=${result.copyAdded ? 'tana' : 'catalog'}`);
       setFailure(result);
@@ -397,8 +400,7 @@ export function ConfirmEdition({
         </div>
       </div>
 
-      <fieldset className="flex flex-col gap-1 rounded-card border-(length:--border-ink) border-border bg-surface-raised p-4">
-        <legend className="sr-only">{t('ownIt')}</legend>
+      <div className="flex flex-col gap-1 rounded-card border-(length:--border-ink) border-border bg-surface-raised p-4">
         <label className="flex min-h-[2.75rem] items-center gap-3 text-text">
           <input
             type="checkbox"
@@ -425,7 +427,24 @@ export function ConfirmEdition({
             {t('lendable')}
           </label>
         )}
-      </fieldset>
+        <fieldset className="mt-3 flex flex-col">
+          <legend className="type-body-strong text-text">{t('readIt')}</legend>
+          <div className="flex flex-wrap gap-x-4">
+            {(['none', 'reading', 'read'] as const).map((choice) => (
+              <label key={choice} className="flex min-h-[2.75rem] items-center gap-2 type-body text-text">
+                <input
+                  type="radio"
+                  name={`${id}-read-it`}
+                  checked={readIt === choice}
+                  onChange={() => setReadIt(choice)}
+                  className="size-5 accent-accent"
+                />
+                {t(`readItChoices.${choice}`)}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
 
       {failure && (
         <p role="alert" className="type-body text-danger">

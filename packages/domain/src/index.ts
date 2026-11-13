@@ -76,6 +76,7 @@ export {
   type ReadingPayload,
   type ReadingStatus,
   type ReadingValidation,
+  finishesReading,
   isFinishedStatus,
   isOpenStatus,
   maxRatingHalf,
@@ -84,5 +85,6 @@ export {
   readingStatuses,
   reviewMaxLength,
   sortReadings,
+  tapRating,
   validateReading,
 } from './readings';

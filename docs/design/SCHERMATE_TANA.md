@@ -67,13 +67,14 @@ I testi citati sono le frasi da usare: vanno in `packages/i18n/messages/`, non n
 - Testata: copertina piccola, "La tua lettura", "titolo · seconda lettura", chiudi.
 - "A che punto sei": quattro scelte esclusive (radio) in griglia 2×2: Voglio leggerlo, Lo sto leggendo, L'ho letto, Messo da parte.
 - "Iniziato" e "Finito", entrambe facoltative, con la frase sulle date vuote.
-- "Quanti funghetti?": voto da toccare, mezzo funghetto toccando di nuovo; "Senza voto" lo toglie (`rating_half` a `NULL`).
+- "Quanti funghetti?": voto da toccare, mezzo funghetto toccando di nuovo; "Senza voto" lo toglie (`rating_half` a `NULL`). Compare solo con "L'ho letto" e "Messo da parte": una lettura aperta non ha voto (F1.6).
 - "Note", "Solo per te, per ora." (fino a F2.2).
 - "Salva la lettura"; "Elimina questa lettura" in `color-danger`, con conferma.
 
 **Libro finito**
 - Quando una lettura passa a "L'ho letto": finestra sul biglietto (`color-ticket`, bordo tratteggiato, `shadow-lift`) con la topina segnaposto.
-- "Finito!" · "«Le città invisibili» è tra i tuoi letti, da oggi." · "Quanti funghetti gli dai?" · "Salva", "Scrivi due righe", "Più tardi".
+- "Finito!" · "«Le città invisibili» è tra i tuoi letti." · "Quanti funghetti gli dai?" · "Salva", "Scrivi due righe", "Più tardi". Senza "da oggi": la data di fine non si mette mai da sola.
+- Solo quando una lettura aperta (Dispensa o in corso) diventa letta; non all'aggiunta e non per una lettura passata.
 - Un solo movimento in entrata con `ease-pop` e `motion-slow`; niente con `prefers-reduced-motion`. Nessun conteggio o obiettivo.
 
 ## Aggiungere un libro (revisione di F1.3 e F1.4)

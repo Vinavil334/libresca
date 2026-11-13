@@ -93,7 +93,7 @@ export default async function BookPage({ params, searchParams }: Props) {
       </header>
 
       <OwnCopies workId={work.id} copies={copies} editions={editionChoices} />
-      <OwnReadings workId={work.id} readings={readings} editions={editionChoices} />
+      <OwnReadings workId={work.id} title={work.title} cover={cover} readings={readings} editions={editionChoices} />
 
       {work.description && (
         <section aria-labelledby="description-heading" className="flex flex-col gap-2">

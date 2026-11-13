@@ -235,9 +235,13 @@ export function OwnCopies({
   return (
     <section aria-labelledby="copies-heading" className="flex flex-col gap-3">
       <h2 id="copies-heading" className="type-heading text-text">
-        {t('heading')}
+        {copies.length > 0 ? t('heading') : t('askHeading')}
       </h2>
-      {copies.length === 0 && !adding && <p className="type-body text-text">{t('none')}</p>}
+      {copies.length === 0 && !adding && (
+        <p className="type-body text-text">
+          {t('none')} {editions.length > 1 && t('chooseLater')}
+        </p>
+      )}
       {copies.length > 0 && (
         <ul className="flex flex-col gap-3">
           {copies.map((copy) => (

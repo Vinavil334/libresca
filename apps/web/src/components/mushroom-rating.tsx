@@ -1,6 +1,6 @@
 'use client';
 
-import { maxRatingHalf, ratingMushrooms } from '@libresca/domain';
+import { maxRatingHalf, ratingMushrooms, tapRating } from '@libresca/domain';
 import { useTranslations } from 'next-intl';
 
 const cap = 'M2 18C2 8 10 2 20 2s18 6 18 16Z';
@@ -35,46 +35,58 @@ export function MushroomRating({ ratingHalf }: { ratingHalf: number }) {
 }
 
 /**
- * Picks a rating in half mushrooms. A native range input: arrow keys, swipes and screen
- * readers work out of the box; 0 means no rating, which is not a low rating.
+ * Picks a rating by tapping the mushrooms (SCHERMATE_TANA.md): a tap gives that many,
+ * a second tap on the same one takes half off, "Senza voto" clears it. Each mushroom is a
+ * button that says what it will do; the current value is announced politely.
  */
 export function RatingInput({
   id,
+  label,
   value,
   onChange,
 }: {
   id: string;
+  label: string;
   value: number | null;
   onChange: (value: number | null) => void;
 }) {
-  const t = useTranslations('readings');
+  const t = useTranslations('readings.rating');
   const current = value ?? 0;
-  const label = value ? t('rating.value', { count: ratingMushrooms(value) }) : t('rating.none');
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="type-label text-text">
-        {t('fields.rating')}
-      </label>
-      <div className="flex flex-wrap items-center gap-3">
-        <MushroomRating ratingHalf={current} />
-        <span aria-hidden className="type-small text-text-muted">
-          {label}
+    <div role="group" aria-labelledby={`${id}-label`} className="flex flex-col gap-2">
+      <p id={`${id}-label`} className="type-label text-text">
+        {label}
+      </p>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <div className="flex">
+          {Array.from({ length: maxRatingHalf / 2 }, (_, i) => {
+            const mushroom = i + 1;
+            const next = tapRating(value, mushroom);
+            const filled = current - i * 2;
+            return (
+              <button
+                key={mushroom}
+                type="button"
+                aria-label={t('tap', { count: ratingMushrooms(next) })}
+                onClick={() => onChange(next)}
+                className="grid size-[2.75rem] place-items-center rounded-card"
+              >
+                <Mushroom fill={filled >= 2 ? 'full' : filled === 1 ? 'half' : 'empty'} />
+              </button>
+            );
+          })}
+        </div>
+        <span aria-live="polite" className="type-small text-text-muted">
+          {value ? t('value', { count: ratingMushrooms(value) }) : t('none')}
         </span>
       </div>
-      <input
-        id={id}
-        type="range"
-        min={0}
-        max={maxRatingHalf}
-        step={1}
-        value={current}
-        aria-valuetext={label}
-        onChange={(event) => onChange(Number(event.target.value) || null)}
-        className="min-h-[2.75rem] w-full max-w-[20rem] accent-accent"
-      />
       {value !== null && (
-        <button type="button" onClick={() => onChange(null)} className="self-start type-label text-link underline">
-          {t('rating.clear')}
+        <button
+          type="button"
+          onClick={() => onChange(null)}
+          className="min-h-[2.75rem] self-start type-label text-link underline underline-offset-4"
+        >
+          {t('none')}
         </button>
       )}
     </div>

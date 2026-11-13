@@ -152,7 +152,13 @@
       "ownIt": "Ce l'ho",
       "ownItHint": "Lo metto nella tua Tana · la tua libreria",
       "lendable": "Si può prestare",
-      "saveToTana": "Aggiungi alla Tana"
+      "saveToTana": "Aggiungi alla Tana",
+      "readIt": "L'hai letto?",
+      "readItChoices": {
+        "none": "Non ancora",
+        "reading": "Lo sto leggendo",
+        "read": "L'ho letto"
+      }
     },
     "cover": {
       "alt": "Copertina di {title}"
@@ -226,52 +232,85 @@
       "not_found": "Questa copia non c'è più: ricarica la pagina.",
       "forbidden": "Il tuo account non può modificare la Tana, per ora.",
       "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
-    }
+    },
+    "askHeading": "Ce l'hai?",
+    "chooseLater": "Poi scegli l'edizione che hai in mano."
   },
   "readings": {
     "heading": "Le tue letture",
-    "none": "Non l'hai ancora letto, e non è in Dispensa.",
+    "askHeading": "L'hai letto?",
+    "askHint": "Vale anche se non ce l'hai: un prestito, la biblioteca, un regalo che hai ridato.",
     "status": {
       "want": "In Dispensa · da leggere",
       "reading": "In lettura",
       "read": "Letto",
-      "abandoned": "Abbandonato"
+      "abandoned": "Messo da parte"
+    },
+    "choices": {
+      "want": "Voglio leggerlo",
+      "reading": "Lo sto leggendo",
+      "read": "L'ho letto",
+      "abandoned": "Messo da parte"
     },
     "actions": {
-      "want": "Mettilo in Dispensa",
+      "want": "Voglio leggerlo · in Dispensa",
       "reading": "Lo sto leggendo",
-      "reread": "Lo rileggo",
-      "read": "L'ho letto",
+      "readBefore": "L'ho già letto",
+      "wantAgain": "Rimettilo in Dispensa",
+      "reread": "Inizia una rilettura",
+      "readAgain": "Segna un'altra lettura",
       "start": "Comincio a leggerlo",
+      "read": "L'ho letto",
       "finish": "L'ho finito",
-      "abandon": "L'ho abbandonato",
-      "removeWant": "Togli dalla Dispensa"
+      "pause": "Lo metto da parte",
+      "edit": "Modifica"
     },
-    "startedOn": "Cominciato il {date}",
-    "finishedOn": "Finito il {date}",
-    "abandonedOn": "Lasciato il {date}",
-    "fields": {
-      "status": "Com'è andata",
-      "startedOn": "Quando l'hai cominciato",
-      "finishedOnRead": "Quando l'hai finito",
-      "finishedOnAbandoned": "Quando l'hai lasciato",
-      "rating": "Voto a funghetti",
-      "review": "Note",
+    "number": "{number, plural, =1 {Prima lettura} =2 {Seconda lettura} =3 {Terza lettura} =4 {Quarta lettura} =5 {Quinta lettura} other {Lettura n. #}}",
+    "numberLower": "{number, plural, =1 {prima lettura} =2 {seconda lettura} =3 {terza lettura} =4 {quarta lettura} =5 {quinta lettura} other {lettura n. #}}",
+    "dates": {
+      "range": "dal {start} al {end}",
+      "from": "dal {start}",
+      "finished": "finita il {end}",
+      "paused": "messa da parte il {end}",
+      "noStart": "inizio non segnato",
+      "noEnd": "fine non segnata",
+      "none": "date non segnate"
+    },
+    "sheet": {
+      "title": "La tua lettura",
+      "subtitle": "{title} · {number}",
+      "close": "Chiudi",
+      "status": "A che punto sei",
+      "startedOn": "Iniziato",
+      "finishedOnRead": "Finito",
+      "finishedOnAbandoned": "Messo da parte",
+      "datesHint": "Non ricordi una data? Lasciala vuota: va bene così.",
+      "rating": "Quanti funghetti?",
       "edition": "Quale edizione",
-      "editionUnknown": "Non lo so"
+      "editionUnknown": "Non lo so",
+      "review": "Note",
+      "reviewHint": "Solo per te, per ora.",
+      "save": "Salva la lettura",
+      "saving": "Salvo…",
+      "delete": "Elimina questa lettura",
+      "deleteWant": "Togli dalla Dispensa",
+      "deleteQuestion": "Eliminare questa lettura? Le altre restano.",
+      "confirmDelete": "Sì, eliminala",
+      "cancel": "Annulla"
     },
-    "reviewHint": "Cosa ne pensi, una frase che ti è rimasta…",
+    "finished": {
+      "title": "Finito!",
+      "text": "«{title}» è tra i tuoi letti.",
+      "rating": "Quanti funghetti gli dai?",
+      "save": "Salva",
+      "write": "Scrivi due righe",
+      "later": "Più tardi"
+    },
     "rating": {
       "value": "{count, plural, one {# funghetto} other {# funghetti}}",
-      "none": "Nessun voto",
-      "clear": "Togli il voto"
+      "tap": "Dai {count, plural, one {# funghetto} other {# funghetti}}",
+      "none": "Senza voto"
     },
-    "edit": "Modifica",
-    "save": "Salva",
-    "cancel": "Annulla",
-    "delete": "Elimina questa lettura",
-    "deleteQuestion": "Eliminare questa lettura? Le altre restano.",
-    "confirmDelete": "Sì, eliminala",
     "errors": {
       "invalid_date": "Scrivi una data valida.",
       "future_date": "Questa data non è ancora arrivata.",
