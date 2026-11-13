@@ -67,7 +67,7 @@ I testi citati sono le frasi da usare: vanno in `packages/i18n/messages/`, non n
 - Testata: copertina piccola, "La tua lettura", "titolo · seconda lettura", chiudi.
 - "A che punto sei": quattro scelte esclusive (radio) in griglia 2×2: Voglio leggerlo, Lo sto leggendo, L'ho letto, Messo da parte.
 - "Iniziato" e "Finito", entrambe facoltative, con la frase sulle date vuote.
-- "Quanti funghetti?": voto da toccare, mezzo funghetto toccando di nuovo; "Senza voto" lo toglie (`rating_half` a `NULL`). Compare solo con "L'ho letto" e "Messo da parte": una lettura aperta non ha voto (F1.6).
+- "Quanti funghetti?": voto da toccare, un quarto in meno a ogni nuovo tocco sullo stesso funghetto (ADR-0009); "Senza voto" lo toglie (`rating_quarter` a `NULL`). Compare solo con "L'ho letto" e "Messo da parte": una lettura aperta non ha voto (F1.6).
 - "Note", "Solo per te, per ora." (fino a F2.2).
 - "Salva la lettura"; "Elimina questa lettura" in `color-danger`, con conferma.
 

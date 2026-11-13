@@ -17,7 +17,13 @@ describe('validateReading', () => {
   it('accepts a finished reading with dates, rating and notes', () => {
     expect(
       validateReading(
-        { status: 'read', startedOn: '2024-03-01', finishedOn: '2024-03-20', ratingHalf: 9, review: '  Bellissimo  ' },
+        {
+          status: 'read',
+          startedOn: '2024-03-01',
+          finishedOn: '2024-03-20',
+          ratingQuarter: 17,
+          review: '  Bellissimo  ',
+        },
         today,
       ),
     ).toEqual({
@@ -26,25 +32,25 @@ describe('validateReading', () => {
         status: 'read',
         started_on: '2024-03-01',
         finished_on: '2024-03-20',
-        rating_half: 9,
+        rating_quarter: 17,
         review: 'Bellissimo',
       },
     });
   });
 
   it('drops what the status does not allow instead of refusing it', () => {
-    const fields = { startedOn: '2024-03-01', finishedOn: '2024-03-20', ratingHalf: 9 };
+    const fields = { startedOn: '2024-03-01', finishedOn: '2024-03-20', ratingQuarter: 18 };
     expect(validateReading({ status: 'want', ...fields }, today)).toMatchObject({
       ok: true,
-      payload: { started_on: null, finished_on: null, rating_half: null },
+      payload: { started_on: null, finished_on: null, rating_quarter: null },
     });
     expect(validateReading({ status: 'reading', ...fields }, today)).toMatchObject({
       ok: true,
-      payload: { started_on: '2024-03-01', finished_on: null, rating_half: null },
+      payload: { started_on: '2024-03-01', finished_on: null, rating_quarter: null },
     });
     expect(validateReading({ status: 'abandoned', ...fields }, today)).toMatchObject({
       ok: true,
-      payload: { finished_on: '2024-03-20', rating_half: 9 },
+      payload: { finished_on: '2024-03-20', rating_quarter: 18 },
     });
   });
 
@@ -61,10 +67,10 @@ describe('validateReading', () => {
       ok: false,
       issues: [{ path: 'finishedOn', code: 'dates_order' }],
     });
-    for (const ratingHalf of [0, 11, 4.5]) {
-      expect(validateReading({ status: 'read', ratingHalf }, today)).toEqual({
+    for (const ratingQuarter of [0, 21, 4.5]) {
+      expect(validateReading({ status: 'read', ratingQuarter }, today)).toEqual({
         ok: false,
-        issues: [{ path: 'ratingHalf', code: 'invalid_rating' }],
+        issues: [{ path: 'ratingQuarter', code: 'invalid_rating' }],
       });
     }
   });
@@ -85,17 +91,18 @@ describe('validateReading', () => {
   });
 
   it('keeps a cleared rating as no rating', () => {
-    expect(validateReading({ status: 'read', ratingHalf: null }, today)).toMatchObject({
+    expect(validateReading({ status: 'read', ratingQuarter: null }, today)).toMatchObject({
       ok: true,
-      payload: { rating_half: null },
+      payload: { rating_quarter: null },
     });
   });
 });
 
 describe('ratingMushrooms', () => {
-  it('turns half steps into mushrooms', () => {
-    expect(ratingMushrooms(9)).toBe(4.5);
-    expect(ratingMushrooms(1)).toBe(0.5);
+  it('turns quarter steps into mushrooms', () => {
+    expect(ratingMushrooms(17)).toBe(4.25);
+    expect(ratingMushrooms(18)).toBe(4.5);
+    expect(ratingMushrooms(1)).toBe(0.25);
   });
 });
 
@@ -119,12 +126,15 @@ describe('openReading and sortReadings', () => {
 });
 
 describe('tapRating', () => {
-  it('gives the tapped mushrooms, then half a mushroom less on a second tap', () => {
-    expect(tapRating(null, 3)).toBe(6);
-    expect(tapRating(6, 3)).toBe(5);
-    expect(tapRating(5, 3)).toBe(6);
-    expect(tapRating(6, 4)).toBe(8);
-    expect(tapRating(2, 1)).toBe(1);
+  it('gives the tapped mushrooms, then a quarter less at each new tap, then starts again', () => {
+    expect(tapRating(null, 3)).toBe(12);
+    expect(tapRating(12, 3)).toBe(11);
+    expect(tapRating(11, 3)).toBe(10);
+    expect(tapRating(10, 3)).toBe(9);
+    expect(tapRating(9, 3)).toBe(12);
+    expect(tapRating(12, 4)).toBe(16);
+    expect(tapRating(16, 3)).toBe(12);
+    expect(tapRating(4, 1)).toBe(3);
   });
 });
 

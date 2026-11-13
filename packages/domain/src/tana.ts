@@ -35,7 +35,7 @@ export interface TanaReadingRow {
   status: ReadingStatus;
   started_on: string | null;
   finished_on: string | null;
-  rating_half: number | null;
+  rating_quarter: number | null;
   edition_id: string | null;
   created_at: string;
   work: TanaWork;
@@ -63,7 +63,7 @@ export interface TanaBook {
   /** Finished readings: "Letto 2 volte". */
   readCount: number;
   /** The rating of the most recent reading that has one. */
-  ratingHalf: number | null;
+  ratingQuarter: number | null;
   /** The end of the most recent finished reading, when known. */
   lastFinishedOn: string | null;
   /** When the book first entered the Tana. */
@@ -117,7 +117,7 @@ export function buildTana(
       lendable: owned.some((copy) => copy.is_lendable),
       status: sorted[0]?.status ?? null,
       readCount: finished.length,
-      ratingHalf: sorted.find((reading) => reading.rating_half !== null)?.rating_half ?? null,
+      ratingQuarter: sorted.find((reading) => reading.rating_quarter !== null)?.rating_quarter ?? null,
       lastFinishedOn: finished.find((reading) => reading.finished_on !== null)?.finished_on ?? null,
       addedAt: [...owned, ...read, ...shelves].map((row) => row.created_at).sort()[0] ?? '',
       shelfIds: [...new Set(shelves.map((item) => item.shelf_id))],

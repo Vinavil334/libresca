@@ -328,7 +328,7 @@ export type Database = {
           edition_id: string | null;
           finished_on: string | null;
           id: string;
-          rating_half: number | null;
+          rating_quarter: number | null;
           review: string | null;
           started_on: string | null;
           status: Database['public']['Enums']['reading_status'];
@@ -343,7 +343,7 @@ export type Database = {
           edition_id?: string | null;
           finished_on?: string | null;
           id?: string;
-          rating_half?: number | null;
+          rating_quarter?: number | null;
           review?: string | null;
           started_on?: string | null;
           status: Database['public']['Enums']['reading_status'];
@@ -357,7 +357,7 @@ export type Database = {
           edition_id?: string | null;
           finished_on?: string | null;
           id?: string;
-          rating_half?: number | null;
+          rating_quarter?: number | null;
           review?: string | null;
           started_on?: string | null;
           status?: Database['public']['Enums']['reading_status'];

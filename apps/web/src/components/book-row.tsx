@@ -28,10 +28,10 @@ export function BookRow({ book }: { book: TanaEntry }) {
         <div className="flex min-w-[0] flex-1 flex-col gap-1">
           <p className="type-title-s wrap-break-word text-text">{book.title}</p>
           {byline && <p className="type-small wrap-break-word text-text-muted">{byline}</p>}
-          {(book.status || book.ratingHalf !== null) && (
+          {(book.status || book.ratingQuarter !== null) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {book.status && <StatusPill status={book.status} readCount={book.readCount} />}
-              {book.ratingHalf !== null && <RatingNumber ratingHalf={book.ratingHalf} />}
+              {book.ratingQuarter !== null && <RatingNumber ratingQuarter={book.ratingQuarter} />}
             </div>
           )}
         </div>

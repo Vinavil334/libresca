@@ -1,10 +1,12 @@
 # Export CSV di Goodreads
 
-Elenco ricostruito da script di terze parti e discussioni su Goodreads, non da una specifica ufficiale. Prima di scrivere il parser, confrontalo con un export reale.
+Elenco verificato sull'intestazione di un export reale del novembre 2026. Goodreads può cambiarlo: il parser legge le colonne per nome e tollera quelle mancanti.
 
 ## Colonne note
 
-`Book Id`, `Title`, `Author`, `Author l-f`, `Additional Authors`, `ISBN`, `ISBN13`, `My Rating`, `Average Rating`, `Publisher`, `Binding`, `Number of Pages`, `Year Published`, `Original Publication Year`, `Date Read`, `Date Added`, `Bookshelves`, `Bookshelves with positions`, `Exclusive Shelf`, `My Review`, `Private Notes`, `Read Count`, `Owned Copies`
+`Book Id`, `Title`, `Author`, `Author l-f`, `Additional Authors`, `ISBN`, `ISBN13`, `My Rating`, `Publisher`, `Binding`, `Number of Pages`, `Year Published`, `Original Publication Year`, `Date Read`, `Date Added`, `Bookshelves`, `Bookshelves with positions`, `Exclusive Shelf`, `My Review`, `Spoiler`, `Private Notes`, `Read Count`, `Owned Copies`
+
+Gli export più vecchi avevano anche `Average Rating`, che non si importa.
 
 Leggi le colonne per nome, mai per posizione.
 
@@ -15,12 +17,12 @@ Leggi le colonne per nome, mai per posizione.
 | `Exclusive Shelf` = `read` | `readings.status = read` |
 | `Exclusive Shelf` = `currently-reading` | `readings.status = reading` |
 | `Exclusive Shelf` = `to-read` | `readings.status = want` |
-| `My Rating` da 1 a 5 | `rating_half` = voto × 2 |
-| `My Rating` = 0 | `rating_half` = NULL: significa nessun voto |
+| `My Rating` da 1 a 5 | `rating_quarter` = voto × 4 |
+| `My Rating` = 0 | `rating_quarter` = NULL: significa nessun voto |
 | `Date Read` | `finished_on`; se è vuota resta `NULL` |
 | Non esiste | `started_on` resta `NULL` |
 | `Bookshelves` | Crea o riusa `shelves`, escludendo gli scaffali esclusivi |
-| `Owned Copies` > 0 | Proponi la creazione di una copia, chiedendo conferma |
+| `Exclusive Shelf` = `read`, oppure `Owned Copies` > 0 | Una copia: si dà per posseduto ogni libro letto, e l'utente toglie a mano quelli che non ha (decisione dell'utente in F1.8) |
 | `Read Count` > 1 | Non inventare date per le riletture: segnalale nel report |
 | `Private Notes` | Note con visibilità `private` |
 

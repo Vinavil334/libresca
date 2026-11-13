@@ -49,8 +49,10 @@ test.describe('readings', () => {
     await readings.getByRole('button', { name: "L'ho finito" }).click();
     const finished = page.getByRole('dialog', { name: 'Finito!' });
     await expect(finished.getByText(`«${title}» è tra i tuoi letti.`)).toBeVisible();
-    // A tap gives five mushrooms, a second tap on the same one takes half off.
+    // A tap gives five mushrooms, each new tap on the same one takes a quarter off.
     await finished.getByRole('button', { name: 'Dai 5 funghetti' }).click();
+    await finished.getByRole('button', { name: 'Dai 4,75 funghetti' }).click();
+    await expect(finished.getByText('4,75 funghetti')).toBeVisible();
     await finished.getByRole('button', { name: 'Dai 4,5 funghetti' }).click();
     await expect(finished.getByText('4,5 funghetti')).toBeVisible();
     await finished.getByRole('button', { name: 'Scrivi due righe' }).click();
@@ -132,7 +134,7 @@ test.describe('readings', () => {
     const { client } = await signInClient(ada);
     const { error } = await client
       .from('readings')
-      .insert({ work_id: workId, status: 'read', rating_half: 10, review: 'Il giudizio di Ada' });
+      .insert({ work_id: workId, status: 'read', rating_quarter: 20, review: 'Il giudizio di Ada' });
     expect(error).toBeNull();
 
     await signIn(context, carla, baseURL!);

@@ -79,7 +79,7 @@ export {
   finishesReading,
   isFinishedStatus,
   isOpenStatus,
-  maxRatingHalf,
+  maxRatingQuarter,
   openReading,
   ratingMushrooms,
   readingStatuses,

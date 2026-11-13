@@ -34,7 +34,7 @@ const reading = (w: TanaWork, created: string, extra: Partial<TanaReadingRow> = 
   status: 'read',
   started_on: null,
   finished_on: null,
-  rating_half: null,
+  rating_quarter: null,
   edition_id: null,
   created_at: created,
   work: w,
@@ -50,8 +50,8 @@ describe('buildTana', () => {
     const [book, ...rest] = buildTana(
       [copy(citta, '2026-01-02T10:00:00Z', { is_lendable: true }), copy(citta, '2026-03-01T10:00:00Z')],
       [
-        reading(citta, '2026-01-05T10:00:00Z', { finished_on: '2019-05-01', rating_half: 7 }),
-        reading(citta, '2026-02-01T10:00:00Z', { finished_on: '2024-03-18', rating_half: 9 }),
+        reading(citta, '2026-01-05T10:00:00Z', { finished_on: '2019-05-01', rating_quarter: 7 }),
+        reading(citta, '2026-02-01T10:00:00Z', { finished_on: '2024-03-18', rating_quarter: 9 }),
         reading(citta, '2026-04-01T10:00:00Z', { status: 'reading', started_on: '2026-04-01' }),
       ],
     );
@@ -64,7 +64,7 @@ describe('buildTana', () => {
       lendable: true,
       status: 'reading',
       readCount: 2,
-      ratingHalf: 9,
+      ratingQuarter: 9,
       lastFinishedOn: '2024-03-18',
       addedAt: '2026-01-02T10:00:00Z',
     });
