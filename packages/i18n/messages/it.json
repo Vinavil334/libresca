@@ -227,5 +227,64 @@
       "forbidden": "Il tuo account non può modificare la Tana, per ora.",
       "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
     }
+  },
+  "readings": {
+    "heading": "Le tue letture",
+    "none": "Non l'hai ancora letto, e non è in Dispensa.",
+    "status": {
+      "want": "In Dispensa · da leggere",
+      "reading": "In lettura",
+      "read": "Letto",
+      "abandoned": "Abbandonato"
+    },
+    "actions": {
+      "want": "Mettilo in Dispensa",
+      "reading": "Lo sto leggendo",
+      "reread": "Lo rileggo",
+      "read": "L'ho letto",
+      "start": "Comincio a leggerlo",
+      "finish": "L'ho finito",
+      "abandon": "L'ho abbandonato",
+      "removeWant": "Togli dalla Dispensa"
+    },
+    "startedOn": "Cominciato il {date}",
+    "finishedOn": "Finito il {date}",
+    "abandonedOn": "Lasciato il {date}",
+    "fields": {
+      "status": "Com'è andata",
+      "startedOn": "Quando l'hai cominciato",
+      "finishedOnRead": "Quando l'hai finito",
+      "finishedOnAbandoned": "Quando l'hai lasciato",
+      "rating": "Voto a funghetti",
+      "review": "Note",
+      "edition": "Quale edizione",
+      "editionUnknown": "Non lo so"
+    },
+    "reviewHint": "Cosa ne pensi, una frase che ti è rimasta…",
+    "rating": {
+      "value": "{count, plural, one {# funghetto} other {# funghetti}}",
+      "none": "Nessun voto",
+      "clear": "Togli il voto"
+    },
+    "edit": "Modifica",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina questa lettura",
+    "deleteQuestion": "Eliminare questa lettura? Le altre restano.",
+    "confirmDelete": "Sì, eliminala",
+    "errors": {
+      "invalid_date": "Scrivi una data valida.",
+      "future_date": "Questa data non è ancora arrivata.",
+      "dates_order": "La fine viene prima dell'inizio: controlla le date.",
+      "invalid_rating": "Il voto va da mezzo a cinque funghetti.",
+      "too_long": "Le note sono un po' troppo lunghe.",
+      "invalid_id": "Questa edizione non torna.",
+      "invalid_option": "Questo valore non torna.",
+      "already_open": "Questo libro è già in Dispensa o in lettura: aggiorna quella lettura.",
+      "not_found": "Questa lettura non c'è più: ricarica la pagina.",
+      "forbidden": "Il tuo account non può modificare le letture, per ora.",
+      "rejected": "Qualcosa non torna: controlla i campi.",
+      "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
+    }
   }
 }

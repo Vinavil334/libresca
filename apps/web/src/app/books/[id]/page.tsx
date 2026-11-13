@@ -1,4 +1,4 @@
-import { type Edition, getWork, listOwnCopies } from '@libresca/data';
+import { type Edition, getWork, listOwnCopies, listOwnReadings } from '@libresca/data';
 import { coverPhotoUrl, coverUrl } from '@libresca/domain';
 import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
@@ -13,6 +13,7 @@ import { supabaseEnv } from '@/lib/supabase/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import { OwnCopies } from './own-copies';
+import { OwnReadings } from './own-readings';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ added?: string; found?: string }> };
 
@@ -32,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The essential book card: the work, its authors, the user's copies ("Ce l'hai") and the
- * editions. F1.6 adds the readings as a separate block; F1.7 turns it into the full card.
+ * The essential book card: the work, its authors, the user's copies ("Ce l'hai") and
+ * readings as two separate blocks, and the editions. F1.7 turns it into the full card.
  */
 export default async function BookPage({ params, searchParams }: Props) {
   const work = await loadWork((await params).id);
@@ -48,7 +49,8 @@ export default async function BookPage({ params, searchParams }: Props) {
   const locale = await getLocale();
   const languageNames = new Intl.DisplayNames([locale], { type: 'language' });
   const languageName = (code: string | null) => (code ? (languageNames.of(code) ?? code) : null);
-  const copies = await listOwnCopies(await createSupabaseServerClient(), work.id);
+  const client = await createSupabaseServerClient();
+  const [copies, readings] = await Promise.all([listOwnCopies(client, work.id), listOwnReadings(client, work.id)]);
   const editionLabel = (edition: Edition) =>
     [
       edition.publisher ?? edition.title ?? work.title,
@@ -57,6 +59,7 @@ export default async function BookPage({ params, searchParams }: Props) {
     ]
       .filter(Boolean)
       .join(' · ');
+  const editionChoices = editions.map((edition) => ({ id: edition.id, label: editionLabel(edition) }));
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-8 px-4 py-6 sm:px-6">
@@ -89,11 +92,8 @@ export default async function BookPage({ params, searchParams }: Props) {
         </div>
       </header>
 
-      <OwnCopies
-        workId={work.id}
-        copies={copies}
-        editions={editions.map((edition) => ({ id: edition.id, label: editionLabel(edition) }))}
-      />
+      <OwnCopies workId={work.id} copies={copies} editions={editionChoices} />
+      <OwnReadings workId={work.id} readings={readings} editions={editionChoices} />
 
       {work.description && (
         <section aria-labelledby="description-heading" className="flex flex-col gap-2">

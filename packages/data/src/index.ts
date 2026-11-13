@@ -32,5 +32,13 @@ export {
   listOwnCopies,
   updateCopy,
 } from './copies';
+export {
+  type Reading,
+  type ReadingResult,
+  addReading,
+  deleteReading,
+  listOwnReadings,
+  updateReading,
+} from './readings';
 export { type UploadCoverResult, deleteCoverPhoto, uploadCoverPhoto } from './covers';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate, Enums } from './database.types';
