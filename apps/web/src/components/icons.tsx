@@ -64,3 +64,54 @@ export function ScanIcon(props: SVGProps<SVGSVGElement>) {
     </Icon>
   );
 }
+
+export function TanaIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 21V11c0-5.5 4-9 9-9s9 3.5 9 9v10Z" />
+      <path d="M8.5 21v-6a3.5 3.5 0 0 1 7 0v6" />
+    </Icon>
+  );
+}
+
+export function UserIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c1-5 4.5-7 8-7s7 2 8 7" />
+    </Icon>
+  );
+}
+
+/** Status icons of the StatusPill: Dispensa, in lettura, letto, messo da parte. */
+export function PantryIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M7 3h10v18l-5-4-5 4Z" />
+    </Icon>
+  );
+}
+
+export function ReadingIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M12 6C9 4 6 4 2.5 5.2v13.3C6 17.3 9 17.3 12 19c3-1.7 6-1.7 9.5-.5V5.2C18 4 15 4 12 6Zm0 0v13" />
+    </Icon>
+  );
+}
+
+export function ReadIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="m5 12.5 4.5 4.5L19 7" />
+    </Icon>
+  );
+}
+
+export function PausedIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M9 6v12M15 6v12" />
+    </Icon>
+  );
+}

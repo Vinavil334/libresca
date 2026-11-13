@@ -11,8 +11,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-export default async function AddPage({ searchParams }: { searchParams: Promise<{ scan?: string }> }) {
+export default async function AddPage({ searchParams }: { searchParams: Promise<{ scan?: string; q?: string }> }) {
   const t = await getTranslations('add');
+  const { scan, q } = await searchParams;
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6">
       <header className="flex flex-col gap-2">
@@ -23,7 +24,7 @@ export default async function AddPage({ searchParams }: { searchParams: Promise<
         <h1 className="type-display-xl text-text">{t('title')}</h1>
         <p className="type-body text-text-muted">{t('intro')}</p>
       </header>
-      <AddBook startScanning={(await searchParams).scan === '1'} />
+      <AddBook startScanning={scan === '1'} initialQuery={q?.slice(0, 200)} />
     </main>
   );
 }

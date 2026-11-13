@@ -34,7 +34,7 @@ test.describe('adding a book', () => {
     const title = `Il sentiero dei funghi ${token()}`;
 
     await page.goto('/');
-    await page.getByRole('link', { name: 'Aggiungi un libro' }).click();
+    await page.getByRole('link', { name: 'Cercalo per titolo o autore' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Aggiungi un libro' })).toBeVisible();
 
     await page

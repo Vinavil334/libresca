@@ -3,13 +3,6 @@
     "title": "Libresca",
     "description": "La tua Tana di libri, con gli amici del Bosco."
   },
-  "home": {
-    "title": "Libresca",
-    "greeting": "Ciao, {name}",
-    "intro": "La tua Tana · la tua libreria",
-    "body": "Qui stanno spuntando i primi funghetti. Presto potrai mettere al riparo i tuoi libri.",
-    "addBook": "Aggiungi un libro"
-  },
   "login": {
     "title": "Libresca",
     "intro": "La tua Tana · la tua libreria",
@@ -325,5 +318,75 @@
       "rejected": "Qualcosa non torna: controlla i campi.",
       "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
     }
+  },
+  "nav": {
+    "label": "Navigazione",
+    "brand": "Libresca",
+    "tana": "Tana",
+    "scan": "Scansiona",
+    "me": "Tu",
+    "add": "Aggiungi un libro"
+  },
+  "statusPill": {
+    "want": "Dispensa",
+    "reading": "In lettura",
+    "read": "Letto",
+    "abandoned": "Messo da parte",
+    "readTimes": "Letto {count} volte"
+  },
+  "tana": {
+    "title": "La tua Tana",
+    "subtitle": "la tua libreria · {count, plural, one {# libro} other {# libri}}",
+    "subtitleEmpty": "la tua libreria · ancora vuota",
+    "error": "Non riusciamo a leggere la tua Tana adesso. Riprova tra un momento.",
+    "search": "Cerca nella tua Tana",
+    "filterGroups": {
+      "reading": "Lettura",
+      "copies": "Copie"
+    },
+    "filters": {
+      "reading": "In lettura",
+      "read": "Letti",
+      "want": "Dispensa",
+      "abandoned": "Messi da parte",
+      "owned": "Ce l'ho",
+      "lendable": "Si può prestare"
+    },
+    "orderLabel": "Ordine",
+    "orders": {
+      "recent": "Aggiunti di recente",
+      "title": "Per titolo",
+      "author": "Per autore"
+    },
+    "readingNow": "Stai leggendo",
+    "all": "Tutta la Tana",
+    "count": "{count, plural, one {# libro} other {# libri}}",
+    "shown": "{shown} su {total}",
+    "notOwned": "non ce l'hai",
+    "noResults": {
+      "title": "{filter, select, reading {Nessun libro in lettura} read {Nessun libro letto} want {Nessun libro in Dispensa} abandoned {Nessun libro messo da parte} owned {Nessun libro che hai} lendable {Nessun libro da prestare} many {Nessun libro con questi filtri} other {Nessun libro}}",
+      "query": " con «{query}»",
+      "textRead": "Forse non l'hai ancora segnato come letto, oppure non è nella tua Tana.",
+      "text": "Forse non è nella tua Tana, oppure è segnato in un altro modo.",
+      "clearFilter": "Togli il filtro {name}",
+      "clearFilters": "Togli i filtri",
+      "clearQuery": "Cancella la ricerca",
+      "searchCatalog": "Cercalo nel catalogo"
+    },
+    "empty": {
+      "title": "Qui stanno spuntando i primi funghetti",
+      "text": "Metti al riparo il primo libro: quello più vicino a te va benissimo.",
+      "scan": "Scansiona il codice a barre",
+      "search": "Cercalo per titolo o autore",
+      "importTitle": "Hai già i tuoi libri su Goodreads?",
+      "importText": "Presto potrai portarli qui in un colpo solo, con voti e date.",
+      "importSoon": "L'import arriva tra poco."
+    }
+  },
+  "me": {
+    "title": "Tu",
+    "subtitle": "il tuo account",
+    "greeting": "Ciao, {name}",
+    "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici."
   }
 }
