@@ -109,3 +109,16 @@ export {
   tanaReadingFilters,
 } from './tana';
 export { type ShelfNameIssue, type ShelfNameValidation, shelfNameMaxLength, validateShelfName } from './shelves';
+export {
+  type GoodreadsBook,
+  type GoodreadsIssue,
+  type GoodreadsParse,
+  type GoodreadsSummary,
+  type PlannedReading,
+  goodreadsShelfName,
+  parseCsv,
+  parseGoodreadsExport,
+  plannedReadings,
+  stripSeries,
+  summarizeGoodreads,
+} from './goodreads';
