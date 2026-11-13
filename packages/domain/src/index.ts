@@ -108,3 +108,4 @@ export {
   tanaOrders,
   tanaReadingFilters,
 } from './tana';
+export { type ShelfNameIssue, type ShelfNameValidation, shelfNameMaxLength, validateShelfName } from './shelves';

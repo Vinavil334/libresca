@@ -1,4 +1,4 @@
-import { listOwnTana } from '@libresca/data';
+import { listOwnShelves, listOwnTana } from '@libresca/data';
 import { editionCoverUrl } from '@libresca/domain';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
@@ -45,9 +45,15 @@ async function EmptyTana() {
 /** The Tana: the books the person owns, reads or keeps on a shelf. Only active accounts get here. */
 export default async function TanaPage() {
   const t = await getTranslations('tana');
-  const books = await listOwnTana(await createSupabaseServerClient());
+  const client = await createSupabaseServerClient();
+  const [books, shelves] = await Promise.all([listOwnTana(client), listOwnShelves(client)]);
   const { url } = supabaseEnv();
   const entries = books?.map((book) => ({ ...book, coverUrl: editionCoverUrl(book.coverEdition, url) }));
+  const shelfLinks = (shelves ?? []).map((shelf) => ({
+    id: shelf.id,
+    name: shelf.name,
+    count: entries?.filter((book) => book.shelfIds.includes(shelf.id)).length ?? 0,
+  }));
 
   return (
     <AppShell>
@@ -63,7 +69,7 @@ export default async function TanaPage() {
         ) : entries.length === 0 ? (
           <EmptyTana />
         ) : (
-          <Tana books={entries} />
+          <Tana books={entries} shelves={shelfLinks} />
         )}
       </main>
     </AppShell>

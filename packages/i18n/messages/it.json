@@ -348,7 +348,8 @@
     "search": "Cerca nella tua Tana",
     "filterGroups": {
       "reading": "Lettura",
-      "copies": "Copie"
+      "copies": "Copie",
+      "shelves": "Scaffali"
     },
     "filters": {
       "reading": "In lettura",
@@ -387,12 +388,54 @@
       "importTitle": "Hai già i tuoi libri su Goodreads?",
       "importText": "Presto potrai portarli qui in un colpo solo, con voti e date.",
       "importSoon": "L'import arriva tra poco."
-    }
+    },
+    "view": {
+      "label": "Vista",
+      "list": "Elenco",
+      "grid": "Griglia"
+    },
+    "shownOnly": "{shown} su {total} · solo {filters}",
+    "allShelves": "Tutti gli scaffali"
   },
   "me": {
     "title": "Tu",
     "subtitle": "il tuo account",
     "greeting": "Ciao, {name}",
     "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici."
+  },
+  "shelves": {
+    "title": "Scaffali",
+    "subtitle": "come li sistemi tu · {count, plural, =0 {ancora nessuno} one {# scaffale} other {# scaffali}}",
+    "new": "Nuovo scaffale",
+    "nameLabel": "Nome dello scaffale",
+    "namePlaceholder": "Comodino, Da regalare…",
+    "create": "Crea lo scaffale",
+    "cancel": "Annulla",
+    "note": "Un libro può stare su più scaffali. Gli scaffali sono solo tuoi: dentro la Tana ritrovi comunque tutto.",
+    "empty": "Ancora nessuno scaffale. Ne basta uno per cominciare: il comodino, per esempio.",
+    "books": "{count, plural, one {# libro} other {# libri}}",
+    "all": "Tutti gli scaffali",
+    "shelfSubtitle": "uno scaffale della tua Tana · {count, plural, one {# libro} other {# libri}}",
+    "shelfEmpty": "Questo scaffale è ancora vuoto. Apri un libro della Tana e mettilo qui.",
+    "edit": "Modifica lo scaffale",
+    "rename": "Salva il nome",
+    "delete": "Elimina lo scaffale",
+    "deleteQuestion": "Eliminare lo scaffale? I libri restano nella tua Tana.",
+    "confirmDelete": "Sì, eliminalo",
+    "errors": {
+      "required": "Dai un nome allo scaffale.",
+      "too_long": "Il nome è un po' troppo lungo.",
+      "duplicate": "Hai già uno scaffale con questo nome.",
+      "not_found": "Questo scaffale non c'è più: ricarica la pagina.",
+      "forbidden": "Il tuo account non può modificare gli scaffali, per ora.",
+      "failed": "Non siamo riusciti a salvare. Riprova tra un momento."
+    },
+    "onBook": {
+      "heading": "Sui tuoi scaffali",
+      "none": "Non hai ancora scaffali.",
+      "hint": "Tocca uno scaffale per metterci il libro, tocca di nuovo per toglierlo.",
+      "manage": "Gestisci gli scaffali",
+      "failed": "Non siamo riusciti a spostare il libro. Riprova tra un momento."
+    }
   }
 }

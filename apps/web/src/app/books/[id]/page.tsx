@@ -1,4 +1,11 @@
-import { type Edition, getWork, listOwnCopies, listOwnReadings } from '@libresca/data';
+import {
+  type Edition,
+  getWork,
+  listOwnCopies,
+  listOwnReadings,
+  listOwnShelves,
+  listShelvesOfWork,
+} from '@libresca/data';
 import { editionCoverUrl } from '@libresca/domain';
 import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
@@ -18,6 +25,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import { OwnCopies } from './own-copies';
 import { OwnReadings } from './own-readings';
+import { OwnShelves } from './own-shelves';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ added?: string; found?: string }> };
 
@@ -51,7 +59,12 @@ export default async function BookPage({ params, searchParams }: Props) {
   const languageNames = new Intl.DisplayNames([locale], { type: 'language' });
   const languageName = (code: string | null) => (code ? (languageNames.of(code) ?? code) : null);
   const client = await createSupabaseServerClient();
-  const [copies, readings] = await Promise.all([listOwnCopies(client, work.id), listOwnReadings(client, work.id)]);
+  const [copies, readings, shelves, onShelves] = await Promise.all([
+    listOwnCopies(client, work.id),
+    listOwnReadings(client, work.id),
+    listOwnShelves(client),
+    listShelvesOfWork(client, work.id),
+  ]);
   const ownedEditions = new Set(copies.map((copy) => copy.edition_id));
   // The cover of the copy you hold comes first, then any edition with one.
   const cover = [...editions.filter((edition) => ownedEditions.has(edition.id)), ...editions]
@@ -162,6 +175,12 @@ export default async function BookPage({ params, searchParams }: Props) {
 
         <OwnCopies workId={work.id} copies={copies} editions={editionChoices} />
         <OwnReadings workId={work.id} title={work.title} cover={cover} readings={readings} editions={editionChoices} />
+
+        <OwnShelves
+          workId={work.id}
+          shelves={(shelves ?? []).map(({ id, name }) => ({ id, name }))}
+          onShelves={onShelves}
+        />
 
         {notes.length > 0 && (
           <section aria-labelledby="notes-heading" className="flex flex-col gap-3">

@@ -1,4 +1,4 @@
-import { type TanaBook, type TanaShelfRow, type TanaWork, buildTana } from '@libresca/domain';
+import { type TanaBook, type TanaWork, buildTana } from '@libresca/domain';
 
 import type { LibrescaClient } from './client';
 
@@ -60,18 +60,20 @@ export async function listOwnTana(client: LibrescaClient): Promise<TanaBook[] | 
         .order('id')
         .range(from, to),
     ),
-    listShelfItemRows(),
+    readAll((from, to) =>
+      client
+        .from('shelf_items')
+        .select(`shelf_id, created_at, ${workColumns}`)
+        .order('shelf_id')
+        .order('work_id')
+        .range(from, to),
+    ),
   ]);
   if (!copies || !readings || !shelfItems) return null;
 
   return buildTana(
     copies.map(({ edition, ...copy }) => ({ ...copy, edition_id: edition.id, work: toWork(edition.work) })),
     readings.map(({ work, ...reading }) => ({ ...reading, work: toWork(work) })),
-    shelfItems,
+    shelfItems.map(({ work, ...item }) => ({ ...item, work: toWork(work) })),
   );
-}
-
-/** Shelves arrive in the third part of F1.7; until then the Tana has none. */
-async function listShelfItemRows(): Promise<TanaShelfRow[]> {
-  return [];
 }
