@@ -181,7 +181,7 @@
   },
   "book": {
     "found": "Questo libro era già nel catalogo.",
-    "back": "Torna all'inizio",
+    "back": "Tana",
     "firstPublished": "Prima edizione: {year}",
     "editions": "Edizioni",
     "pages": "{count, plural, one {# pagina} other {# pagine}}",
@@ -193,7 +193,19 @@
     "translatedBy": "Traduzione di {names}",
     "scanAnother": "Scansiona un altro",
     "addedToTana": "È nella tua Tana.",
-    "addedToCatalog": "Aggiunto al catalogo. Quando vuoi, puoi dire che ce l'hai."
+    "addedToCatalog": "Aggiunto al catalogo. Quando vuoi, puoi dire che ce l'hai.",
+    "yourCopy": "La tua copia",
+    "notesHeading": "Le tue note",
+    "summary": {
+      "label": "In breve",
+      "copies": "Ce l'hai",
+      "copiesNone": "Non ce l'hai",
+      "copiesDetail": "{count, plural, one {# copia} other {# copie}} · {lendable, select, yes {si può prestare} other {non la presti}}",
+      "copiesNoneDetail": "Non è nella tua Tana",
+      "read": "{count, plural, =0 {Non l'hai letto} one {Letto} other {Letto # volte}}",
+      "lastRead": "ultima a {date}",
+      "noReadings": "Né letto né in Dispensa"
+    }
   },
   "copies": {
     "heading": "Ce l'hai",
@@ -233,12 +245,6 @@
     "heading": "Le tue letture",
     "askHeading": "L'hai letto?",
     "askHint": "Vale anche se non ce l'hai: un prestito, la biblioteca, un regalo che hai ridato.",
-    "status": {
-      "want": "In Dispensa · da leggere",
-      "reading": "In lettura",
-      "read": "Letto",
-      "abandoned": "Messo da parte"
-    },
     "choices": {
       "want": "Voglio leggerlo",
       "reading": "Lo sto leggendo",

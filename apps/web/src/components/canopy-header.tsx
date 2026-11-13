@@ -42,7 +42,7 @@ export function CanopyHeader({
   return (
     <header className="relative mb-4 bg-canopy text-on-canopy">
       <div
-        className={`mx-auto flex max-w-5xl items-end justify-between gap-4 px-4 sm:px-6 ${low ? 'min-h-[5rem] pt-3 pb-2' : 'pt-6 pb-2'}`}
+        className={`mx-auto flex justify-between gap-4 px-4 sm:px-6 ${low ? 'min-h-[7.5rem] max-w-2xl items-start pt-2' : 'max-w-5xl items-end pt-6 pb-2'}`}
       >
         {title && (
           <div className="flex min-w-[0] flex-col gap-1">
