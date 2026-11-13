@@ -115,10 +115,13 @@ export {
   type GoodreadsParse,
   type GoodreadsSummary,
   type PlannedReading,
+  goodreadsCatalogEntry,
+  goodreadsExternalIds,
   goodreadsShelfName,
   parseCsv,
   parseGoodreadsExport,
   plannedReadings,
+  sameGoodreadsBook,
   stripSeries,
   summarizeGoodreads,
 } from './goodreads';

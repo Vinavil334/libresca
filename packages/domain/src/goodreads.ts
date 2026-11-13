@@ -1,7 +1,9 @@
+import type { CatalogEntryInput, ExternalIdInput } from './catalog';
 import { isCalendarDate } from './dates';
 import { toIsbn13 } from './isbn';
 import { type ReadingStatus, reviewMaxLength } from './readings';
 import { validateShelfName } from './shelves';
+import { foldText } from './tana';
 
 /**
  * The Goodreads library export (F1.8). The CSV is parsed by column name, never by position
@@ -15,7 +17,7 @@ export function parseCsv(text: string): string[][] {
   let row: string[] = [];
   let field = '';
   let quoted = false;
-  const input = text.replace(/^﻿/, '');
+  const input = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
     if (quoted) {
@@ -283,4 +285,51 @@ export function summarizeGoodreads(books: GoodreadsBook[]): GoodreadsSummary {
       .map(([key, count]) => ({ name: names.get(key) ?? key, books: count }))
       .sort((a, b) => b.books - a.books || a.name.localeCompare(b.name)),
   };
+}
+
+/**
+ * A catalog entry from the export alone, for a book no source knows: the title without
+ * the series, the main author, the edition details and the Goodreads id for provenance.
+ * Additional authors are left out: on Goodreads they are often translators.
+ */
+export function goodreadsCatalogEntry(book: GoodreadsBook): CatalogEntryInput {
+  const sources = { title: 'goodreads' as const };
+  return {
+    work: {
+      title: book.searchTitle,
+      authors: book.author ? [{ name: book.author }] : [],
+      ...(book.originalYear ? { firstPublishedYear: book.originalYear } : {}),
+      fieldSources: sources,
+    },
+    edition: {
+      ...(book.isbn13 ? { isbn: book.isbn13 } : {}),
+      ...(book.publisher ? { publisher: book.publisher } : {}),
+      ...(book.publishedYear ? { publishedYear: book.publishedYear } : {}),
+      ...(book.pageCount ? { pageCount: book.pageCount } : {}),
+      metadataStatus: 'incomplete',
+      fieldSources: sources,
+      externalIds: goodreadsExternalIds(book),
+    },
+  };
+}
+
+/** The Goodreads id of the exported edition, kept on the edition for provenance. */
+export function goodreadsExternalIds(book: GoodreadsBook): ExternalIdInput[] {
+  return /^\d{1,20}$/.test(book.goodreadsId) ? [{ source: 'goodreads', value: book.goodreadsId }] : [];
+}
+
+/**
+ * Whether a found book is surely the exported one when there is no ISBN: the same title
+ * (series aside) and the same author, ignoring case and accents. Anything less goes to
+ * the review screen.
+ */
+export function sameGoodreadsBook(book: GoodreadsBook, title: string, authors: string[]): boolean {
+  const fold = (text: string) =>
+    foldText(stripSeries(text))
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+  if (fold(title) !== fold(book.searchTitle)) return false;
+  if (!book.author) return authors.length === 0;
+  const author = fold(book.author);
+  return authors.some((name) => fold(name) === author);
 }

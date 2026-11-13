@@ -54,3 +54,22 @@ export {
   renameShelf,
   setOnShelf,
 } from './shelves';
+export {
+  type ImportJob,
+  type ImportProgress,
+  type ImportRow,
+  type ImportRowStatus,
+  type ImportSources,
+  type ReviewChoice,
+  type StartImportResult,
+  type StoredCandidate,
+  getImportProgress,
+  getLatestImport,
+  googleDailyCap,
+  listFailedImportRows,
+  listImportRowsInReview,
+  resolveImportRow,
+  runImportStep,
+  startGoodreadsImport,
+} from './imports';
+export { type CachedResponse, createMetadataCache } from './metadata-cache';

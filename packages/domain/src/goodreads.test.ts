@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseCsv, parseGoodreadsExport, plannedReadings, stripSeries, summarizeGoodreads } from './goodreads';
+import { validateCatalogEntry } from './catalog';
+import {
+  goodreadsCatalogEntry,
+  parseCsv,
+  parseGoodreadsExport,
+  plannedReadings,
+  sameGoodreadsBook,
+  stripSeries,
+  summarizeGoodreads,
+} from './goodreads';
 
 // An invented export with the columns of a real one (November 2026), in a shuffled order
 // to prove that columns are read by name. No real library data.
@@ -98,9 +107,14 @@ describe('parseGoodreadsExport', () => {
 describe('plannedReadings', () => {
   const parsed = parseGoodreadsExport(csv);
   const books = parsed.ok ? parsed.books : [];
+  const book = (index: number) => {
+    const found = books[index];
+    if (!found) throw new Error(`no book ${index} in the fixture`);
+    return found;
+  };
 
   it('gives the latest reading its date, rating and notes, and earlier reads none', () => {
-    expect(plannedReadings(books[0]!)).toEqual([
+    expect(plannedReadings(book(0))).toEqual([
       {
         status: 'read',
         finishedOn: '2024-03-18',
@@ -109,8 +123,8 @@ describe('plannedReadings', () => {
       },
       { status: 'read' },
     ]);
-    expect(plannedReadings(books[1]!)).toEqual([{ status: 'want' }]);
-    expect(plannedReadings(books[4]!)).toEqual([]);
+    expect(plannedReadings(book(1))).toEqual([{ status: 'want' }]);
+    expect(plannedReadings(book(4))).toEqual([]);
   });
 });
 
@@ -138,5 +152,38 @@ describe('stripSeries', () => {
   it('removes only a trailing series with a number', () => {
     expect(stripSeries('Dune (Dune, #1)')).toBe('Dune');
     expect(stripSeries('Il barone (rampante)')).toBe('Il barone (rampante)');
+  });
+});
+
+describe('goodreadsCatalogEntry and sameGoodreadsBook', () => {
+  const parsed = parseGoodreadsExport(csv);
+  const books = parsed.ok ? parsed.books : [];
+
+  it('builds a valid catalog entry from the export alone', () => {
+    const [topina, bosco] = books;
+    if (!topina || !bosco) throw new Error('fixture');
+    const entry = goodreadsCatalogEntry(topina);
+    expect(entry).toMatchObject({
+      work: { title: 'La topina, il fungo e la luna', authors: [{ name: 'Ada Muskio' }], firstPublishedYear: 1957 },
+      edition: {
+        isbn: '9788806123451',
+        publisher: 'Edizioni Sottobosco',
+        publishedYear: 2019,
+        pageCount: 212,
+        metadataStatus: 'incomplete',
+        externalIds: [{ source: 'goodreads', value: '101' }],
+      },
+    });
+    expect(validateCatalogEntry(entry).ok).toBe(true);
+    expect(validateCatalogEntry(goodreadsCatalogEntry(bosco)).ok).toBe(true);
+  });
+
+  it('accepts a found book only with the same title and author', () => {
+    const [topina] = books;
+    if (!topina) throw new Error('fixture');
+    expect(sameGoodreadsBook(topina, 'La Topina, il fungo e la luna', ['ADA MUSKIO'])).toBe(true);
+    expect(sameGoodreadsBook(topina, 'La topina il fungo e la luna (Sottobosco, #1)', ['Ada Muskìo'])).toBe(true);
+    expect(sameGoodreadsBook(topina, 'La topina', ['Ada Muskio'])).toBe(false);
+    expect(sameGoodreadsBook(topina, 'La topina, il fungo e la luna', ['Bruno Felce'])).toBe(false);
   });
 });

@@ -2,7 +2,7 @@ import { getOwnProfile } from '@libresca/data';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { Button } from '@/components/button';
+import { Button, ButtonLink } from '@/components/button';
 import { CanopyHeader } from '@/components/canopy-header';
 import { AppShell } from '@/components/nav-bar';
 import { signOut } from '@/lib/auth-actions';
@@ -29,6 +29,9 @@ export default async function MePage() {
           <p className="type-title wrap-break-word text-text">{t('greeting', { name: profile.display_name })}</p>
         )}
         <p className="type-body text-text-muted">{t('soon')}</p>
+        <ButtonLink href="/import" variant="secondary" className="self-start">
+          {t('import')}
+        </ButtonLink>
         <form action={signOut}>
           <Button type="submit" variant="secondary">
             {tAuth('signOut')}

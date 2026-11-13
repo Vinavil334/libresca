@@ -21,10 +21,11 @@ Leggi le colonne per nome, mai per posizione.
 | `My Rating` = 0 | `rating_quarter` = NULL: significa nessun voto |
 | `Date Read` | `finished_on`; se è vuota resta `NULL` |
 | Non esiste | `started_on` resta `NULL` |
-| `Bookshelves` | Crea o riusa `shelves`, escludendo gli scaffali esclusivi |
+| `Bookshelves` | Crea o riusa `shelves` (i trattini diventano spazi), escludendo gli scaffali esclusivi |
+| `Exclusive Shelf` personalizzato | `did-not-finish`, `dnf`, `abbandonati` e simili diventano `abandoned`; gli altri diventano uno scaffale, senza lettura |
 | `Exclusive Shelf` = `read`, oppure `Owned Copies` > 0 | Una copia: si dà per posseduto ogni libro letto, e l'utente toglie a mano quelli che non ha (decisione dell'utente in F1.8) |
-| `Read Count` > 1 | Non inventare date per le riletture: segnalale nel report |
-| `Private Notes` | Note con visibilità `private` |
+| `Read Count` > 1 | Una lettura per volta; solo la più recente prende data, voto e note, le altre restano senza date |
+| `My Review`, `Private Notes` | Note della lettura più recente, in testo semplice (l'HTML di Goodreads si toglie) |
 
 ## Particolarità
 

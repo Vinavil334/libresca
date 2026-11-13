@@ -125,11 +125,13 @@ Le foto di copertina (F1.3b) vanno nel bucket pubblico `covers` di Supabase Stor
 
 ### Import di librerie grandi
 
-L'import procede a blocchi guidati dal browser: il client invia un blocco, il server lo elabora rispettando i limiti delle fonti, l'avanzamento vive in `import_jobs`. Si può riprendere dopo un'interruzione e non richiede code né server aggiuntivi. Le corrispondenze dubbie finiscono in una schermata di revisione.
+L'import procede a blocchi guidati dal browser (F1.8). `POST /api/v1/imports` riceve il CSV, lo analizza di nuovo sul server con il parser di `packages/domain` e salva una riga per libro in `import_rows`; poi il browser chiama `POST /api/v1/imports/{id}/step` finché l'import non è finito. Ogni passo elabora al massimo 12 righe in 20 secondi (`maxDuration` 60): si riprende dopo un'interruzione e non richiede code né server aggiuntivi. La logica sta in `runImportStep` (`packages/data`), che riceve le fonti da `importSourcesFor` (`packages/metadata` dietro `/api/v1`).
+
+Per ogni riga: l'edizione con lo stesso ID Goodreads o lo stesso ISBN nel catalogo; altrimenti Open Library e SBN, con le risposte condivise in Postgres per un mese; Google Books solo se le fonti aperte non trovano nulla, fino a 300 chiamate al giorno per import; se nessuna fonte conosce il libro, la scheda si crea dai dati dell'export. Senza ISBN si cerca prima nel catalogo e poi su Open Library: un risultato con lo stesso titolo e autore si accetta, quelli approssimativi finiscono nella revisione di `/import`.
 
 ### Import da Goodreads
 
-L'export conserva voti, scaffali e **data di fine lettura**, che a volte manca, ma **non la data di inizio**. Il parser non deve mai dedurre date da `Date Added`. Le date mancanti restano vuote, e l'app guida a completarle. Il metodo per recuperare quelle di inizio si decide in F1.8, senza scraping automatico. Dettagli in `.claude/skills/metadati-libri/goodreads-csv.md`.
+L'export conserva voti, scaffali e **data di fine lettura**, che a volte manca, ma **non la data di inizio**. Il parser non deduce mai date da `Date Added`. Le date mancanti restano vuote e si completano dalla scheda del libro. Ogni libro letto si dà per posseduto: l'utente toglie a mano le copie che non ha. Dettagli in `.claude/skills/metadati-libri/goodreads-csv.md`.
 
 ### Spike F0.2
 

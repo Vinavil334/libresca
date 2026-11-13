@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createHttpClient, maxAgeSeconds } from './http';
+import { type HttpResult, type SharedCache, createHttpClient, maxAgeSeconds } from './http';
 
 function json(body: unknown, init: { status?: number; cacheControl?: string } = {}): Response {
   const headers = new Headers({ 'content-type': 'application/json' });
@@ -92,6 +92,44 @@ describe('createHttpClient', () => {
     // No Cache-Control on the second answer: not kept.
     expect(await get()).toEqual({ status: 'ok', data: 3 });
     expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('reads and fills a shared cache for open data only, and survives its failures', async () => {
+    const store = new Map<string, HttpResult>();
+    const shared: SharedCache = {
+      get: async (url) => store.get(url) ?? null,
+      set: async (url, result, ttl) => {
+        expect(ttl).toBe(86400);
+        store.set(url, result);
+      },
+    };
+    const open = { kind: 'fixed', ttlMs: 1000, sharedTtlSeconds: 86400 } as const;
+    const { client, fetchMock } = setup([() => json({ a: 1 }), () => json({ b: 2 })]);
+
+    expect(await client.getJson('https://openlibrary.org/a', open, shared)).toEqual({ status: 'ok', data: { a: 1 } });
+    expect(store.get('https://openlibrary.org/a')).toEqual({ status: 'ok', data: { a: 1 } });
+
+    // Another instance, empty memory: the shared cache answers without a request.
+    const other = setup([]);
+    expect(await other.client.getJson('https://openlibrary.org/a', open, shared)).toEqual({
+      status: 'ok',
+      data: { a: 1 },
+    });
+    expect(other.fetchMock).not.toHaveBeenCalled();
+
+    // Google Books data is never shared; a broken shared cache is just skipped.
+    await client.getJson('https://www.googleapis.com/b', { kind: 'header' }, shared);
+    expect(store.has('https://www.googleapis.com/b')).toBe(false);
+    const broken: SharedCache = {
+      get: () => Promise.reject(new Error('down')),
+      set: () => Promise.reject(new Error('down')),
+    };
+    const third = setup([() => json({ c: 3 })]);
+    expect(await third.client.getJson('https://openlibrary.org/c', open, broken)).toEqual({
+      status: 'ok',
+      data: { c: 3 },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('ignores the key and the quota user in the cache key', async () => {

@@ -17,7 +17,7 @@ export type {
   ValueSource,
 } from './types';
 export { sourceNames } from './types';
-export { type CachePolicy, type HttpClient, type HttpResult, createHttpClient } from './http';
+export { type CachePolicy, type HttpClient, type HttpResult, type SharedCache, createHttpClient } from './http';
 export { type LookupOptions, createMetadataHttpClient, lookupIsbn, sourcePacing } from './lookup';
 export { mergeRecords, proposalToCatalogEntry } from './merge';
 export { type WindowLimiter, createWindowLimiter } from './limiter';
@@ -51,3 +51,10 @@ export {
   openLibraryAuthorIds,
 } from './edit';
 export type { ApiError, BookSearchResponse, IsbnLookupResponse } from './api';
+export {
+  type ImportCandidate,
+  type ImportCatalogLookups,
+  type ImportSourceOptions,
+  importCandidates,
+  importEntryForIsbn,
+} from './import-sources';
