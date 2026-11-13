@@ -56,7 +56,7 @@ Definiti nel design system su Claude con anteprime e linee guida; nell'app si ri
 | Button | `primary` (uno per schermata), `secondary`, `quiet`; etichetta col verbo: "Aggiungi alla Tana" |
 | Chip | Filtri combinabili, `aria-pressed`, miele quando attivo |
 | Segmented | Due o tre viste esclusive: "Elenco / Griglia", "Scansiona / Cerca / A mano" |
-| StatusPill | `read`, `reading`, `loan`, `pantry`, `late`: forma + icona + parola |
+| StatusPill | `read`, `reading`, `loan`, `pantry`, `late`, `paused` ("Messo da parte"): forma + icona + parola |
 | MushroomRating | Voto da mezzo a cinque funghetti, con testo per lettori di schermo |
 | BookCover | Copertina 2:3 con contorno; senza immagine, copertina generata stabile dal titolo |
 | BookRow | Riga della Tana: copertina, titolo, autore, uno stato, voto |
@@ -66,9 +66,9 @@ Definiti nel design system su Claude con anteprime e linee guida; nell'app si ri
 | CanopyHeader | Chioma con titolo, sottotitolo, smerlo e funghi; lucciole di notte |
 | SearchField | "Ce l'ho già? Cerca…", pillola 52px |
 | WhyBox | "Perché te lo consigliamo": 1–3 ragioni concrete |
-| NavBar | Tana, Bosco, Scansiona al centro, Micelio, Tu |
+| NavBar | Tana, Bosco, Scansiona al centro, Micelio, Tu; finché Bosco e Micelio non esistono (F2, F3) solo Tana, Scansiona e Tu |
 
-Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2 volte" nella scheda libro).
+Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2 volte" nella scheda libro). Le schermate della Tana che usano questi componenti sono descritte in [`SCHERMATE_TANA.md`](SCHERMATE_TANA.md).
 
 ## Voce
 
@@ -85,6 +85,7 @@ Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2
 | Dispensa | Libri da leggere | "Dispensa · da leggere" | `readings.status = 'want'` |
 | spora | Consiglio diretto da un amico, con una nota | "una spora · un consiglio da un amico" | `spores` |
 | Micelio | Consigli automatici, sempre con il perché | "Micelio · consigli per te" | `reco_candidates` (`reasons`) |
+| Messo da parte | Lettura interrotta, senza giudizio: mai "abbandonato" | "Messo da parte" | `readings.status = 'abandoned'` |
 | funghetti | Il voto, da mezzo a cinque | "4,5 funghetti" | `readings.rating_half` (1–10) |
 | Fungo raro | Consiglio inaspettato | "Fungo raro · inaspettato" | candidato di esplorazione |
 | In viaggio | Un tuo libro prestato | "In viaggio da Luca" | `loans` aperto |
