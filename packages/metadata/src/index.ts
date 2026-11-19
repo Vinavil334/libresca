@@ -19,6 +19,7 @@ export type {
 export { sourceNames } from './types';
 export { type CachePolicy, type HttpClient, type HttpResult, type SharedCache, createHttpClient } from './http';
 export { type LookupOptions, createMetadataHttpClient, lookupIsbn, sourcePacing } from './lookup';
+export { type FoundCover, lookupCover } from './cover-lookup';
 export { mergeRecords, proposalToCatalogEntry } from './merge';
 export { type WindowLimiter, createWindowLimiter } from './limiter';
 export {

@@ -10,6 +10,7 @@ import {
   sbnSearch,
 } from './fixtures/responses';
 import type { HttpClient, HttpResult } from './http';
+import { lookupCover } from './cover-lookup';
 import { lookupIsbn } from './lookup';
 
 /** Answers by URL prefix; anything else is a 404. Records every URL asked. */
@@ -94,5 +95,79 @@ describe('lookupIsbn', () => {
     const result = await lookupIsbn(italianIsbn, { http, googleBooksKey: 'k' });
     expect(result?.sources).toEqual({ openlibrary: 'not_found', googlebooks: 'not_found', sbn: 'not_found' });
     expect(result?.proposal).toBeNull();
+  });
+});
+
+describe('lookupIsbn for an import (googleOnlyForGaps)', () => {
+  const googleAsked = (asked: string[]) => asked.some((url) => url.includes('googleapis'));
+  const withoutOpenLibraryCover = {
+    [`ISBN:${italianIsbn}`]: {
+      ...openLibraryDetails[`ISBN:${italianIsbn}`],
+      details: { ...openLibraryDetails[`ISBN:${italianIsbn}`].details, covers: [] },
+    },
+  };
+
+  it('leaves Google Books out when the open sources already have a cover', async () => {
+    const { http, asked } = fakeHttp(allSources);
+    const result = await lookupIsbn(italianIsbn, { http, googleBooksKey: 'k', googleOnlyForGaps: true });
+    expect(googleAsked(asked)).toBe(false);
+    expect(result?.sources.googlebooks).toBe('skipped');
+    expect(result?.proposal?.cover?.source).toBe('openlibrary');
+  });
+
+  it('asks Google Books for the cover when only SBN knows the book', async () => {
+    const { http, asked } = fakeHttp({
+      'https://www.googleapis.com/books/v1/volumes': ok(googleBooksResponse),
+      'https://opac.sbn.it/opacmobilegw/search.json': ok(sbnSearch),
+      'https://opac.sbn.it/opacmobilegw/full.json': ok(sbnFull),
+    });
+    const result = await lookupIsbn(italianIsbn, { http, googleBooksKey: 'k', googleOnlyForGaps: true });
+    expect(googleAsked(asked)).toBe(true);
+    expect(result?.sources).toEqual({ openlibrary: 'not_found', googlebooks: 'found', sbn: 'found' });
+    expect(result?.proposal?.title?.source).toBe('sbn');
+    expect(result?.proposal?.cover?.source).toBe('googlebooks');
+  });
+
+  it('asks Google Books when Open Library has the edition but no cover', async () => {
+    const { http, asked } = fakeHttp({
+      ...allSources,
+      'https://openlibrary.org/api/books': ok(withoutOpenLibraryCover),
+    });
+    const result = await lookupIsbn(italianIsbn, { http, googleBooksKey: 'k', googleOnlyForGaps: true });
+    expect(googleAsked(asked)).toBe(true);
+    expect(result?.proposal?.cover?.source).toBe('googlebooks');
+  });
+
+  it('asks Google Books when the open sources found nothing', async () => {
+    const { http, asked } = fakeHttp({ 'https://www.googleapis.com/books/v1/volumes': ok(googleBooksResponse) });
+    const result = await lookupIsbn(italianIsbn, { http, googleBooksKey: 'k', googleOnlyForGaps: true });
+    expect(googleAsked(asked)).toBe(true);
+    expect(result?.sources.googlebooks).toBe('found');
+  });
+});
+
+describe('lookupCover', () => {
+  it('finds the Google Books cover of a book SBN knows, and counts the call', async () => {
+    const { http } = fakeHttp({
+      'https://www.googleapis.com/books/v1/volumes': ok(googleBooksResponse),
+      'https://opac.sbn.it/opacmobilegw/search.json': ok(sbnSearch),
+      'https://opac.sbn.it/opacmobilegw/full.json': ok(sbnFull),
+    });
+    const result = await lookupCover(italianIsbn, true, { http, googleBooksKey: 'k' });
+    expect(result.usedGoogle).toBe(true);
+    expect(result.cover?.source).toBe('googlebooks');
+  });
+
+  it('does not ask Google Books when it is not allowed', async () => {
+    const { http, asked } = fakeHttp({
+      'https://www.googleapis.com/books/v1/volumes': ok(googleBooksResponse),
+      'https://opac.sbn.it/opacmobilegw/search.json': ok(sbnSearch),
+      'https://opac.sbn.it/opacmobilegw/full.json': ok(sbnFull),
+    });
+    expect(await lookupCover(italianIsbn, false, { http, googleBooksKey: 'k' })).toEqual({
+      cover: null,
+      usedGoogle: false,
+    });
+    expect(asked.some((url) => url.includes('googleapis'))).toBe(false);
   });
 });

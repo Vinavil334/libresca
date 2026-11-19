@@ -8,12 +8,14 @@ import { AppShell } from '@/components/nav-bar';
 import { signOut } from '@/lib/auth-actions';
 import { createSupabaseServerClient, currentUserId } from '@/lib/supabase/server';
 
+import { FindCovers } from './find-covers';
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('me');
   return { title: t('title') };
 }
 
-/** "Tu": for now the account and the way out; the real profile arrives with F2.1. */
+/** "Tu": for now the account, the library tools and the way out; the real profile arrives with F2.1. */
 export default async function MePage() {
   const t = await getTranslations('me');
   const tAuth = await getTranslations('auth');
@@ -32,6 +34,7 @@ export default async function MePage() {
         <ButtonLink href="/import" variant="secondary" className="self-start">
           {t('import')}
         </ButtonLink>
+        <FindCovers />
         <form action={signOut}>
           <Button type="submit" variant="secondary">
             {tAuth('signOut')}

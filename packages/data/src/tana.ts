@@ -1,4 +1,12 @@
-import { type TanaBook, type TanaWork, buildTana } from '@libresca/domain';
+import {
+  type TanaBook,
+  type TanaCopyRow,
+  type TanaReadingRow,
+  type TanaShelfRow,
+  type TanaWork,
+  buildTana,
+  editionsWithoutCover,
+} from '@libresca/domain';
 
 import type { LibrescaClient } from './client';
 
@@ -39,12 +47,10 @@ async function readAll<T>(
   }
 }
 
-/**
- * The caller's Tana: one book per work they own, read, want to read or keep on a shelf.
- * RLS returns only the caller's rows. `null` when a query fails, so the page can tell an
- * error from an empty Tana.
- */
-export async function listOwnTana(client: LibrescaClient): Promise<TanaBook[] | null> {
+/** The rows behind the caller's Tana. RLS returns only the caller's rows; `null` when a query fails. */
+async function readOwnTanaRows(
+  client: LibrescaClient,
+): Promise<{ copies: TanaCopyRow[]; readings: TanaReadingRow[]; shelfItems: TanaShelfRow[] } | null> {
   const [copies, readings, shelfItems] = await Promise.all([
     readAll((from, to) =>
       client
@@ -71,9 +77,24 @@ export async function listOwnTana(client: LibrescaClient): Promise<TanaBook[] | 
   ]);
   if (!copies || !readings || !shelfItems) return null;
 
-  return buildTana(
-    copies.map(({ edition, ...copy }) => ({ ...copy, edition_id: edition.id, work: toWork(edition.work) })),
-    readings.map(({ work, ...reading }) => ({ ...reading, work: toWork(work) })),
-    shelfItems.map(({ work, ...item }) => ({ ...item, work: toWork(work) })),
-  );
+  return {
+    copies: copies.map(({ edition, ...copy }) => ({ ...copy, edition_id: edition.id, work: toWork(edition.work) })),
+    readings: readings.map(({ work, ...reading }) => ({ ...reading, work: toWork(work) })),
+    shelfItems: shelfItems.map(({ work, ...item }) => ({ ...item, work: toWork(work) })),
+  };
+}
+
+/**
+ * The caller's Tana: one book per work they own, read, want to read or keep on a shelf.
+ * `null` when a query fails, so the page can tell an error from an empty Tana.
+ */
+export async function listOwnTana(client: LibrescaClient): Promise<TanaBook[] | null> {
+  const rows = await readOwnTanaRows(client);
+  return rows && buildTana(rows.copies, rows.readings, rows.shelfItems);
+}
+
+/** The editions of the caller's books shown without a cover, sorted by id (`editionsWithoutCover`). */
+export async function listOwnEditionsWithoutCover(client: LibrescaClient): Promise<string[] | null> {
+  const rows = await readOwnTanaRows(client);
+  return rows && editionsWithoutCover(rows.copies, rows.readings, rows.shelfItems);
 }

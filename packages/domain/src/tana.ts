@@ -125,6 +125,42 @@ export function buildTana(
   });
 }
 
+/**
+ * The editions worth a cover lookup: for each book of the Tana shown without a cover, the
+ * editions of its copies, else of its readings, else every edition of the work. Sorted by
+ * id, so a lookup can walk them in steps with the last id as cursor.
+ */
+export function editionsWithoutCover(
+  copies: TanaCopyRow[],
+  readings: TanaReadingRow[],
+  shelfItems: TanaShelfRow[] = [],
+): string[] {
+  const works = new Map<string, { work: TanaWork; own: Set<string> }>();
+  const entry = (work: TanaWork) => {
+    let found = works.get(work.id);
+    if (!found) {
+      found = { work, own: new Set() };
+      works.set(work.id, found);
+    }
+    return found;
+  };
+  for (const copy of copies) entry(copy.work).own.add(copy.edition_id);
+  for (const reading of readings) {
+    const found = entry(reading.work);
+    if (reading.edition_id) found.own.add(reading.edition_id);
+  }
+  for (const item of shelfItems) entry(item.work);
+
+  const ids = new Set<string>();
+  for (const { work, own } of works.values()) {
+    if (work.editions.some((edition) => edition.cover_source !== null)) continue;
+    const known = new Set(work.editions.map((edition) => edition.id));
+    const mine = [...own].filter((id) => known.has(id));
+    for (const id of mine.length > 0 ? mine : [...known]) ids.add(id);
+  }
+  return [...ids].sort();
+}
+
 /** The image of an edition: a photo from our bucket, or a cover loaded live from its source. */
 export function editionCoverUrl(edition: Omit<CoverEdition, 'id'> | null, supabaseUrl: string): string | null {
   if (!edition) return null;

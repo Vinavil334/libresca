@@ -47,8 +47,10 @@ export interface LookupOptions {
   /** Postgres cache of the open sources, for imports. */
   shared?: SharedCache;
   /**
-   * Ask Google Books only when the open sources found nothing, as an import does to save
-   * the daily quota (docs/ARCHITECTURE.md). By default the three sources go in parallel.
+   * Ask Google Books only for what the open sources leave out, as an import does to save
+   * the daily quota (docs/ARCHITECTURE.md): when they found nothing, or found no cover.
+   * SBN never has covers and Open Library has few Italian editions, so for most Italian
+   * books Google Books is the only cover. By default the three sources go in parallel.
    */
   googleOnlyForGaps?: boolean;
 }
@@ -94,6 +96,12 @@ async function fromSbn(isbn13: string, http: HttpClient, shared?: SharedCache): 
   return record ? { status: 'found', record } : { status: 'not_found' };
 }
 
+/** Whether Google Books can still add something an import keeps: a book, or its cover. */
+export function openSourcesHaveGaps(records: (SourceRecord | undefined)[]): boolean {
+  const found = records.filter((record) => record !== undefined);
+  return found.length === 0 || !found.some((record) => record.coverId);
+}
+
 /**
  * Asks every relevant source in parallel and merges what they found (ADR-0008).
  * Returns null for an invalid ISBN. A failing source never fails the lookup.
@@ -108,7 +116,9 @@ export async function lookupIsbn(isbn: string, options: LookupOptions): Promise<
       fromOpenLibrary(isbn13, options.http, options.shared),
       fromSbn(isbn13, options.http, options.shared),
     ]);
-    googlebooks = openlibrary.record || sbn.record ? { status: 'skipped' } : await fromGoogleBooks(isbn13, options);
+    googlebooks = openSourcesHaveGaps([openlibrary.record, sbn.record])
+      ? await fromGoogleBooks(isbn13, options)
+      : { status: 'skipped' };
   } else {
     [openlibrary, googlebooks, sbn] = await Promise.all([
       fromOpenLibrary(isbn13, options.http, options.shared),

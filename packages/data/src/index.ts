@@ -45,7 +45,8 @@ export {
 } from './readings';
 export { type UploadCoverResult, deleteCoverPhoto, uploadCoverPhoto } from './covers';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate, Enums } from './database.types';
-export { listOwnTana } from './tana';
+export { listOwnEditionsWithoutCover, listOwnTana } from './tana';
+export { type CoverFillOptions, type CoverFillProgress, type CoverSources, runCoverFillStep } from './cover-fill';
 export {
   type Shelf,
   type ShelfResult,
