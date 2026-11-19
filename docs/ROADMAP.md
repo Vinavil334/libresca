@@ -2,7 +2,7 @@
 
 Questo file è la **fonte di verità sullo stato del progetto**. Va aggiornato alla fine di ogni task: spunta le caselle e, se un piano cambia, riscrivilo invece di aggiungere note a margine.
 
-**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Catalogo condiviso con scrittura validata e ricerca senza accenti (F1.1). API che propone la scheda di un libro per ISBN dalle tre fonti (F1.2a) e ricerca per titolo e autore che segnala le opere già nel catalogo (F1.2b): **F1.2 è chiusa**. Prima schermata per aggiungere un libro: ricerca unica per titolo, autore o ISBN, scheda da confermare e correggere, scheda libro essenziale (F1.3a); inserimento a mano con lingua, traduttori e foto della copertina su Supabase Storage (F1.3b): **F1.3 è chiusa**. Scanner del codice a barre dalla fotocamera, con lettura da foto quando la fotocamera non va (F1.4). Copie possedute nella Tana, i primi dati personali, con "Ce l'ho" già all'aggiunta (F1.5). Letture con Dispensa, date, riletture e voto a funghetti (F1.6), poi allineate al disegno della D2 con foglio della lettura, "Finito!" e "L'hai letto?" (F1.6b). Disegnate le schermate della Tana (D2). La Tana vera e propria, con ricerca, filtri, scaffali e scheda libro completa (F1.7). Voto a quarti di funghetto (ADR-0009) e import da Goodreads a passi, con cache condivisa delle fonti aperte e revisione dei libri incerti (F1.8). Prossimo task: **F1.9**, l'export completo; sulla traccia design, **D3**.
+**Stato attuale:** fondamenta documentali pronte, decisioni iniziali prese, direzione visiva e design system scelti (D0, D1), fonti dei metadati misurate (F0.2, ADR-0008), monorepo pronto con una pagina che usa token, font e testi tradotti (F0.3), Supabase locale in Docker e progetto remoto a Francoforte con tipi generati (F0.4). CI su GitHub Actions con controlli, test RLS ed e2e (F0.5), deploy su `libresca.vercel.app` con preview per PR e Stop hook sul typecheck (F0.6). Login con Google, accesso riservato agli account attivi e shell PWA installabile (F0.7). Job giornaliero che tiene attivo Supabase (F0.8): **F0 è chiusa**. Catalogo condiviso con scrittura validata e ricerca senza accenti (F1.1). API che propone la scheda di un libro per ISBN dalle tre fonti (F1.2a) e ricerca per titolo e autore che segnala le opere già nel catalogo (F1.2b): **F1.2 è chiusa**. Prima schermata per aggiungere un libro: ricerca unica per titolo, autore o ISBN, scheda da confermare e correggere, scheda libro essenziale (F1.3a); inserimento a mano con lingua, traduttori e foto della copertina su Supabase Storage (F1.3b): **F1.3 è chiusa**. Scanner del codice a barre dalla fotocamera, con lettura da foto quando la fotocamera non va (F1.4). Copie possedute nella Tana, i primi dati personali, con "Ce l'ho" già all'aggiunta (F1.5). Letture con Dispensa, date, riletture e voto a funghetti (F1.6), poi allineate al disegno della D2 con foglio della lettura, "Finito!" e "L'hai letto?" (F1.6b). Disegnate le schermate della Tana (D2). La Tana vera e propria, con ricerca, filtri, scaffali e scheda libro completa (F1.7). Voto a quarti di funghetto (ADR-0009) e import da Goodreads a passi, con cache condivisa delle fonti aperte e revisione dei libri incerti (F1.8). Disegnate le schermate del Bosco (D3). Prossimo task: **F1.9**, l'export completo; sulla traccia design, **D4**.
 
 Dimensioni indicative dei task: **S** (una sessione), **M** (qualche sessione), **L** (da spezzare prima di iniziare).
 
@@ -91,12 +91,12 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 
 *Fatto quando:* almeno 5 amici hanno una Tana attiva e tutte le tabelle hanno test RLS.
 
-- [ ] **F2.1** (M) Attivazione tramite invito, richieste di amicizia, profilo
+- [ ] **F2.1** (M) Attivazione tramite invito, richieste di amicizia, profilo; l'invito dura 7 giorni e rende subito amici, come in `docs/design/SCHERMATE_BOSCO.md`
 - [ ] **F2.2** (M) Visibilità per copia e lettura, suite di test RLS sugli scenari tra amici: estende la policy di lettura di `copies` (oggi solo il proprietario) e aggiunge il selettore nell'interfaccia
-- [ ] **F2.3** (S) Tana degli amici in sola lettura
-- [ ] **F2.4** (S) "Chi ce l'ha?" su scheda libro e ricerca
-- [ ] **F2.5** (M) Prestiti: richiesta, accettazione, consegna, promemoria, restituzione; anche verso chi non è nell'app
-- [ ] **F2.6** (M) Spore: consigli diretti con nota e stato (ricevuta, in lista, letta, grazie)
+- [ ] **F2.3** (S) Tana degli amici in sola lettura, con i libri in comune e i suoi desideri
+- [ ] **F2.4** (S) "Chi ce l'ha?" su scheda libro e ricerca: il blocco "Nel tuo Bosco" della D3
+- [ ] **F2.5** (M) Prestiti: richiesta, accettazione, consegna, promemoria, restituzione; anche verso chi non è nell'app. "Con calma" dopo tre mesi o dopo la data di ritorno, un solo promemoria, "Ricordalo a…" con un testo fisso
+- [ ] **F2.6** (M) Spore: consigli diretti con nota e stato (ricevuta, in lista, letta, grazie), più "Non fa per me" che chi la manda non vede; le ricevute stanno in cima al Micelio, che entra nella barra con questo task
 - [ ] **F2.7** (S) Lista dei desideri e "idee regalo" per un amico
 - [ ] **F2.8** (M) Feed del Bosco e notifiche in app; quelle email richiedono un servizio SMTP e aspettano la F5
 - [ ] **F2.9** (S) Log delle interazioni per il recommender: impression, salvataggi, scarti
@@ -112,7 +112,7 @@ Dettagli in [ADR-0005](adr/0005-portabilita-mobile-e-pubblico.md), [ADR-0006](ad
 - [ ] **F3.4** (M) Harness di valutazione offline con baseline
 - [ ] **F3.5** (M) Livello M2: prior collaborativo da dataset pubblico, dopo verifica della licenza
 - [ ] **F3.6** (M) Livello M3: ranking ibrido, diversificazione, esplorazione
-- [ ] **F3.7** (M) Pagina consigli con "perché", "non mi interessa" e modalità regalo
+- [ ] **F3.7** (M) Pagina consigli con "perché", "non mi interessa" e modalità regalo, come in `docs/design/SCHERMATE_BOSCO.md`
 
 ## F4 · Incanto
 
@@ -162,7 +162,7 @@ Si lavora nella chat di design del progetto Claude, a partire da `docs/design/DE
 - [x] **D0** Direzione visiva: scelta la direzione D "Sottobosco" tra quattro proposte (Erbario, Lanterna, Linoleum, Sottobosco), con giorno e notte su cinque schermate. Logo e mascotte definitiva passano alla D4
 - [x] **D1** Design system: token in `packages/tokens/tokens.json` con CSS generato e test, regole in `docs/design/DESIGN_SYSTEM.md`, icone e motivi in `docs/design/assets/`
 - [x] **D2** Schermate Tana: elenco, griglia, scaffali e desktop della Tana; scheda libro con copie e letture, foglio della lettura e libro finito; aggiunta, conferma, inserimento a mano, scanner; stati vuoti ed errori; copertine generate definitive. Decisioni e struttura in `docs/design/SCHERMATE_TANA.md`
-- [ ] **D3** Schermate Bosco: tane degli amici, prestiti, spore, consigli
+- [x] **D3** Schermate Bosco: pagina del Bosco, Tana di un amico, "Nel tuo Bosco" sulla scheda libro, amici, invito, lucciole, Bosco vuoto; prestiti (elenco, richiesta, chiedi, presta anche fuori dal Bosco, libro in viaggio); spore (manda, ricevuta, elenco, grazie); idee regalo; Micelio con il perché, "Non mi interessa" e Micelio vuoto; Tu e visibilità. Decisioni e struttura in `docs/design/SCHERMATE_BOSCO.md`
 - [ ] **D4** Set di creature, illustrazioni e animazioni; mascotte definitiva (sostituisce la topina provvisoria) e logo
 
 F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`; le schermate di F1 possono partire anche se D2 è ancora in corso.
@@ -195,3 +195,4 @@ F0 non dipende dal design. Da F0.3 in poi la UI usa i token di `packages/tokens`
 | 2026-11-13 | Chiusa F1.8, da M a L, in quattro fasi nella stessa PR: voto a quarti (ADR-0009); ogni libro letto si dà per posseduto; le date di inizio restano vuote e si aggiungono dalla scheda, senza elenco guidato; Google Books non rimanda al giorno dopo: oltre il tetto si usano i dati dell'export | Decisioni dell'utente all'avvio di F1.8 |
 | 2026-11-13 | Correzioni dopo il primo import reale: i caratteri di non ordinamento di SBN (U+0098, U+009C) si tolgono dai testi e dal catalogo già salvato; `My Rating` si legge come decimale, e rilanciare l'import ripara i voti troncati | Segnalazione dell'utente dopo il primo import |
 | 2026-11-13 | Correzione delle schede del catalogo (`/books/{id}/edit`): titolo, autori, anno, descrizione, dettagli dell'edizione, traduttori e foto. Qualunque account attivo può correggere; la moderazione resta in F5.4 | Richiesta dell'utente dopo il primo import |
+| 2026-11-19 | Chiusa D3: richieste in cima al Bosco, niente like né contatori; le spore ricevute stanno nel Micelio, che entra nella barra con F2.6; prestiti con "Da consegnare" e "Con calma" calcolato, un solo promemoria; "Non fa per me" privato; note della copia sempre private; le idee regalo escludono solo i libri visibili; niente prenotazione dei regali; il Bosco su desktop riusa la struttura della Tana | Decisioni dell'utente sulla tela di D3 |
