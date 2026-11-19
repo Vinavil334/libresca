@@ -66,9 +66,9 @@ Definiti nel design system su Claude con anteprime e linee guida; nell'app si ri
 | CanopyHeader | Chioma con titolo, sottotitolo, smerlo e funghi; lucciole di notte |
 | SearchField | "Ce l'ho già? Cerca…", pillola 52px |
 | WhyBox | "Perché te lo consigliamo": 1–3 ragioni concrete |
-| NavBar | Tana, Bosco, Scansiona al centro, Micelio, Tu; finché Bosco e Micelio non esistono (F2, F3) solo Tana, Scansiona e Tu |
+| NavBar | Tana, Bosco, Scansiona al centro, Micelio, Tu; finché il Bosco non esiste (F2) solo Tana, Scansiona e Tu; il Micelio compare con le spore (F2.6) |
 
-Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2 volte" nella scheda libro). Le schermate della Tana che usano questi componenti sono descritte in [`SCHERMATE_TANA.md`](SCHERMATE_TANA.md).
+Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2 volte" nella scheda libro). Le schermate che usano questi componenti sono descritte in [`SCHERMATE_TANA.md`](SCHERMATE_TANA.md) (Tana, scheda libro, aggiunta) e [`SCHERMATE_BOSCO.md`](SCHERMATE_BOSCO.md) (Bosco, prestiti, spore, Micelio, privacy).
 
 ## Voce
 
@@ -92,7 +92,7 @@ Posseduto e letto restano sempre due blocchi separati (es. "Ce l'hai" e "Letto 2
 | Con calma | Prestito lungo, senza rimprovero | "Sara, con calma" | `loans` aperto oltre la soglia |
 | lucciola | Notifica | "2 lucciole nuove" | `notifications` |
 
-Frasi della casa: "Ce l'ho già? Cerca…", "Non è ancora nella tua Tana", "Ce l'ha Marta: potresti chiederlo a lei", "Un amico bussa alla tana", "È tornato", "Perché te lo consigliamo", "Il tarlo ha mangiato questa pagina". In altre lingue le parole si adattano, non si traducono alla lettera.
+Frasi della casa: "Ce l'ho già? Cerca…", "Non è ancora nella tua Tana", "Ce l'ha Marta: potresti chiederlo a lei", "Un amico bussa alla tana", "È tornato", "Il Bosco è ancora silenzioso", "Il Micelio sta ancora crescendo", "Perché te lo consigliamo", "Il tarlo ha mangiato questa pagina". In altre lingue le parole si adattano, non si traducono alla lettera.
 
 ## Creature
 
