@@ -108,6 +108,7 @@ export {
   type TanaWork,
   buildTana,
   editionCoverUrl,
+  editionsWithoutCover,
   foldText,
   matchesTana,
   sortTana,

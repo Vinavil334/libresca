@@ -664,6 +664,14 @@ export type Database = {
     };
     Functions: {
       create_edition: { Args: { entry: Json }; Returns: Json };
+      fill_edition_cover: {
+        Args: {
+          new_cover_id: string;
+          new_cover_source: Database['public']['Enums']['cover_source'];
+          target_edition_id: string;
+        };
+        Returns: boolean;
+      };
       health_check: { Args: Record<PropertyKey, never>; Returns: boolean };
       metadata_cache_get: { Args: { cache_url: string }; Returns: Json };
       metadata_cache_put: {

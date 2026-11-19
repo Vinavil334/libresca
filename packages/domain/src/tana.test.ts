@@ -6,6 +6,7 @@ import {
   type TanaWork,
   buildTana,
   editionCoverUrl,
+  editionsWithoutCover,
   foldText,
   matchesTana,
   sortTana,
@@ -157,5 +158,36 @@ describe('sortTana', () => {
     expect(order('recent')).toEqual(['Il nome della rosa', 'Lezioni americane', 'Le città invisibili']);
     expect(order('title')).toEqual(['Il nome della rosa', 'Le città invisibili', 'Lezioni americane']);
     expect(order('author')).toEqual(['Le città invisibili', 'Lezioni americane', 'Il nome della rosa']);
+  });
+});
+
+describe('editionsWithoutCover', () => {
+  const bare = (id: string, editions: string[]): TanaWork => ({
+    id,
+    title: id,
+    authors: [],
+    editions: editions.map((edition) => ({ id: edition, cover_source: null, cover_id: null, cover_path: null })),
+  });
+
+  it('skips a book that already shows a cover', () => {
+    expect(editionsWithoutCover([copy(citta, '2026-01-01')], [])).toEqual([]);
+  });
+
+  it('takes the editions of the copies and readings of a book without cover', () => {
+    const w = bare('w9', ['e3', 'e1', 'e2']);
+    const owned = { ...copy(w, '2026-01-01'), edition_id: 'e3' };
+    expect(editionsWithoutCover([owned], [reading(w, '2026-01-02', { edition_id: 'e1' })])).toEqual(['e1', 'e3']);
+  });
+
+  it('falls back to every edition of the work, once, in id order', () => {
+    const w = bare('w8', ['e5', 'e4']);
+    const other = bare('w7', ['e0']);
+    expect(
+      editionsWithoutCover(
+        [],
+        [reading(w, '2026-01-01'), reading(w, '2026-01-02')],
+        [{ shelf_id: 's1', created_at: '2026-01-03', work: other }],
+      ),
+    ).toEqual(['e0', 'e4', 'e5']);
   });
 });

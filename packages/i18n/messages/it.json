@@ -403,7 +403,18 @@
     "subtitle": "il tuo account",
     "greeting": "Ciao, {name}",
     "soon": "Qui arriverà il tuo profilo, quando la Tana si aprirà agli amici.",
-    "import": "Importa da Goodreads"
+    "import": "Importa da Goodreads",
+    "covers": {
+      "heading": "Copertine mancanti",
+      "intro": "Cerchiamo la copertina dei libri della tua Tana che non ce l'hanno. Con molti libri ci vuole qualche minuto: tieni aperta la pagina.",
+      "start": "Cerca le copertine",
+      "running": "Cerchiamo… {found, plural, =0 {nessuna copertina finora} one {# copertina trovata} other {# copertine trovate}}, {remaining, plural, one {manca # libro} other {mancano # libri}}.",
+      "allCovered": "Tutti i libri della tua Tana hanno già una copertina.",
+      "found": "{count, plural, =0 {Nessuna copertina nuova.} one {Trovata # copertina.} other {Trovate # copertine.}}",
+      "missing": "{count, plural, one {Per # libro nessuna fonte ha la copertina: puoi fotografarla dalla sua scheda.} other {Per # libri nessuna fonte ha la copertina: puoi fotografarla dalla loro scheda.}}",
+      "error": "La ricerca si è interrotta. Riprendi quando vuoi: ripartiamo da dove eravamo.",
+      "resume": "Riprendi"
+    }
   },
   "shelves": {
     "title": "Scaffali",
